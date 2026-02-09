@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>FinTrack</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* 🔥 YOUR ORIGINAL CSS (unchanged, shortened here for sanity) */
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #e2e8f0;
+      margin: 0;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      background: rgba(15, 23, 42, 0.85);
+      position: sticky;
+      top: 0;
+    }
+
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.7rem;
+      background: linear-gradient(135deg, #10b981, #059669);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .nav-links a {
+      margin-right: 1rem;
+      cursor: pointer;
+      color: #cbd5e1;
+    }
+
+    .nav-links a.active {
+      color: #10b981;
+    }
+
+    .main-content {
+      padding: 2rem;
+      max-width: 1300px;
+      margin: auto;
+    }
+
+    .summary-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .summary-card {
+      background: rgba(30, 41, 59, 0.5);
+      padding: 1.5rem;
+      border-radius: 1rem;
+    }
+
+    .summary-card h3 {
+      margin: 0;
+      font-size: 0.9rem;
+      color: #94a3b8;
+    }
+
+    .amount {
+      font-size: 2.2rem;
+      font-family: 'Playfair Display', serif;
+      margin-top: 0.5rem;
+    }
+
+    canvas {
+      max-width: 100%;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="logo">FinTrack</div>
+    <div class="nav-links">
+      <a class="active" onclick="showPage('dashboard')">Dashboard</a>
+      <a onclick="showPage('transactions')">Transactions</a>
+      <a onclick="showPage('profile')">Profile</a>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <!-- DASHBOARD -->
+    <section id="dashboard">
+      <h1>Welcome back, Alex 👋</h1>
+
+      <div class="summary-cards">
+        <div class="summary-card">
+          <h3>Total Income</h3>
+          <div class="amount" id="income">₹0</div>
+        </div>
+
+        <div class="summary-card">
+          <h3>Total Expenses</h3>
+          <div class="amount" id="expenses">₹0</div>
+        </div>
+
+        <div class="summary-card">
+          <h3>Balance</h3>
+          <div class="amount" id="balance">₹0</div>
+        </div>
+      </div>
+
+      <canvas id="pieChart" height="120"></canvas>
+      <br>
+      <canvas id="barChart" height="120"></canvas>
+    </section>
+
+    <!-- TRANSACTIONS -->
+    <section id="transactions" style="display:none">
+      <h2>Add Transaction</h2>
+      <input id="amount" type="number" placeholder="Amount">
+      <select id="type">
+        <option value="income">Income</option>
+        <option value="expense">Expense</option>
+      </select>
+      <button onclick="addTransaction()">Add</button>
+
+      <ul id="txList"></ul>
+    </section>
+
+    <!-- PROFILE -->
+    <section id="profile" style="display:none">
+      <h2>Profile</h2>
+      <p>Name: Alex Morgan</p>
+      <p>Email: alex@email.com</p>
+    </section>
+
+  </main>
+
+  <script>
+    lucide.createIcons();
+
+    const API_URL = "/transactions";
+    let transactions = [];
+
+    /* ---------- PAGE SWITCH ---------- */
+    function showPage(page) {
+      document.querySelectorAll("section").forEach(s => s.style.display = "none");
+      document.getElementById(page).style.display = "block";
+
+      document.querySelectorAll(".nav-links a").forEach(a => a.classList.remove("active"));
+      event.target.classList.add("active");
+    }
+
+    /* ---------- API INTERACTIONS ---------- */
+    async function fetchTransactions() {
+      try {
+        const res = await fetch(API_URL);
+        if (!res.ok) throw new Error("Failed to fetch");
+        transactions = await res.json();
+        calculate();
+      } catch (err) {
+        console.error("Error loading transactions:", err);
+        // Fallback for demo if backend isn't running
+        // transactions = []; 
+        // calculate();
+      }
+    }
+
+    async function addTransaction() {
+      const amountVal = document.getElementById("amount").value;
+      const type = document.getElementById("type").value;
+
+      if (!amountVal) return;
+      const amount = Number(amountVal);
+
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ amount, type })
+        });
+
+        if (res.ok) {
+          // Clear input
+          document.getElementById("amount").value = "";
+          // Refresh data
+          fetchTransactions();
+        } else {
+          alert("Failed to save transaction");
+        }
+      } catch (err) {
+        console.error("Error adding transaction:", err);
+        alert("Backend error");
+      }
+    }
+
+    /* ---------- CALCULATIONS ---------- */
+    function calculate() {
+      let income = 0, expense = 0;
+
+      transactions.forEach(t => {
+        // Ensure amount is a number
+        const amt = Number(t.amount);
+        if (t.type === "income") income += amt;
+        else expense += amt;
+      });
+
+      document.getElementById("income").innerText = "₹" + income;
+      document.getElementById("expenses").innerText = "₹" + expense;
+      document.getElementById("balance").innerText = "₹" + (income - expense);
+
+      renderCharts(income, expense);
+      renderTransactions();
+    }
+
+    /* ---------- CHARTS ---------- */
+    let pieChart, barChart;
+
+    function renderCharts(income, expense) {
+      if (pieChart) pieChart.destroy();
+      if (barChart) barChart.destroy();
+
+      pieChart = new Chart(document.getElementById("pieChart"), {
+        type: "pie",
+        data: {
+          labels: ["Income", "Expense"],
+          datasets: [{
+            data: [income, expense],
+            backgroundColor: ["#10b981", "#ef4444"]
+          }]
+        }
+      });
+
+      barChart = new Chart(document.getElementById("barChart"), {
+        type: "bar",
+        data: {
+          labels: ["Income", "Expense"],
+          datasets: [{
+            data: [income, expense],
+            backgroundColor: ["#10b981", "#ef4444"]
+          }]
+        }
+      });
+    }
+
+    /* ---------- TRANSACTIONS RENDER ---------- */
+    function renderTransactions() {
+      const list = document.getElementById("txList");
+      list.innerHTML = "";
+      transactions.forEach(t => {
+        const li = document.createElement("li");
+        li.style.padding = "0.5rem";
+        li.style.borderBottom = "1px solid #334155";
+        li.style.display = "flex";
+        li.style.justifyContent = "space-between";
+
+        const typeSpan = document.createElement("span");
+        typeSpan.innerText = t.type.toUpperCase();
+        typeSpan.style.color = t.type === "income" ? "#10b981" : "#ef4444";
+        typeSpan.style.fontWeight = "bold";
+
+        const amtSpan = document.createElement("span");
+        amtSpan.innerText = `₹${t.amount}`;
+
+        li.appendChild(typeSpan);
+        li.appendChild(amtSpan);
+        list.appendChild(li);
+      });
+    }
+
+    // Initial Fetch
+    fetchTransactions();
+  </script>
+
+</body>
+
+</html>
