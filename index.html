@@ -11,6 +11,7 @@
     href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap"
     rel="stylesheet">
 
+
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -18,76 +19,174 @@
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
-    /* 🔥 YOUR ORIGINAL CSS (unchanged, shortened here for sanity) */
     body {
-      font-family: 'DM Sans', sans-serif;
-      background: linear-gradient(135deg, #0f172a, #1e293b);
-      color: #e2e8f0;
-      margin: 0;
-    }
+    font-family: 'DM Sans', sans-serif;
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: #e2e8f0;
+    margin: 0;
+}
 
-    .navbar {
-      display: flex;
-      justify-content: space-between;
-      padding: 1rem 2rem;
-      background: rgba(15, 23, 42, 0.85);
-      position: sticky;
-      top: 0;
-    }
+.chart-container {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+}
 
-    .logo {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.7rem;
-      background: linear-gradient(135deg, #10b981, #059669);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
+.chart-box {
+    flex: 1;
+    min-width: 300px;
+    background: rgba(30, 41, 59, 0.5);
+    padding: 1rem;
+    border-radius: 1rem;
+}
 
-    .nav-links a {
-      margin-right: 1rem;
-      cursor: pointer;
-      color: #cbd5e1;
-    }
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+    background: rgba(15, 23, 42, 0.85);
+    position: sticky;
+    top: 0;
+}
 
-    .nav-links a.active {
-      color: #10b981;
-    }
+/* Add Button */
+.add-btn {
+    background: linear-gradient(135deg, #10b981, #059669);
+    border: none;
+    padding: 0.7rem 1.5rem;
+    border-radius: 2px;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+}
 
-    .main-content {
-      padding: 2rem;
-      max-width: 1300px;
-      margin: auto;
-    }
+.add-btn:hover {
+    transform: translateY(-3px);
+}
 
-    .summary-cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 2rem;
-    }
+.add-btn:active {
+    transform: scale(0.95);
+}
 
-    .summary-card {
-      background: rgba(30, 41, 59, 0.5);
-      padding: 1.5rem;
-      border-radius: 1rem;
-    }
+.logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.7rem;
+    background: linear-gradient(135deg, #10b981, #059669);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
 
-    .summary-card h3 {
-      margin: 0;
-      font-size: 0.9rem;
-      color: #94a3b8;
-    }
+.nav-links a {
+    margin-right: 1rem;
+    cursor: pointer;
+    color: #cbd5e1;
+}
 
-    .amount {
-      font-size: 2.2rem;
-      font-family: 'Playfair Display', serif;
-      margin-top: 0.5rem;
-    }
+.nav-links a.active {
+    color: #10b981;
+}
 
-    canvas {
-      max-width: 100%;
-    }
+.main-content {
+    padding: 2rem;
+    max-width: 1300px;
+    margin: auto;
+}
+
+.summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.summary-card {
+    background: rgba(30, 41, 59, 0.6);
+    backdrop-filter: blur(12px);
+    padding: 1.5rem;
+    border-radius: 1rem;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.summary-card:hover {
+    transform: translateY(-5px);
+}
+
+
+.summary-card h3 {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #94a3b8;
+}
+
+.amount {
+    font-size: 2.2rem;
+    font-family: 'Playfair Display', serif;
+    margin-top: 0.5rem;
+}
+
+canvas {
+    max-width: 100%;
+}
+
+.summary-card:nth-child(1) {
+    border-left: 4px solid #10b981;
+}
+
+.summary-card:nth-child(2) {
+    border-left: 4px solid #ef4444;
+}
+
+.summary-card:nth-child(3) {
+    border-left: 4px solid #3b82f6;
+}
+
+/* Transaction Box Container */
+.transaction-box {
+    max-width: 700px;
+    margin: 3rem auto;
+    padding: 2rem;
+    background: rgba(30, 41, 59, 0.6);
+    backdrop-filter: blur(12px);
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    text-align: center;
+}
+
+/* Horizontal Form Layout */
+.transaction-form {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+}
+
+/* Input & Select Styling */
+.transaction-form input,
+.transaction-form select {
+    padding: 0.8rem 1rem;
+    border-radius: 0.8rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(15, 23, 42, 0.8);
+    color: #e2e8f0;
+    font-size: 1rem;
+    outline: none;
+    transition: 0.3s ease;
+    min-width: 180px;
+}
+
+/* Focus Effect */
+.transaction-form input:focus,
+.transaction-form select:focus {
+    border-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
   </style>
 </head>
 
@@ -108,7 +207,7 @@
 
     <!-- DASHBOARD -->
     <section id="dashboard">
-      <h1>Welcome back, Alex 👋</h1>
+      <h1>Welcome back, GT Edits👋</h1>
 
       <div class="summary-cards">
         <div class="summary-card">
@@ -127,20 +226,38 @@
         </div>
       </div>
 
-      <canvas id="pieChart" height="120"></canvas>
-      <br>
-      <canvas id="barChart" height="120"></canvas>
+
+      <div class="chart-container">
+        <div class="chart-box">
+          <canvas id="pieChart"></canvas>
+        </div>
+        <div class="chart-box">
+          <canvas id="barChart"></canvas>
+        </div>
+      </div>
+
     </section>
 
     <!-- TRANSACTIONS -->
     <section id="transactions" style="display:none">
-      <h2>Add Transaction</h2>
-      <input id="amount" type="number" placeholder="Amount">
-      <select id="type">
-        <option value="income">Income</option>
-        <option value="expense">Expense</option>
-      </select>
-      <button onclick="addTransaction()">Add</button>
+      <div class="transaction-box">
+        <h2>Add Transaction</h2>
+
+        <div class="transaction-form">
+          <input id="amount" type="number" placeholder="Enter Amount">
+
+          <select id="type">
+            <option value="income">Income</option>
+            <option value="expense">Expense</option>
+          </select>
+
+          <button class="add-btn" onclick="addTransaction()">
+            + Add
+          </button>
+        </div>
+      </div>
+
+
 
       <ul id="txList"></ul>
     </section>
@@ -148,8 +265,8 @@
     <!-- PROFILE -->
     <section id="profile" style="display:none">
       <h2>Profile</h2>
-      <p>Name: Alex Morgan</p>
-      <p>Email: alex@email.com</p>
+      <p>Name: Tanishq Mehta</p>
+      <p>Email: tm@gmail.com</p>
     </section>
 
   </main>
@@ -267,10 +384,15 @@
       list.innerHTML = "";
       transactions.forEach(t => {
         const li = document.createElement("li");
-        li.style.padding = "0.5rem";
-        li.style.borderBottom = "1px solid #334155";
+        li.style.background = "rgba(30, 41, 59, 0.6)";
+        li.style.padding = "0.8rem 1rem";
+        li.style.marginBottom = "0.7rem";
+        li.style.borderRadius = "0.8rem";
         li.style.display = "flex";
         li.style.justifyContent = "space-between";
+        li.style.alignItems = "center";
+        li.style.boxShadow = "0 6px 15px rgba(0,0,0,0.3)";
+
 
         const typeSpan = document.createElement("span");
         typeSpan.innerText = t.type.toUpperCase();
