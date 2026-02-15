@@ -70,7 +70,7 @@ The application uses a RESTful API provided by the Flask backend (`app.py`), whi
 ![alt text](image-1.png)
 
 ### B. "Add Transaction" Workflow
-![alt text](image-5.png)
+![alt text](image-7.png)
 
 ### C. "Split Expense" Feature Logic
-![alt text](image-6.png)
+![alt text](image-8.png)
