@@ -51,15 +51,19 @@ def add_transaction():
 
     data = request.json
     amount = data.get('amount')
-    type_ = data.get('type')
+    category = data.get('category')
+    note = data.get('note', '')
     
-    if not amount or not type_:
-        return jsonify({"error": "Missing amount or type"}), 400
+    if not amount or not category:
+        return jsonify({"error": "Missing amount or category"}), 400
 
     try:
         # Supabase REST API: POST request to table endpoint
         api_url = f"{SUPABASE_URL}/rest/v1/transactions"
-        response = requests.post(api_url, json={"amount": amount, "type": type_}, headers=get_headers())
+        payload = {"amount": amount, "category": category}
+        if note:
+            payload["note"] = note
+        response = requests.post(api_url, json=payload, headers=get_headers())
         
         if response.status_code == 201:
             # Return the created object (requires Prefer: return=representation header)

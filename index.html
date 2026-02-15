@@ -20,173 +20,288 @@
 
   <style>
     body {
-    font-family: 'DM Sans', sans-serif;
-    background: linear-gradient(135deg, #0f172a, #1e293b);
-    color: #e2e8f0;
-    margin: 0;
-}
+      font-family: 'DM Sans', sans-serif;
+      background: #0B1426;
+      color: #F9FAFB;
+      margin: 0;
+    }
 
-.chart-container {
-    display: flex;
-    gap: 2rem;
-    flex-wrap: wrap;
-    margin-top: 2rem;
-}
+    .chart-container {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      margin-top: 2rem;
+    }
 
-.chart-box {
-    flex: 1;
-    min-width: 300px;
-    background: rgba(30, 41, 59, 0.5);
-    padding: 1rem;
-    border-radius: 1rem;
-}
+    .chart-box {
+      flex: 1;
+      min-width: 300px;
+      background: #111C36;
+      padding: 1rem;
+      border-radius: 1rem;
+      height: 400px;
+    }
 
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    padding: 1rem 2rem;
-    background: rgba(15, 23, 42, 0.85);
-    position: sticky;
-    top: 0;
-}
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      background: #111C36;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
 
-/* Add Button */
-.add-btn {
-    background: linear-gradient(135deg, #10b981, #059669);
-    border: none;
-    padding: 0.7rem 1.5rem;
-    border-radius: 2px;
-    font-weight: 600;
-    color: white;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-top: 1rem;
-}
+    /* Add Button */
+    .add-btn {
+      background: linear-gradient(135deg, #10B981, #059669);
+      border: none;
+      padding: 0.7rem 1.5rem;
+      border-radius: 2px;
+      font-weight: 600;
+      color: #F9FAFB;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
 
-.add-btn:hover {
-    transform: translateY(-3px);
-}
+    .add-btn:hover {
+      transform: translateY(-3px);
+    }
 
-.add-btn:active {
-    transform: scale(0.95);
-}
+    .add-btn:active {
+      transform: scale(0.95);
+    }
 
-.logo {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.7rem;
-    background: linear-gradient(135deg, #10b981, #059669);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-}
+    /* Split Button */
+    .split-btn {
+      background: linear-gradient(135deg, #3B82F6, #2563EB);
+      border: none;
+      padding: 0.7rem 1.5rem;
+      border-radius: 2px;
+      font-weight: 600;
+      color: #F9FAFB;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: none;
+    }
 
-.nav-links a {
-    margin-right: 1rem;
-    cursor: pointer;
-    color: #cbd5e1;
-}
+    .split-btn:hover {
+      transform: translateY(-3px);
+    }
 
-.nav-links a.active {
-    color: #10b981;
-}
+    .split-btn.visible {
+      display: inline-block;
+    }
 
-.main-content {
-    padding: 2rem;
-    max-width: 1300px;
-    margin: auto;
-}
+    /* Split Row */
+    .split-row {
+      display: none;
+      width: 100%;
+      justify-content: center;
+      align-items: center;
+      gap: 0.8rem;
+      margin-top: 0.5rem;
+      animation: fadeIn 0.3s ease;
+    }
 
-.summary-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-}
+    .split-row.visible {
+      display: flex;
+    }
 
-.summary-card {
-    background: rgba(30, 41, 59, 0.6);
-    backdrop-filter: blur(12px);
-    padding: 1.5rem;
-    border-radius: 1rem;
-    transition: all 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-}
+    .split-row input {
+      width: 80px;
+      padding: 0.6rem 0.8rem;
+      border-radius: 0.8rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: #0B1426;
+      color: #F9FAFB;
+      font-size: 1rem;
+      text-align: center;
+      outline: none;
+    }
 
-.summary-card:hover {
-    transform: translateY(-5px);
-}
+    .split-row input:focus {
+      border-color: #3B82F6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+
+    .split-row span {
+      color: #94a3b8;
+      font-size: 0.9rem;
+    }
+
+    .split-confirm-btn {
+      background: linear-gradient(135deg, #3B82F6, #2563EB);
+      border: none;
+      padding: 0.5rem 1.2rem;
+      border-radius: 2px;
+      font-weight: 600;
+      color: #F9FAFB;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .split-cancel-btn {
+      background: #334155;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 2px;
+      font-weight: 500;
+      color: #94a3b8;
+      cursor: pointer;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-5px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.7rem;
+      color: #10B981;
+      font-weight: 700;
+    }
+
+    .nav-links a {
+      margin-right: 1rem;
+      cursor: pointer;
+      color: #64748B;
+    }
+
+    .nav-links a.active {
+      color: #10B981;
+    }
+
+    .main-content {
+      padding: 2rem;
+      max-width: 1300px;
+      margin: auto;
+    }
+
+    .summary-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .summary-card {
+      background: #111C36;
+      backdrop-filter: blur(12px);
+      padding: 1.5rem;
+      border-radius: 1rem;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .summary-card:hover {
+      transform: translateY(-5px);
+    }
 
 
-.summary-card h3 {
-    margin: 0;
-    font-size: 0.9rem;
-    color: #94a3b8;
-}
+    .summary-card h3 {
+      margin: 0;
+      font-size: 0.9rem;
+      color: #64748B;
+    }
 
-.amount {
-    font-size: 2.2rem;
-    font-family: 'Playfair Display', serif;
-    margin-top: 0.5rem;
-}
+    .amount {
+      font-size: 2.2rem;
+      font-family: 'Playfair Display', serif;
+      margin-top: 0.5rem;
+    }
 
-canvas {
-    max-width: 100%;
-}
+    canvas {
+      max-width: 100%;
+    }
 
-.summary-card:nth-child(1) {
-    border-left: 4px solid #10b981;
-}
+    .summary-card:nth-child(1) {
+      border-left: 4px solid #10B981;
+    }
 
-.summary-card:nth-child(2) {
-    border-left: 4px solid #ef4444;
-}
+    .summary-card:nth-child(2) {
+      border-left: 4px solid #EF4444;
+    }
 
-.summary-card:nth-child(3) {
-    border-left: 4px solid #3b82f6;
-}
+    .summary-card:nth-child(3) {
+      border-left: 4px solid #3B82F6;
+    }
 
-/* Transaction Box Container */
-.transaction-box {
-    max-width: 700px;
-    margin: 3rem auto;
-    padding: 2rem;
-    background: rgba(30, 41, 59, 0.6);
-    backdrop-filter: blur(12px);
-    border-radius: 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    text-align: center;
-}
+    /* Transaction Box Container */
+    .transaction-box {
+      max-width: 700px;
+      margin: 3rem auto;
+      padding: 2rem;
+      background: #111C36;
+      backdrop-filter: blur(12px);
+      border-radius: 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      text-align: center;
+    }
 
-/* Horizontal Form Layout */
-.transaction-form {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    margin-top: 1.5rem;
-}
+    /* Horizontal Form Layout */
+    .transaction-form {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
+      align-items: flex-start;
+    }
 
-/* Input & Select Styling */
-.transaction-form input,
-.transaction-form select {
-    padding: 0.8rem 1rem;
-    border-radius: 0.8rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(15, 23, 42, 0.8);
-    color: #e2e8f0;
-    font-size: 1rem;
-    outline: none;
-    transition: 0.3s ease;
-    min-width: 180px;
-}
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
 
-/* Focus Effect */
-.transaction-form input:focus,
-.transaction-form select:focus {
-    border-color: #10b981;
-    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
-}
+    .error-msg {
+      color: #EF4444;
+      font-size: 1rem;
+      font-weight: bold;
+      margin-top: 0.25rem;
+      min-height: 1.2em;
+      margin-left: 0.5rem;
+    }
+
+    /* Input & Select Styling */
+    .transaction-form input,
+    .transaction-form select {
+      padding: 0.8rem 1rem;
+      border-radius: 0.8rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: #0B1426;
+      color: #F9FAFB;
+      font-size: 1rem;
+      outline: none;
+      transition: 0.3s ease;
+      min-width: 180px;
+    }
+
+    .transaction-form .note-input {
+      display: none;
+      min-width: 200px;
+    }
+
+    .transaction-form .note-input.visible {
+      display: block;
+    }
+
+    /* Focus Effect */
+    .transaction-form input:focus,
+    .transaction-form select:focus {
+      border-color: #10B981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    }
   </style>
 </head>
 
@@ -244,20 +359,55 @@ canvas {
         <h2>Add Transaction</h2>
 
         <div class="transaction-form">
-          <input id="amount" type="number" placeholder="Enter Amount">
+          <div class="input-group">
+            <input id="amount" type="number" placeholder="Enter Amount" min="0.01" step="0.01"
+              oninput="document.getElementById('amount-error').innerText = ''">
+            <span id="amount-error" class="error-msg"></span>
+          </div>
 
-          <select id="type">
-            <option value="income">Income</option>
-            <option value="expense">Expense</option>
+          <select id="category" onchange="onCategoryChange()">
+            <optgroup label="Expense">
+              <option value="Food">Food</option>
+              <option value="Housing / Rent">Housing / Rent</option>
+              <option value="Utilities">Utilities</option>
+              <option value="Transport">Transport</option>
+              <option value="EMI">EMI</option>
+              <option value="Insurance">Insurance</option>
+              <option value="Shopping">Shopping</option>
+              <option value="Entertainment">Entertainment</option>
+              <option value="Health / Medical">Health / Medical</option>
+              <option value="Investments">Investments</option>
+              <option value="Travel">Travel</option>
+              <option value="Gifts / Donations">Gifts / Donations</option>
+              <option value="Miscellaneous">Miscellaneous</option>
+            </optgroup>
+            <optgroup label="Income">
+              <option value="Salary">Salary</option>
+              <option value="Freelance">Freelance</option>
+              <option value="Investment Return">Investment Return</option>
+              <option value="Other">Other</option>
+            </optgroup>
           </select>
+
+          <input id="note" type="text" class="note-input" placeholder="Add a note...">
 
           <button class="add-btn" onclick="addTransaction()">
             + Add
           </button>
+          <button class="split-btn" id="splitBtn" onclick="toggleSplitRow()">
+            ✂ Split
+          </button>
         </div>
+
+        <div class="split-row" id="splitRow">
+          <span>Split among</span>
+          <input id="splitCount" type="number" min="2" value="2" placeholder="2">
+          <span>people</span>
+          <button class="split-confirm-btn" onclick="addSplitTransaction()">Confirm Split</button>
+          <button class="split-cancel-btn" onclick="toggleSplitRow()">Cancel</button>
+        </div>
+
       </div>
-
-
 
       <ul id="txList"></ul>
     </section>
@@ -277,6 +427,120 @@ canvas {
     const API_URL = "/transactions";
     let transactions = [];
 
+    /* ---------- CATEGORY CONFIG ---------- */
+    const incomeCategories = ["Salary", "Freelance", "Investment Return", "Other"];
+
+    // Color map for each category
+    const categoryColors = {
+      // Expenses
+      "Food": "#EF4444",
+      "Housing / Rent": "#F97316",
+      "Utilities": "#F59E0B",
+      "Transport": "#EAB308",
+      "EMI": "#84CC16",
+      "Insurance": "#22C55E",
+      "Shopping": "#14B8A6",
+      "Entertainment": "#06B6D4",
+      "Health / Medical": "#0EA5E9",
+      "Investments": "#3B82F6",
+      "Travel": "#6366F1",
+      "Gifts / Donations": "#8B5CF6",
+      "Miscellaneous": "#A855F7",
+      // Income
+      "Salary": "#10B981",
+      "Freelance": "#34D399",
+      "Investment Return": "#6EE7B7",
+      "Other": "#A7F3D0"
+    };
+
+    function isIncome(category) {
+      return incomeCategories.includes(category);
+    }
+
+    /* ---------- NOTE INPUT & SPLIT TOGGLE ---------- */
+    function onCategoryChange() {
+      const cat = document.getElementById("category").value;
+      const noteInput = document.getElementById("note");
+      const splitBtn = document.getElementById("splitBtn");
+      const splitRow = document.getElementById("splitRow");
+
+      // Note input toggle
+      if (cat === "Miscellaneous" || cat === "Other") {
+        noteInput.classList.add("visible");
+        noteInput.placeholder = cat === "Miscellaneous" ? "Describe the expense..." : "Describe the income...";
+      } else {
+        noteInput.classList.remove("visible");
+        noteInput.value = "";
+      }
+
+      // Split button: show only for expense categories
+      if (!isIncome(cat)) {
+        splitBtn.classList.add("visible");
+      } else {
+        splitBtn.classList.remove("visible");
+        splitRow.classList.remove("visible");
+      }
+    }
+
+    // Initialize on load
+    onCategoryChange();
+
+    function toggleSplitRow() {
+      const splitRow = document.getElementById("splitRow");
+      splitRow.classList.toggle("visible");
+    }
+
+    async function addSplitTransaction() {
+      const amountVal = document.getElementById("amount").value;
+      const category = document.getElementById("category").value;
+      const note = document.getElementById("note").value.trim();
+      const splitCount = parseInt(document.getElementById("splitCount").value);
+      const amountError = document.getElementById("amount-error");
+      amountError.innerText = "";
+
+      if (!amountVal) {
+        amountError.innerText = "Please enter an amount";
+        return;
+      }
+      const totalAmount = Number(amountVal);
+      if (totalAmount <= 0) {
+        amountError.innerText = "Values cannot be negative";
+        return;
+      }
+      if (!splitCount || splitCount < 2) {
+        amountError.innerText = "Split must be among at least 2 people";
+        return;
+      }
+
+      const userShare = Math.round((totalAmount / splitCount) * 100) / 100;
+      const splitNote = note ? `${note} (Split ${splitCount} ways)` : `Split ${splitCount} ways`;
+
+      try {
+        const payload = { amount: userShare, category, note: splitNote };
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          document.getElementById("amount").value = "";
+          document.getElementById("note").value = "";
+          document.getElementById("note").classList.remove("visible");
+          document.getElementById("splitRow").classList.remove("visible");
+          document.getElementById("splitCount").value = "2";
+          document.getElementById("category").value = "Food";
+          onCategoryChange();
+          fetchTransactions();
+        } else {
+          amountError.innerText = "Failed to save";
+        }
+      } catch (err) {
+        console.error("Error adding split transaction:", err);
+        amountError.innerText = "Backend error";
+      }
+    }
+
     /* ---------- PAGE SWITCH ---------- */
     function showPage(page) {
       document.querySelectorAll("section").forEach(s => s.style.display = "none");
@@ -295,85 +559,148 @@ canvas {
         calculate();
       } catch (err) {
         console.error("Error loading transactions:", err);
-        // Fallback for demo if backend isn't running
-        // transactions = []; 
-        // calculate();
       }
     }
 
     async function addTransaction() {
       const amountVal = document.getElementById("amount").value;
-      const type = document.getElementById("type").value;
+      const category = document.getElementById("category").value;
+      const note = document.getElementById("note").value.trim();
 
-      if (!amountVal) return;
+      const amountError = document.getElementById("amount-error");
+      amountError.innerText = "";
+
+      if (!amountVal) {
+        amountError.innerText = "Please enter an amount";
+        return;
+      }
       const amount = Number(amountVal);
 
+      if (amount <= 0) {
+        amountError.innerText = "Values cannot be negative";
+        return;
+      }
+
       try {
+        const payload = { amount, category };
+        if (note) payload.note = note;
+
         const res = await fetch(API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ amount, type })
+          body: JSON.stringify(payload)
         });
 
         if (res.ok) {
-          // Clear input
           document.getElementById("amount").value = "";
-          // Refresh data
+          document.getElementById("note").value = "";
+          document.getElementById("note").classList.remove("visible");
+          document.getElementById("category").value = "Food";
           fetchTransactions();
         } else {
-          alert("Failed to save transaction");
+          amountError.innerText = "Failed to save";
         }
       } catch (err) {
         console.error("Error adding transaction:", err);
-        alert("Backend error");
+        amountError.innerText = "Backend error";
       }
     }
 
     /* ---------- CALCULATIONS ---------- */
     function calculate() {
       let income = 0, expense = 0;
+      const catTotals = {}; // { "Food": 100, "Salary": 5000 }
 
       transactions.forEach(t => {
-        // Ensure amount is a number
         const amt = Number(t.amount);
-        if (t.type === "income") income += amt;
-        else expense += amt;
+        const cat = t.category || "Miscellaneous";
+
+        if (isIncome(cat)) {
+          income += amt;
+        } else {
+          expense += amt;
+        }
+
+        if (!catTotals[cat]) catTotals[cat] = 0;
+        catTotals[cat] += amt;
       });
 
-      document.getElementById("income").innerText = "₹" + income;
-      document.getElementById("expenses").innerText = "₹" + expense;
-      document.getElementById("balance").innerText = "₹" + (income - expense);
+      document.getElementById("income").innerText = "\u20B9" + income;
+      document.getElementById("expenses").innerText = "\u20B9" + expense;
+      document.getElementById("balance").innerText = "\u20B9" + (income - expense);
 
-      renderCharts(income, expense);
+      renderCharts(income, expense, catTotals);
       renderTransactions();
     }
 
     /* ---------- CHARTS ---------- */
     let pieChart, barChart;
 
-    function renderCharts(income, expense) {
+    function renderCharts(income, expense, catTotals) {
       if (pieChart) pieChart.destroy();
       if (barChart) barChart.destroy();
+
+      // Pie Chart: All categories breakdown
+      const pieLabels = Object.keys(catTotals);
+      const pieData = Object.values(catTotals);
+      const pieColors = pieLabels.map(c => categoryColors[c] || "#64748B");
 
       pieChart = new Chart(document.getElementById("pieChart"), {
         type: "pie",
         data: {
-          labels: ["Income", "Expense"],
+          labels: pieLabels.length ? pieLabels : ["No Data"],
           datasets: [{
-            data: [income, expense],
-            backgroundColor: ["#10b981", "#ef4444"]
+            data: pieData.length ? pieData : [1],
+            backgroundColor: pieLabels.length ? pieColors : ["#334155"],
+            borderWidth: 0
           }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'right',
+              labels: {
+                color: '#F9FAFB',
+                padding: 12,
+                font: { size: 11 }
+              }
+            }
+          }
         }
       });
 
+      // Bar Chart: Income vs Expense totals
       barChart = new Chart(document.getElementById("barChart"), {
         type: "bar",
         data: {
           labels: ["Income", "Expense"],
           datasets: [{
+            label: 'Amount',
             data: [income, expense],
-            backgroundColor: ["#10b981", "#ef4444"]
+            backgroundColor: ["#10B981", "#EF4444"],
+            borderWidth: 0,
+            borderRadius: 6
           }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: { color: 'rgba(255, 255, 255, 0.1)' },
+              ticks: { color: '#64748B' }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { color: '#64748B' }
+            }
+          },
+          plugins: {
+            legend: { display: false }
+          }
         }
       });
     }
@@ -384,7 +711,7 @@ canvas {
       list.innerHTML = "";
       transactions.forEach(t => {
         const li = document.createElement("li");
-        li.style.background = "rgba(30, 41, 59, 0.6)";
+        li.style.background = "#111C36";
         li.style.padding = "0.8rem 1rem";
         li.style.marginBottom = "0.7rem";
         li.style.borderRadius = "0.8rem";
@@ -393,16 +720,23 @@ canvas {
         li.style.alignItems = "center";
         li.style.boxShadow = "0 6px 15px rgba(0,0,0,0.3)";
 
+        const cat = t.category || "Miscellaneous";
+        const type = isIncome(cat) ? "INCOME" : "EXPENSE";
+        const color = categoryColors[cat] || "#64748B";
 
-        const typeSpan = document.createElement("span");
-        typeSpan.innerText = t.type.toUpperCase();
-        typeSpan.style.color = t.type === "income" ? "#10b981" : "#ef4444";
-        typeSpan.style.fontWeight = "bold";
+        const leftSpan = document.createElement("span");
+        leftSpan.innerHTML = `
+          <span style="color:${isIncome(cat) ? '#10B981' : '#EF4444'}; font-weight:bold">${type}</span>
+          <span style="margin-left:0.5rem; color:${color}; font-weight:600">${cat}</span>
+          ${t.note ? `<span style="font-size:0.8rem; color:#94a3b8; margin-left:0.5rem">(${t.note})</span>` : ''}
+        `;
 
         const amtSpan = document.createElement("span");
-        amtSpan.innerText = `₹${t.amount}`;
+        amtSpan.style.fontWeight = "600";
+        amtSpan.style.color = isIncome(cat) ? "#10B981" : "#EF4444";
+        amtSpan.innerText = `\u20B9${t.amount}`;
 
-        li.appendChild(typeSpan);
+        li.appendChild(leftSpan);
         li.appendChild(amtSpan);
         list.appendChild(li);
       });
