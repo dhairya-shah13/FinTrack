@@ -161,4 +161,4 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ---
 
-**Made with ❤️ by [Dhairya Shah](https://github.com/dhairya-shah13)**
+**Made with ❤️ by [Dhairya Shah](https://github.com/dhairya-shah13) & [Tanishq Mehta](https://github.com/gt228-tan)**
