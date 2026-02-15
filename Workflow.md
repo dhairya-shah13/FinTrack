@@ -70,7 +70,7 @@ The application uses a RESTful API provided by the Flask backend (`app.py`), whi
 ![alt text](image-1.png)
 
 ### B. "Add Transaction" Workflow
-![alt text](image-7.png)
+![alt text](<WhatsApp Image 2026-02-15 at 2.56.33 PM.jpeg>)
 
 ### C. "Split Expense" Feature Logic
 ![alt text](image-8.png)
