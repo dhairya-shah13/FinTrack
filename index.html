@@ -302,7 +302,55 @@
       border-color: #10B981;
       box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
     }
+
+    /* Choices.js Customization for Dark Theme */
+    .choices {
+      min-width: 200px;
+      margin-bottom: 0;
+    }
+
+    .choices__inner {
+      background-color: #0B1426 !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      border-radius: 0.8rem !important;
+      color: #F9FAFB !important;
+      min-height: 48px;
+    }
+
+    .choices__input {
+      background-color: transparent !important;
+      color: #F9FAFB !important;
+    }
+
+    .choices__list--dropdown {
+      background-color: #111C36 !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      color: #F9FAFB !important;
+    }
+
+    .choices__list--dropdown .choices__item--selectable.is-highlighted {
+      background-color: #1F2937 !important;
+    }
+
+    .choices__list--dropdown .choices__item {
+      color: #F9FAFB !important;
+    }
+
+    .choices__group-heading {
+      background-color: #0B1426 !important;
+      color: #94a3b8 !important;
+      font-weight: 600;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    }
+
+    /* Adjust placeholder color */
+    .choices__placeholder {
+      opacity: 0.7;
+    }
   </style>
+
+  <!-- Choices.js CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
 </head>
 
 <body>
@@ -365,27 +413,137 @@
             <span id="amount-error" class="error-msg"></span>
           </div>
 
-          <select id="category" onchange="onCategoryChange()">
-            <optgroup label="Expense">
-              <option value="Food">Food</option>
-              <option value="Housing / Rent">Housing / Rent</option>
-              <option value="Utilities">Utilities</option>
-              <option value="Transport">Transport</option>
-              <option value="EMI">EMI</option>
-              <option value="Insurance">Insurance</option>
-              <option value="Shopping">Shopping</option>
-              <option value="Entertainment">Entertainment</option>
-              <option value="Health / Medical">Health / Medical</option>
-              <option value="Investments">Investments</option>
-              <option value="Travel">Travel</option>
-              <option value="Gifts / Donations">Gifts / Donations</option>
-              <option value="Miscellaneous">Miscellaneous</option>
-            </optgroup>
+          <select id="category">
             <optgroup label="Income">
               <option value="Salary">Salary</option>
-              <option value="Freelance">Freelance</option>
-              <option value="Investment Return">Investment Return</option>
-              <option value="Other">Other</option>
+              <option value="Bonus">Bonus</option>
+              <option value="Overtime">Overtime</option>
+              <option value="Commission">Commission</option>
+              <option value="Freelance Income">Freelance Income</option>
+              <option value="Side Hustle Income">Side Hustle Income</option>
+              <option value="Interest Income">Interest Income</option>
+              <option value="Savings Account Interest">Savings Account Interest</option>
+              <option value="Fixed Deposit Interest">Fixed Deposit Interest</option>
+              <option value="Recurring Deposit Interest">Recurring Deposit Interest</option>
+              <option value="Dividend Income">Dividend Income</option>
+              <option value="Mutual Fund Profit">Mutual Fund Profit</option>
+              <option value="Stock Profit">Stock Profit</option>
+              <option value="Rental Income">Rental Income</option>
+              <option value="Gift Received">Gift Received</option>
+              <option value="Cash Gift">Cash Gift</option>
+              <option value="Refund">Refund</option>
+              <option value="Purchase Refund">Purchase Refund</option>
+              <option value="Tax Refund">Tax Refund</option>
+              <option value="Cashback">Cashback</option>
+              <option value="Rewards">Rewards</option>
+              <option value="Insurance Claim Received">Insurance Claim Received</option>
+              <option value="Scholarship">Scholarship</option>
+              <option value="Allowance">Allowance</option>
+              <option value="Pocket Money">Pocket Money</option>
+              <option value="Sale of Personal Item">Sale of Personal Item</option>
+              <option value="Sale of Vehicle">Sale of Vehicle</option>
+              <option value="Loan Received">Loan Received</option>
+              <option value="Investment Withdrawal">Investment Withdrawal</option>
+              <option value="Other Income">Other Income</option>
+            </optgroup>
+            <optgroup label="Expense">
+              <option value="Housing">Housing</option>
+              <option value="Rent">Rent</option>
+              <option value="Home Loan EMI">Home Loan EMI</option>
+              <option value="Maintenance">Maintenance</option>
+              <option value="Repairs">Repairs</option>
+              <option value="Furniture">Furniture</option>
+              <option value="Home Appliances">Home Appliances</option>
+              <option value="Food">Food</option>
+              <option value="Groceries">Groceries</option>
+              <option value="Restaurant">Restaurant</option>
+              <option value="Fast Food">Fast Food</option>
+              <option value="Cafe">Cafe</option>
+              <option value="Food Delivery">Food Delivery</option>
+              <option value="Snacks">Snacks</option>
+              <option value="Beverages">Beverages</option>
+              <option value="Transportation">Transportation</option>
+              <option value="Fuel">Fuel</option>
+              <option value="Public Transport">Public Transport</option>
+              <option value="Taxi / Auto / Cab">Taxi / Auto / Cab</option>
+              <option value="Parking">Parking</option>
+              <option value="Toll">Toll</option>
+              <option value="Vehicle Maintenance">Vehicle Maintenance</option>
+              <option value="Vehicle Insurance">Vehicle Insurance</option>
+              <option value="Bills & Utilities">Bills & Utilities</option>
+              <option value="Electricity">Electricity</option>
+              <option value="Water">Water</option>
+              <option value="Gas">Gas</option>
+              <option value="Mobile Recharge">Mobile Recharge</option>
+              <option value="Internet">Internet</option>
+              <option value="Broadband">Broadband</option>
+              <option value="Cable TV">Cable TV</option>
+              <option value="OTT Subscription">OTT Subscription</option>
+              <option value="Shopping">Shopping</option>
+              <option value="Clothes">Clothes</option>
+              <option value="Shoes">Shoes</option>
+              <option value="Accessories">Accessories</option>
+              <option value="Electronics">Electronics</option>
+              <option value="Gadgets">Gadgets</option>
+              <option value="Home Items">Home Items</option>
+              <option value="Healthcare">Healthcare</option>
+              <option value="Doctor Fees">Doctor Fees</option>
+              <option value="Medicines">Medicines</option>
+              <option value="Medical Tests">Medical Tests</option>
+              <option value="Hospital Expenses">Hospital Expenses</option>
+              <option value="Health Insurance">Health Insurance</option>
+              <option value="Education">Education</option>
+              <option value="Fees">Fees</option>
+              <option value="Courses">Courses</option>
+              <option value="Books">Books</option>
+              <option value="Stationery">Stationery</option>
+              <option value="Entertainment">Entertainment</option>
+              <option value="Movies">Movies</option>
+              <option value="Games">Games</option>
+              <option value="Events">Events</option>
+              <option value="Hobbies">Hobbies</option>
+              <option value="Subscriptions">Subscriptions</option>
+              <option value="Personal Care">Personal Care</option>
+              <option value="Haircut">Haircut</option>
+              <option value="Salon">Salon</option>
+              <option value="Cosmetics">Cosmetics</option>
+              <option value="Grooming">Grooming</option>
+              <option value="Gym">Gym</option>
+              <option value="Family">Family</option>
+              <option value="Parents Support">Parents Support</option>
+              <option value="Child Expenses">Child Expenses</option>
+              <option value="Financial">Financial</option>
+              <option value="Loan EMI">Loan EMI</option>
+              <option value="Credit Card Bill Payment">Credit Card Bill Payment</option>
+              <option value="Interest Paid">Interest Paid</option>
+              <option value="Bank Charges">Bank Charges</option>
+              <option value="Late Fees">Late Fees</option>
+              <option value="Penalties">Penalties</option>
+              <option value="Travel">Travel</option>
+              <option value="Flight">Flight</option>
+              <option value="Train">Train</option>
+              <option value="Bus">Bus</option>
+              <option value="Hotel">Hotel</option>
+              <option value="Vacation">Vacation</option>
+              <option value="Gifts & Donations">Gifts & Donations</option>
+              <option value="Gifts Given">Gifts Given</option>
+              <option value="Charity">Charity</option>
+              <option value="Religious Donation">Religious Donation</option>
+              <option value="Insurance">Insurance</option>
+              <option value="Life Insurance Premium">Life Insurance Premium</option>
+              <option value="Health Insurance Premium">Health Insurance Premium</option>
+              <option value="Vehicle Insurance Premium">Vehicle Insurance Premium</option>
+              <option value="Investments">Investments</option>
+              <option value="Mutual Fund Investment">Mutual Fund Investment</option>
+              <option value="Stock Investment">Stock Investment</option>
+              <option value="Gold Investment">Gold Investment</option>
+              <option value="Fixed Deposit">Fixed Deposit</option>
+              <option value="Taxes">Taxes</option>
+              <option value="Income Tax">Income Tax</option>
+              <option value="Professional Tax">Professional Tax</option>
+              <option value="Miscellaneous">Miscellaneous</option>
+              <option value="Emergency Expense">Emergency Expense</option>
+              <option value="Other Expense">Other Expense</option>
             </optgroup>
           </select>
 
@@ -409,7 +567,7 @@
 
       </div>
 
-      <ul id="txList"></ul>
+      <div id="txContainer"></div>
     </section>
 
     <!-- PROFILE -->
@@ -418,46 +576,105 @@
       <p>Name: Tanishq Mehta</p>
       <p>Occupation : Student</p>
       <p>Email: tanishqmehta08@gmail.com</p>
-      <p>Socials : <a href="https://github.com/gt228-tan" style="color: rgb(141, 151, 255); text-decoration: none;">GitHub </a> | <a href="https://www.linkedin.com/in/tanishq-mehta-51055127b/" style="color: rgb(141, 151, 255); text-decoration: none;">LinkedIn</a></p>
+      <p>Socials : <a href="https://github.com/gt228-tan"
+          style="color: rgb(141, 151, 255); text-decoration: none;">GitHub </a> | <a
+          href="https://www.linkedin.com/in/tanishq-mehta-51055127b/"
+          style="color: rgb(141, 151, 255); text-decoration: none;">LinkedIn</a></p>
       <p>------------------------------</p>
       <p>Name: Dhairya Shah</p>
       <p>Occupation : Student</p>
       <p>Email: dhairya.shah13@gmail.com</p>
-      <p>Socials : <a href="https://github.com/dhairya-shah13" style="color: rgb(141, 151, 255); text-decoration: none;">GitHub </a> | <a href="https://www.linkedin.com/in/dhairya-shah-42703a319/" style="color: rgb(141, 151, 255); text-decoration: none;">LinkedIn</a></p>
+      <p>Socials : <a href="https://github.com/dhairya-shah13"
+          style="color: rgb(141, 151, 255); text-decoration: none;">GitHub </a> | <a
+          href="https://www.linkedin.com/in/dhairya-shah-42703a319/"
+          style="color: rgb(141, 151, 255); text-decoration: none;">LinkedIn</a></p>
     </section>
 
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
   <script>
     lucide.createIcons();
+
+    /* ---------- CHOICES.JS INITIALIZATION ---------- */
+    document.addEventListener('DOMContentLoaded', function () {
+      const element = document.getElementById('category');
+      const choices = new Choices(element, {
+        searchEnabled: true,
+        itemSelectText: '',
+        shouldSort: false, // Keep the order of groups
+        searchPlaceholderValue: 'Search categories...',
+      });
+
+      // Choices.js hides the original select, so we need to listen to its custom event 
+      // or the standard change event which it forwards.
+      element.addEventListener('change', onCategoryChange);
+
+      // Also trigger once to set initial state
+      onCategoryChange();
+    });
 
     const API_URL = "/transactions";
     let transactions = [];
 
     /* ---------- CATEGORY CONFIG ---------- */
-    const incomeCategories = ["Salary", "Freelance", "Investment Return", "Other"];
+    const incomeCategories = [
+      "Salary", "Bonus", "Overtime", "Commission", "Freelance Income", "Side Hustle Income",
+      "Interest Income", "Savings Account Interest", "Fixed Deposit Interest", "Recurring Deposit Interest",
+      "Dividend Income", "Mutual Fund Profit", "Stock Profit", "Rental Income", "Gift Received",
+      "Cash Gift", "Refund", "Purchase Refund", "Tax Refund", "Cashback", "Rewards",
+      "Insurance Claim Received", "Scholarship", "Allowance", "Pocket Money", "Sale of Personal Item",
+      "Sale of Vehicle", "Loan Received", "Investment Withdrawal", "Other Income"
+    ];
 
     // Color map for each category
     const categoryColors = {
-      // Expenses
-      "Food": "#EF4444",
-      "Housing / Rent": "#F97316",
-      "Utilities": "#F59E0B",
-      "Transport": "#EAB308",
-      "EMI": "#84CC16",
-      "Insurance": "#22C55E",
-      "Shopping": "#14B8A6",
-      "Entertainment": "#06B6D4",
-      "Health / Medical": "#0EA5E9",
-      "Investments": "#3B82F6",
-      "Travel": "#6366F1",
-      "Gifts / Donations": "#8B5CF6",
-      "Miscellaneous": "#A855F7",
-      // Income
-      "Salary": "#10B981",
-      "Freelance": "#34D399",
-      "Investment Return": "#6EE7B7",
-      "Other": "#A7F3D0"
+      // INCOME
+      "Salary": "#10B981", "Bonus": "#34D399", "Overtime": "#6EE7B7", "Commission": "#A7F3D0",
+      "Freelance Income": "#059669", "Side Hustle Income": "#10B981", "Interest Income": "#34D399",
+      "Savings Account Interest": "#6EE7B7", "Fixed Deposit Interest": "#A7F3D0", "Recurring Deposit Interest": "#059669",
+      "Dividend Income": "#10B981", "Mutual Fund Profit": "#34D399", "Stock Profit": "#6EE7B7",
+      "Rental Income": "#A7F3D0", "Gift Received": "#059669", "Cash Gift": "#10B981",
+      "Refund": "#34D399", "Purchase Refund": "#6EE7B7", "Tax Refund": "#A7F3D0",
+      "Cashback": "#059669", "Rewards": "#10B981", "Insurance Claim Received": "#34D399",
+      "Scholarship": "#6EE7B7", "Allowance": "#A7F3D0", "Pocket Money": "#059669",
+      "Sale of Personal Item": "#10B981", "Sale of Vehicle": "#34D399", "Loan Received": "#6EE7B7",
+      "Investment Withdrawal": "#A7F3D0", "Other Income": "#059669",
+
+      // EXPENSE
+      "Housing": "#EF4444", "Rent": "#F87171", "Home Loan EMI": "#FCA5A5", "Maintenance": "#FECACA",
+      "Repairs": "#DC2626", "Furniture": "#EF4444", "Home Appliances": "#F87171",
+      "Food": "#F59E0B", "Groceries": "#FBBF24", "Restaurant": "#FCD34D", "Fast Food": "#FDE68A",
+      "Cafe": "#D97706", "Food Delivery": "#F59E0B", "Snacks": "#FBBF24", "Beverages": "#FCD34D",
+      "Transportation": "#3B82F6", "Fuel": "#60A5FA", "Public Transport": "#93C5FD",
+      "Taxi / Auto / Cab": "#BFDBFE", "Parking": "#2563EB", "Toll": "#3B82F6",
+      "Vehicle Maintenance": "#60A5FA", "Vehicle Insurance": "#93C5FD",
+      "Bills & Utilities": "#8B5CF6", "Electricity": "#A78BFA", "Water": "#C4B5FD",
+      "Gas": "#DDD6FE", "Mobile Recharge": "#7C3AED", "Internet": "#8B5CF6",
+      "Broadband": "#A78BFA", "Cable TV": "#C4B5FD", "OTT Subscription": "#DDD6FE",
+      "Shopping": "#EC4899", "Clothes": "#F472B6", "Shoes": "#F9A8D4", "Accessories": "#FBCFE8",
+      "Electronics": "#DB2777", "Gadgets": "#EC4899", "Home Items": "#F472B6",
+      "Healthcare": "#14B8A6", "Doctor Fees": "#2DD4BF", "Medicines": "#5EEAD4",
+      "Medical Tests": "#99F6E4", "Hospital Expenses": "#0D9488", "Health Insurance": "#14B8A6",
+      "Education": "#6366F1", "Fees": "#818CF8", "Courses": "#A5B4FC",
+      "Books": "#C7D2FE", "Stationery": "#4F46E5",
+      "Entertainment": "#84CC16", "Movies": "#A3E635", "Games": "#BEF264",
+      "Events": "#D9F99D", "Hobbies": "#65A30D", "Subscriptions": "#84CC16",
+      "Personal Care": "#F97316", "Haircut": "#FB923C", "Salon": "#FDBA74",
+      "Cosmetics": "#FED7AA", "Grooming": "#EA580C", "Gym": "#F97316",
+      "Family": "#06B6D4", "Parents Support": "#22D3EE", "Child Expenses": "#67E8F9",
+      "Financial": "#64748B", "Loan EMI": "#94A3B8", "Credit Card Bill Payment": "#CBD5E1",
+      "Interest Paid": "#475569", "Bank Charges": "#64748B", "Late Fees": "#94A3B8", "Penalties": "#CBD5E1",
+      "Travel": "#F43F5E", "Flight": "#FB7185", "Train": "#FDA4AF",
+      "Bus": "#FECDD3", "Hotel": "#E11D48", "Vacation": "#F43F5E",
+      "Gifts & Donations": "#D946EF", "Gifts Given": "#E879F9", "Charity": "#F0ABFC",
+      "Religious Donation": "#F5D0FE",
+      "Insurance": "#10B981", "Life Insurance Premium": "#34D399",
+      "Health Insurance Premium": "#6EE7B7", "Vehicle Insurance Premium": "#A7F3D0",
+      "Investments": "#3B82F6", "Mutual Fund Investment": "#60A5FA",
+      "Stock Investment": "#93C5FD", "Gold Investment": "#BFDBFE", "Fixed Deposit": "#2563EB",
+      "Taxes": "#EF4444", "Income Tax": "#F87171", "Professional Tax": "#FCA5A5",
+      "Miscellaneous": "#64748B", "Emergency Expense": "#94A3B8", "Other Expense": "#CBD5E1"
     };
 
     function isIncome(category) {
@@ -714,39 +931,69 @@
 
     /* ---------- TRANSACTIONS RENDER ---------- */
     function renderTransactions() {
-      const list = document.getElementById("txList");
-      list.innerHTML = "";
+      const container = document.getElementById("txContainer");
+      container.innerHTML = "";
+
+      if (transactions.length === 0) {
+        container.innerHTML = "<p style='text-align:center; color:#64748B;'>No transactions found</p>";
+        return;
+      }
+
+      const table = document.createElement("table");
+      table.style.width = "100%";
+      table.style.borderCollapse = "separate";
+      table.style.borderSpacing = "0 0.8rem";
+
+      const thead = document.createElement("thead");
+      thead.innerHTML = `
+        <tr style="color:#94a3b8; text-align:center;">
+          <th style="padding:0.5rem;">Type</th>
+          <th style="padding:0.5rem;">Category</th>
+          <th style="padding:0.5rem;">Date</th>
+          <th style="padding:0.5rem;">Amount</th>
+        </tr>
+      `;
+      table.appendChild(thead);
+
+      const tbody = document.createElement("tbody");
+
       transactions.forEach(t => {
-        const li = document.createElement("li");
-        li.style.background = "#111C36";
-        li.style.padding = "0.8rem 1rem";
-        li.style.marginBottom = "0.7rem";
-        li.style.borderRadius = "0.8rem";
-        li.style.display = "flex";
-        li.style.justifyContent = "space-between";
-        li.style.alignItems = "center";
-        li.style.boxShadow = "0 6px 15px rgba(0,0,0,0.3)";
+        const tr = document.createElement("tr");
+        tr.style.background = "#111C36";
+        tr.style.boxShadow = "0 6px 15px rgba(0,0,0,0.3)";
+        // To add border radius to table rows, we need to apply it to cells
 
         const cat = t.category || "Miscellaneous";
         const type = isIncome(cat) ? "INCOME" : "EXPENSE";
         const color = categoryColors[cat] || "#64748B";
+        const date = new Date(t.created_at).toLocaleDateString('en-GB');
 
-        const leftSpan = document.createElement("span");
-        leftSpan.innerHTML = `
-          <span style="color:${isIncome(cat) ? '#10B981' : '#EF4444'}; font-weight:bold">${type}</span>
-          <span style="margin-left:0.5rem; color:${color}; font-weight:600">${cat}</span>
-          ${t.note ? `<span style="font-size:0.8rem; color:#94a3b8; margin-left:0.5rem">(${t.note})</span>` : ''}
+        // Helper for cell style
+        const cellStyle = "padding: 1rem; text-align: center; color: #F9FAFB;";
+        const firstCellStyle = cellStyle + "border-top-left-radius: 0.8rem; border-bottom-left-radius: 0.8rem;";
+        const lastCellStyle = cellStyle + "border-top-right-radius: 0.8rem; border-bottom-right-radius: 0.8rem;";
+
+        tr.innerHTML = `
+          <td style="${firstCellStyle}">
+            <span style="color:${isIncome(cat) ? '#10B981' : '#EF4444'}; font-weight:bold">${type}</span>
+          </td>
+          <td style="${cellStyle}">
+             <span style="color:${color}; font-weight:600">${cat}</span>
+             ${t.note ? `<div style="font-size:0.8rem; color:#94a3b8; margin-top:0.2rem;">${t.note}</div>` : ''}
+          </td>
+          <td style="${cellStyle} color: #64748B; font-size: 0.9rem;">
+            ${date}
+          </td>
+          <td style="${lastCellStyle}">
+            <span style="font-weight:600; color:${isIncome(cat) ? '#10B981' : '#EF4444'}">\u20B9${t.amount}</span>
+          </td>
         `;
 
-        const amtSpan = document.createElement("span");
-        amtSpan.style.fontWeight = "600";
-        amtSpan.style.color = isIncome(cat) ? "#10B981" : "#EF4444";
-        amtSpan.innerText = `\u20B9${t.amount}`;
-
-        li.appendChild(leftSpan);
-        li.appendChild(amtSpan);
-        list.appendChild(li);
+        tbody.appendChild(tr);
       });
+
+      table.appendChild(tbody);
+      container.appendChild(table);
     }
 
     // Initial Fetch
