@@ -18,6 +18,9 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
+  <!-- Choices.js CSS (loaded before custom styles so overrides work) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+
   <style>
     body {
       font-family: 'DM Sans', sans-serif;
@@ -303,54 +306,135 @@
       box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
     }
 
-    /* Choices.js Customization for Dark Theme */
+    /* ===== Choices.js — match the "Enter Amount" input exactly ===== */
     .choices {
-      min-width: 200px;
-      margin-bottom: 0;
+      min-width: 180px;
+      margin-bottom: 0 !important;
+      position: relative;
     }
 
     .choices__inner {
-      background-color: #0B1426 !important;
+      background: #0B1426 !important;
       border: 1px solid rgba(255, 255, 255, 0.1) !important;
       border-radius: 0.8rem !important;
+      min-height: auto !important;
+      padding: 0.8rem 1rem !important;
+      font-size: 1rem !important;
       color: #F9FAFB !important;
-      min-height: 48px;
+      line-height: normal !important;
+      display: flex !important;
+      align-items: center;
+      justify-content: center !important;
+      /* Center text horizontally */
+      transition: 0.3s ease;
     }
 
+    .is-focused .choices__inner,
+    .is-open .choices__inner {
+      border-color: #10B981 !important;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2) !important;
+    }
+
+    /* Remove extra padding that Choices.js adds for select-one */
+    .choices[data-type*="select-one"] .choices__inner {
+      padding-bottom: 0.8rem !important;
+    }
+
+    /* Inner Text Item Styling */
+    .choices__list--single {
+      padding: 0 !important;
+      margin: 0 !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .choices__item.choices__item--selectable,
+    .choices__list--single .choices__item {
+      color: #F9FAFB !important;
+      opacity: 1 !important;
+      text-align: center;
+      width: 100%;
+      /* Ensure text is centered visually despite the arrow */
+      padding-right: 0 !important;
+    }
+
+    /* Arrow Icon - moved slightly more to the right to not overlap centered text */
+    .choices[data-type*="select-one"]::after {
+      border-color: #64748B transparent transparent transparent;
+      right: 12px;
+      /* Close to edge */
+      top: 50%;
+      margin-top: -2.5px;
+      transition: 0.2s ease;
+      position: absolute;
+      pointer-events: none;
+      /* Let clicks pass through */
+    }
+
+    .choices[data-type*="select-one"].is-open::after {
+      margin-top: -7.5px;
+      border-color: transparent transparent #10B981 transparent;
+    }
+
+    /* Search input inside dropdown */
     .choices__input {
-      background-color: transparent !important;
+      background: #0B1426 !important;
       color: #F9FAFB !important;
+      padding: 0.8rem 1rem !important;
+      font-size: 1rem !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+      margin-bottom: 0 !important;
+      text-align: left;
+      /* Keep search left aligned */
     }
 
-    .choices__list--dropdown {
-      background-color: #111C36 !important;
+    .choices__input::placeholder {
+      color: #64748B !important;
+    }
+
+    /* Dropdown list */
+    .choices__list--dropdown,
+    .choices__list[aria-expanded] {
+      background: #0B1426 !important;
       border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      border-radius: 0.8rem !important;
+      margin-top: 5px;
+      z-index: 100;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+    }
+
+    .choices__list--dropdown .choices__item,
+    .choices__list[aria-expanded] .choices__item {
+      color: #F9FAFB !important;
+      padding: 0.6rem 1rem !important;
+      font-size: 0.95rem;
+    }
+
+    .choices__list--dropdown .choices__item--selectable.is-highlighted,
+    .choices__list[aria-expanded] .choices__item--selectable.is-highlighted {
+      background: rgba(255, 255, 255, 0.06) !important;
       color: #F9FAFB !important;
     }
 
-    .choices__list--dropdown .choices__item--selectable.is-highlighted {
-      background-color: #1F2937 !important;
-    }
-
-    .choices__list--dropdown .choices__item {
-      color: #F9FAFB !important;
-    }
-
-    .choices__group-heading {
-      background-color: #0B1426 !important;
-      color: #94a3b8 !important;
+    /* Group headings */
+    .choices__heading {
+      color: #64748B !important;
+      font-size: 0.75rem !important;
       font-weight: 600;
+      text-transform: uppercase;
+      padding: 0.6rem 1rem !important;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
     }
 
-    /* Adjust placeholder color */
     .choices__placeholder {
-      opacity: 0.7;
+      color: #64748B !important;
+      opacity: 1;
     }
   </style>
 
-  <!-- Choices.js CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+
 </head>
 
 <body>
