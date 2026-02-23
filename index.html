@@ -21,6 +21,9 @@
   <!-- Choices.js CSS (loaded before custom styles so overrides work) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
 
+  <!-- Supabase JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     :root {
       --bg-deep: #0B1426;
@@ -119,6 +122,13 @@
       border: 2px solid #1E293B;
       cursor: pointer;
       transition: 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--accent-green);
+      font-size: 1rem;
+      text-transform: uppercase;
     }
 
     .nav-avatar:hover {
@@ -777,16 +787,8 @@
       background: rgba(255, 255, 255, 0.2);
     }
 
-    .choices__list--dropdown .choices__item,
-    .choices__list[aria-expanded] .choices__item {
-      color: #F9FAFB !important;
-      padding: 0.75rem 1.25rem !important;
-      font-size: 0.95rem;
-      transition: background 0.2s ease;
-    }
-
     .choices__list--dropdown .choices__item--selectable.is-highlighted,
-    .choices__list[aria-expanded] .choices__item--selectable.is-highlighted {
+    .is-open .choices__list--dropdown .choices__item--selectable.is-highlighted {
       background: rgba(16, 185, 129, 0.15) !important;
       color: #10B981 !important;
     }
@@ -798,14 +800,128 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 1.5px;
-      padding: 1rem 1.25rem 0.5rem !important;
-      border: none !important;
-      opacity: 0.8;
+      padding: 0.5rem 1.25rem 0.25rem !important;
     }
+
 
     .choices__placeholder {
       color: #64748B !important;
       opacity: 1;
+    }
+
+    /* Auth Overlay Styling - Full Screen */
+    #auth-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg-deep);
+      z-index: 100000;
+      /* Above everything */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .auth-card {
+      background: var(--bg-card);
+      padding: 3rem;
+      border-radius: 2rem;
+      border: 1px solid var(--glass-border);
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 40px 100px -12px rgba(0, 0, 0, 0.7);
+    }
+
+    .auth-tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+      justify-content: center;
+    }
+
+    .auth-tab {
+      padding: 0.6rem 1.25rem;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-weight: 600;
+      border-bottom: 2px solid transparent;
+      transition: 0.3s;
+      font-size: 1rem;
+    }
+
+    .auth-tab.active {
+      color: var(--accent-green);
+      border-bottom-color: var(--accent-green);
+    }
+
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .auth-input {
+      background: var(--bg-deep);
+      border: 1px solid var(--glass-border);
+      padding: 1rem 1.25rem;
+      border-radius: 1rem;
+      color: #fff;
+      outline: none;
+      width: 100%;
+      box-sizing: border-box;
+      font-size: 1rem;
+    }
+
+    .auth-input:focus {
+      border-color: var(--accent-green);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    }
+
+    .auth-btn {
+      background: var(--accent-green);
+      color: #000;
+      border: none;
+      padding: 1rem;
+      border-radius: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 1rem;
+      font-size: 1rem;
+      transition: 0.3s;
+    }
+
+    .auth-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2);
+    }
+
+    .auth-error {
+      color: var(--accent-red);
+      font-size: 0.85rem;
+      margin-top: 1.5rem;
+      min-height: 1.2rem;
+      font-weight: 500;
+    }
+
+    .auth-toggle {
+      margin-top: 1.5rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .auth-toggle span {
+      color: var(--accent-green);
+      cursor: pointer;
+      font-weight: 600;
+      text-decoration: underline;
+      margin-left: 0.25rem;
+    }
+
+    .hidden {
+      display: none !important;
     }
   </style>
 
@@ -813,6 +929,36 @@
 </head>
 
 <body>
+
+  <!-- AUTH OVERLAY -->
+  <div id="auth-overlay">
+    <div class="auth-card">
+      <div class="logo" style="margin-bottom: 2.5rem; font-size: 2.5rem;">FinTrack</div>
+
+      <div id="login-form" class="auth-form">
+        <h2 style="margin-bottom: 0.5rem; font-size: 1.5rem;">Welcome Back</h2>
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.9rem;">Log in to manage your finances
+        </p>
+        <input type="text" id="login-username" class="auth-input" placeholder="Username">
+        <input type="password" id="login-password" class="auth-input" placeholder="Password">
+        <button class="auth-btn" onclick="handleLogin()">Log In</button>
+        <div class="auth-toggle">Don't have an account? <span onclick="switchAuthMode('signup')">Click here to
+            sign-up</span></div>
+      </div>
+
+      <div id="signup-form" class="auth-form hidden">
+        <h2 style="margin-bottom: 0.5rem; font-size: 1.5rem;">Create Account</h2>
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.9rem;">Join FinTrack today</p>
+        <input type="text" id="signup-username" class="auth-input" placeholder="Username (unique)">
+        <input type="email" id="signup-email" class="auth-input" placeholder="Email">
+        <input type="password" id="signup-password" class="auth-input" placeholder="Password">
+        <button class="auth-btn" onclick="handleSignup()">Sign Up</button>
+        <div class="auth-toggle">Already have an account? <span onclick="switchAuthMode('login')">Login</span></div>
+      </div>
+
+      <div id="auth-error" class="auth-error"></div>
+    </div>
+  </div>
 
   <!-- NAVBAR -->
   <nav class="navbar">
@@ -825,9 +971,6 @@
       <a onclick="showPage('transactions')">Transactions</a>
     </div>
     <div class="nav-actions">
-      <div class="nav-badge">
-        <i data-lucide="bell" style="width: 18px; height: 18px;"></i>
-      </div>
       <div class="nav-avatar" onclick="showPage('profile')"></div>
     </div>
   </nav>
@@ -835,10 +978,9 @@
   <!-- MAIN -->
   <main class="main-content">
 
-    <!-- DASHBOARD -->
     <section id="dashboard">
       <div class="section-header">
-        <h1 style="font-size: 1.5rem; margin: 0;">Welcome back, GT Edits👋</h1>
+        <h1 id="user-welcome" style="font-size: 1.5rem; margin: 0;">Welcome back👋</h1>
       </div>
 
       <div class="dashboard-grid">
@@ -1094,23 +1236,22 @@
     </div>
 
     <!-- PROFILE -->
-    <section id="profile" style="display:none">
-      <h2>Profile</h2>
-      <p>Name: Tanishq Mehta</p>
-      <p>Occupation : Student</p>
-      <p>Email: tanishqmehta08@gmail.com</p>
-      <p>Socials : <a href="https://github.com/gt228-tan"
-          style="color: rgb(141, 151, 255); text-decoration: none;">GitHub </a> | <a
-          href="https://www.linkedin.com/in/tanishq-mehta-51055127b/"
-          style="color: rgb(141, 151, 255); text-decoration: none;">LinkedIn</a></p>
-      <p>------------------------------</p>
-      <p>Name: Dhairya Shah</p>
-      <p>Occupation : Student</p>
-      <p>Email: dhairya.shah13@gmail.com</p>
-      <p>Socials : <a href="https://github.com/dhairya-shah13"
-          style="color: rgb(141, 151, 255); text-decoration: none;">GitHub </a> | <a
-          href="https://www.linkedin.com/in/dhairya-shah-42703a319/"
-          style="color: rgb(141, 151, 255); text-decoration: none;">LinkedIn</a></p>
+    <section id="profile"
+      style="display:none; background: var(--bg-card); padding: 2.5rem; border-radius: 1.5rem; border: 1px solid var(--glass-border);">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <h2 style="margin-top: 0; color: var(--accent-green);">Your Profile</h2>
+        <button onclick="handleLogout()"
+          style="background: rgba(248, 113, 113, 0.1); border: 1px solid rgba(248, 113, 113, 0.2); color: var(--accent-red); padding: 0.5rem 1.25rem; border-radius: 0.75rem; cursor: pointer; font-weight: 600; transition: 0.3s;"
+          onmouseover="this.style.background='rgba(248, 113, 113, 0.2)'"
+          onmouseout="this.style.background='rgba(248, 113, 113, 0.1)'">
+          Logout
+        </button>
+      </div>
+      <div style="margin: 2rem 0; display: flex; flex-direction: column; gap: 1rem;">
+        <p id="profile-name" style="font-size: 1.1rem; color: var(--text-main);">Username: ...</p>
+        <p id="profile-email" style="font-size: 1.1rem; color: var(--text-main);">Email: ...</p>
+      </div>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">Your data is protected by Supabase RLS.</p>
     </section>
 
   </main>
@@ -1137,8 +1278,205 @@
       onCategoryChange();
     });
 
-    const API_URL = "/transactions";
+    /* ---------- SUPABASE INITIALIZATION ---------- */
+    const SUPABASE_URL = "https://zskikcqzewieatvuxcgp.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_vifQ2Cdn_d7bvucFqQE7pQ_py6FdvkY";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
     let transactions = [];
+    let currentUser = null;
+
+    /* ---------- AUTH LOGIC ---------- */
+    async function checkUser() {
+      const { data: { user } } = await supabaseClient.auth.getUser();
+      if (user) {
+        currentUser = user;
+        document.getElementById("auth-overlay").classList.add("hidden");
+        fetchTransactions();
+        updateProfileDisplay();
+      } else {
+        document.getElementById("auth-overlay").classList.remove("hidden");
+      }
+    }
+
+    function switchAuthMode(mode) {
+      const loginForm = document.getElementById("login-form");
+      const signupForm = document.getElementById("signup-form");
+      const errorDiv = document.getElementById("auth-error");
+
+      errorDiv.innerText = "";
+      if (mode === 'login') {
+        loginForm.classList.remove("hidden");
+        signupForm.classList.add("hidden");
+      } else {
+        loginForm.classList.add("hidden");
+        signupForm.classList.remove("hidden");
+      }
+    }
+
+    async function handleLogin() {
+      const username = document.getElementById("login-username").value.trim();
+      const password = document.getElementById("login-password").value;
+      const errorDiv = document.getElementById("auth-error");
+      errorDiv.innerText = "";
+
+      if (!username || !password) {
+        errorDiv.innerText = "Please enter username and password.";
+        return;
+      }
+
+      try {
+        // Step 1: Get email for the username from profiles table
+        const { data, error: profileError } = await supabaseClient
+          .from('profiles')
+          .select('email')
+          .eq('username', username)
+          .single();
+
+        if (profileError || !data) {
+          errorDiv.innerText = "Username not found.";
+          return;
+        }
+
+        // Step 2: Login with email and password
+        const { error } = await supabaseClient.auth.signInWithPassword({
+          email: data.email,
+          password: password
+        });
+
+        if (error) throw error;
+      } catch (err) {
+        errorDiv.innerText = err.message || "Invalid credentials.";
+      }
+    }
+
+    async function handleSignup() {
+      const username = document.getElementById("signup-username").value.trim();
+      const email = document.getElementById("signup-email").value.trim();
+      const password = document.getElementById("signup-password").value;
+      const errorDiv = document.getElementById("auth-error");
+      errorDiv.innerText = "";
+
+      if (!username || !email || !password) {
+        errorDiv.innerText = "All fields are required.";
+        return;
+      }
+
+      try {
+        // Supabase signUp with metadata for the trigger to pick up
+        const { error } = await supabaseClient.auth.signUp({
+          email,
+          password,
+          options: {
+            data: { username: username }
+          }
+        });
+
+        if (error) throw error;
+        errorDiv.style.color = "var(--accent-green)";
+        errorDiv.innerText = "Signup successful! Check your email for verification (if enabled) or try logging in.";
+        setTimeout(() => switchAuthMode('login'), 2000);
+      } catch (err) {
+        errorDiv.innerText = err.message;
+      }
+    }
+
+    async function handleLogout() {
+      await supabaseClient.auth.signOut();
+      window.location.reload();
+    }
+
+    /* ---------- API INTERACTIONS (SUPABASE) ---------- */
+    async function fetchTransactions() {
+      try {
+        const { data, error } = await supabaseClient
+          .from('transactions')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        transactions = data || [];
+        calculate();
+      } catch (err) {
+        console.error("Error loading transactions:", err);
+      }
+    }
+
+    async function addTransaction() {
+      const amountVal = document.getElementById("amount").value;
+      const category = document.getElementById("category").value;
+      const note = document.getElementById("note").value.trim();
+      const amountError = document.getElementById("amount-error");
+      if (amountError) amountError.innerText = "";
+
+      if (!amountVal) { if (amountError) amountError.innerText = "Please enter an amount"; return; }
+      const amount = Number(amountVal);
+      if (amount <= 0) { if (amountError) amountError.innerText = "Values cannot be negative"; return; }
+
+      try {
+        const payload = {
+          amount,
+          category,
+          user_id: currentUser.id
+        };
+        if (note) payload.note = note;
+
+        const { error } = await supabaseClient
+          .from('transactions')
+          .insert([payload]);
+
+        if (!error) {
+          document.getElementById("amount").value = "";
+          document.getElementById("note").value = "";
+          onCategoryChange();
+          toggleAddTxSection();
+          fetchTransactions();
+        } else {
+          throw error;
+        }
+      } catch (err) {
+        console.error("Error adding transaction:", err);
+        if (amountError) amountError.innerText = "Failed to save to database.";
+      }
+    }
+
+    async function updateProfileDisplay() {
+      if (!currentUser) return;
+      try {
+        const { data } = await supabaseClient
+          .from('profiles')
+          .select('username, email')
+          .eq('id', currentUser.id)
+          .single();
+
+        if (data) {
+          document.getElementById("user-welcome").innerText = `Welcome back, ${data.username}👋`;
+          document.getElementById("profile-name").innerText = `Username: ${data.username}`;
+          document.getElementById("profile-email").innerText = `Email: ${data.email}`;
+
+          // Set initial in avatar
+          const initial = data.username.charAt(0).toUpperCase();
+          const avatar = document.querySelector(".nav-avatar");
+          if (avatar) avatar.innerText = initial;
+        }
+      } catch (err) {
+        console.error("Error updating profile display:", err);
+      }
+    }
+
+    // Initialize Auth Listener
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN') {
+        checkUser();
+      } else if (event === 'SIGNED_OUT') {
+        currentUser = null;
+        document.getElementById("auth-overlay").classList.remove("hidden");
+      }
+    });
+
+    // Initial check
+    checkUser();
+
 
     /* ---------- CATEGORY CONFIG ---------- */
     const incomeCategories = [
@@ -1206,9 +1544,7 @@
       const fabIcon = document.querySelector("#fabAdd [data-lucide]");
 
       if (section && backdrop) {
-        // Use getComputedStyle for more reliable state detection
         const isVisible = window.getComputedStyle(section).display === "block";
-
         if (isVisible) {
           section.style.display = "none";
           backdrop.style.display = "none";
@@ -1262,54 +1598,6 @@
       renderTransactions(filtered);
     }
 
-    /* ---------- API INTERACTIONS ---------- */
-    async function fetchTransactions() {
-      try {
-        const res = await fetch(API_URL);
-        if (!res.ok) throw new Error("Failed to fetch");
-        transactions = await res.json();
-        calculate();
-      } catch (err) {
-        console.error("Error loading transactions:", err);
-      }
-    }
-
-    async function addTransaction() {
-      const amountVal = document.getElementById("amount").value;
-      const category = document.getElementById("category").value;
-      const note = document.getElementById("note").value.trim();
-      const amountError = document.getElementById("amount-error");
-      if (amountError) amountError.innerText = "";
-
-      if (!amountVal) { if (amountError) amountError.innerText = "Please enter an amount"; return; }
-      const amount = Number(amountVal);
-      if (amount <= 0) { if (amountError) amountError.innerText = "Values cannot be negative"; return; }
-
-      try {
-        const payload = { amount, category };
-        if (note) payload.note = note;
-        const res = await fetch(API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-
-        if (res.ok) {
-          document.getElementById("amount").value = "";
-          document.getElementById("note").value = "";
-          document.getElementById("note").classList.remove("visible");
-          onCategoryChange();
-          toggleAddTxSection();
-          fetchTransactions();
-        } else if (amountError) {
-          amountError.innerText = "Failed to save";
-        }
-      } catch (err) {
-        console.error("Error adding transaction:", err);
-        if (amountError) amountError.innerText = "Backend error";
-      }
-    }
-
     async function addSplitTransaction() {
       const amountVal = document.getElementById("amount").value;
       const category = document.getElementById("category").value;
@@ -1324,33 +1612,37 @@
       if (!splitCount || splitCount < 2) { if (amountError) amountError.innerText = "Split must be among at least 2 people"; return; }
 
       const userShare = Math.round((totalAmount / splitCount) * 100) / 100;
-      const splitNote = note ? `${note} (Split ${splitCount} ways)` : `Split ${splitCount} ways`;
+      const formattedOriginal = "₹" + totalAmount.toLocaleString();
+      const splitNote = note ? `${note} (${formattedOriginal} split ${splitCount} ways)` : `${formattedOriginal} split ${splitCount} ways`;
 
       try {
-        const payload = { amount: userShare, category, note: splitNote };
-        const res = await fetch(API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
+        const payload = {
+          amount: userShare,
+          category,
+          note: splitNote,
+          user_id: currentUser.id
+        };
+        const { error } = await supabaseClient
+          .from('transactions')
+          .insert([payload]);
 
-        if (res.ok) {
+        if (!error) {
           document.getElementById("amount").value = "";
           document.getElementById("note").value = "";
-          document.getElementById("note").classList.remove("visible");
           if (document.getElementById("splitRow")) document.getElementById("splitRow").classList.remove("visible");
           document.getElementById("splitCount").value = "2";
           onCategoryChange();
           toggleAddTxSection();
           fetchTransactions();
-        } else if (amountError) {
-          amountError.innerText = "Failed to save";
+        } else {
+          throw error;
         }
       } catch (err) {
         console.error("Error adding split transaction:", err);
-        if (amountError) amountError.innerText = "Backend error";
+        if (amountError) amountError.innerText = "Failed to save to database.";
       }
     }
+
 
     /* ---------- PAGE SWITCH ---------- */
     function showPage(page) {
