@@ -7,12 +7,17 @@ import requests
 # Load environment variables
 load_dotenv()
 
-app = Flask(__name__, static_folder='static')
+app = Flask(__name__, static_folder='.')
 CORS(app)  # Enable CORS for all routes
 
 @app.route('/')
 def home():
     return send_from_directory('.', 'index.html')
+
+# Serve static files (style.css, app.js, images, etc.) from root directory
+@app.route('/<path:filename>')
+def serve_static(filename):
+    return send_from_directory('.', filename)
 
 # Supabase Configuration
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
