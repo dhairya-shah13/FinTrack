@@ -19,9 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 /* ---------- SUPABASE INITIALIZATION ---------- */
 const SUPABASE_URL = "https://vahpisvskwmxsqwbzcmp.supabase.co";
-// IMPORTANT: The key below looks like a Stripe key (sb_publishable_...). 
-// Please replace it with your Supabase Anon (public) Key from Settings > API.
-const SUPABASE_KEY = "sb_publishable_yCHBZUFETPQN5hAwH1x4dQ_TBXLdzQc";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZhaHBpc3Zza3dteHNxd2J6Y21wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwMzcxMTYsImV4cCI6MjA4NzYxMzExNn0.mg887ixNB78R4KrWnEvpaemxlz6zqWz0IFsTTR4CAko";
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let transactions = [];
