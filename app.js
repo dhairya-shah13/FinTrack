@@ -57,41 +57,57 @@ function switchAuthMode(mode) {
 async function handleLogin() {
   const usernameField = document.getElementById("login-username");
   const passwordField = document.getElementById("login-password");
-  const username = usernameField.value.trim();
+  let username = usernameField.value.trim();
   const password = passwordField.value;
   const errorDiv = document.getElementById("auth-error");
-  
+
+  // reset any previous message
   errorDiv.innerText = "";
   errorDiv.style.color = "var(--accent-red)";
 
   if (!username || !password) {
-    errorDiv.innerText = "Please enter username and password.";
+    errorDiv.innerText = "Please enter email/username and password.";
     return;
   }
 
   try {
+    // first attempt: look up the real email address attached to the username
+    // use ILIKE so the check is case‑insensitive, and log the result for
+    // easier debugging when the lookup fails (most often because of RLS)
     const { data, error: profileError } = await supabaseClient
       .from('profiles')
       .select('email')
-      .eq('username', username)
+      .ilike('username', username)
       .single();
 
-    if (profileError || !data) {
-      errorDiv.innerText = "Username not found.";
-      return;
+    if (profileError) {
+      console.error('profile lookup error', profileError);
+      // if the error comes from row‑level security it will be surfaced here
+      if (profileError.message && profileError.message.toLowerCase().includes('polic')) {
+        errorDiv.innerText =
+          "Cannot search users by username due to database policy. " +
+          "Please sign in with your email or contact support.";
+        return;
+      }
+      // fall through to generic message below
     }
 
+    // if we got an email back we use it, otherwise assume the user entered
+    // their email directly instead of a username
+    const loginEmail = data?.email || username;
+
     const { error } = await supabaseClient.auth.signInWithPassword({
-      email: data.email,
+      email: loginEmail,
       password: password
     });
 
     if (error) throw error;
-    
-    // Clear fields on success
+
+    // clear fields after successful login
     usernameField.value = "";
     passwordField.value = "";
   } catch (err) {
+    console.error('login failed', err);
     errorDiv.innerText = err.message || "Invalid credentials.";
   }
 }

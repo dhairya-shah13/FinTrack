@@ -86,6 +86,24 @@ PORT=5000
 
 Create a `transactions` table in your Supabase project with these columns:
 
+> **Note on authentication and profiles**
+>
+> The frontend looks up a user's email address by querying the `profiles` table using the
+> supplied username before calling `auth.signInWithPassword`. If you have Row Level
+> Security (RLS) enabled (which is the default), make sure there's a policy that
+> allows anonymous/select access on the `username` (or at least on
+> `username,email`) otherwise the lookup will always return nothing and you'll see
+> a "Username not found" message even when a matching record exists. A simple
+> policy that permits public read is:
+>
+> ```sql
+> create policy "public select profiles" on profiles
+>   for select using (true);
+> ```
+>
+> Alternatively, change the login form to accept an email address directly.
+
+
 | Column | Type | Notes |
 |--------|------|-------|
 | `id` | `int8` | Primary key, auto-increment |
