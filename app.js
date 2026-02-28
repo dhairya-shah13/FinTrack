@@ -19,6 +19,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
 /* ---------- SUPABASE INITIALIZATION ---------- */
 const SUPABASE_URL = "https://vahpisvskwmxsqwbzcmp.supabase.co";
+// IMPORTANT: The key below looks like a Stripe key (sb_publishable_...). 
+// Please replace it with your Supabase Anon (public) Key from Settings > API.
 const SUPABASE_KEY = "sb_publishable_yCHBZUFETPQN5hAwH1x4dQ_TBXLdzQc";
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -95,6 +97,7 @@ async function handleLogin() {
     // if we got an email back we use it, otherwise assume the user entered
     // their email directly instead of a username
     const loginEmail = data?.email || username;
+    console.log("Attempting sign-in with email/identifier:", loginEmail);
 
     const { error } = await supabaseClient.auth.signInWithPassword({
       email: loginEmail,
@@ -108,7 +111,11 @@ async function handleLogin() {
     passwordField.value = "";
   } catch (err) {
     console.error('login failed', err);
-    errorDiv.innerText = err.message || "Invalid credentials.";
+    if (err.message === "Failed to fetch") {
+      errorDiv.innerText = "Network Error: Could not reach Supabase. Check your internet or project URL.";
+    } else {
+      errorDiv.innerText = err.message || "Invalid credentials.";
+    }
   }
 }
 
@@ -193,6 +200,28 @@ async function handleSignup() {
     }
   }
 }
+
+// Proactive Connectivity Check
+async function testSupabaseConnection() {
+  try {
+    const { error } = await supabaseClient.from('profiles').select('count', { count: 'exact', head: true });
+    if (error && error.message === "Failed to fetch") {
+      console.error("Supabase Connectivity Test Failed: Failed to fetch");
+      const errorDiv = document.getElementById("auth-error");
+      if (errorDiv) {
+        errorDiv.innerText = "Initial Connection Warning: Cannot reach Supabase. Check your URL and Key.";
+        errorDiv.style.color = "var(--accent-red)";
+      }
+    } else {
+      console.log("Supabase Connectivity Test: Success or reachable.");
+    }
+  } catch (err) {
+    console.warn("Supabase Connectivity Test error (expected if not logged in or invalid URL):", err);
+  }
+}
+
+// Run test on load
+testSupabaseConnection();
 
 async function handleLogout() {
   await supabaseClient.auth.signOut();
