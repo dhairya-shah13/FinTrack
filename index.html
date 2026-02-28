@@ -11,7 +11,7 @@
     href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap"
     rel="stylesheet">
 
-  <!-- Choices.js CSS (loaded before custom styles so overrides work) -->
+  <!-- Choices.js CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
 
   <!-- App Styles -->
@@ -27,8 +27,7 @@
 
       <div id="login-form" class="auth-form">
         <h2 style="margin-bottom: 0.5rem; font-size: 1.5rem;">Welcome Back</h2>
-        <p style="color: #878787; margin-bottom: 1.5rem; font-size: 0.9rem;">Log in to manage your finances
-        </p>
+        <p style="color: #878787; margin-bottom: 1.5rem; font-size: 0.9rem;">Log in to manage your finances</p>
         <input type="text" id="login-username" class="auth-input" placeholder="Username">
         <input type="password" id="login-password" class="auth-input" placeholder="Password">
         <button class="auth-btn" onclick="handleLogin()">Log In</button>
@@ -68,18 +67,16 @@
   <!-- MAIN -->
   <main class="main-content">
 
+    <!-- DASHBOARD -->
     <section id="dashboard">
       <div class="section-header">
-        <h1 id="user-welcome" style="font-size: 1.5rem; margin: 0; color: #000000;">Welcome back👋</h1>
+        <h1 id="user-welcome" style="font-size: 1.5rem; margin: 0; color: var(--text-main);">Welcome back👋</h1>
       </div>
 
       <div class="dashboard-grid">
-        <!-- Balance Card -->
         <div class="balance-card">
-          <div>
-            <div class="balance-main">
-              <span class="balance-amount" id="balance-big">₹0</span>
-            </div>
+          <div class="balance-main">
+            <span class="balance-amount" id="balance-big">₹0</span>
           </div>
           <div class="balance-progress">
             <div class="progress-fill progress-income" id="income-bar"></div>
@@ -87,21 +84,16 @@
           </div>
         </div>
 
-        <!-- Quick Stats -->
         <div class="stats-container">
           <div class="stat-card">
-            <div class="stat-icon icon-income">
-              <i data-lucide="arrow-down-left"></i>
-            </div>
+            <div class="stat-icon icon-income"><i data-lucide="arrow-down-left"></i></div>
             <div class="stat-info">
               <div class="stat-label">Income</div>
               <div class="stat-value" id="income-val">₹0</div>
             </div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon icon-expense">
-              <i data-lucide="arrow-up-right"></i>
-            </div>
+            <div class="stat-icon icon-expense"><i data-lucide="arrow-up-right"></i></div>
             <div class="stat-info">
               <div class="stat-label">Expense</div>
               <div class="stat-value" id="expense-val">₹0</div>
@@ -111,230 +103,27 @@
       </div>
 
       <div class="chart-container">
-        <div class="chart-box">
-          <canvas id="pieChart"></canvas>
-        </div>
-        <div class="chart-box">
-          <canvas id="barChart"></canvas>
-        </div>
+        <div class="chart-box"><canvas id="pieChart"></canvas></div>
+        <div class="chart-box"><canvas id="barChart"></canvas></div>
       </div>
     </section>
 
-    <!-- TRANSACTIONS -->
+    <!-- TRANSACTIONS PAGE -->
     <section id="transactions" style="display:none">
-
       <div class="section-header">
         <div class="section-title">Recent Activity</div>
         <a class="view-report">View Report</a>
       </div>
-
       <div id="txContainer" class="transaction-list"></div>
     </section>
 
-    <!-- Global Modal Structure -->
-    <div class="modal-backdrop" id="modalBackdrop" onclick="toggleAddTxSection()"></div>
-
-    <div class="add-transaction-section" id="addTxSection">
-      <div class="modal-header">
-        <h2>Add Transaction</h2>
-        <div class="close-modal" onclick="toggleAddTxSection()">
-          <i data-lucide="x" style="width: 24px; height: 24px;"></i>
-        </div>
-      </div>
-
-      <div class="transaction-form">
-        <div class="form-group">
-          <label class="field-label">Amount</label>
-          <input id="amount" type="number" placeholder="0.00" min="0.01" step="0.01">
-          <span id="amount-error"
-            style="color: var(--accent-red); font-size: 0.8rem; margin-top: 0.5rem; height: 1.1rem; display: block;"></span>
-        </div>
-
-        <div class="form-group" style="margin-top: -0.5rem;">
-          <label class="field-label">Category</label>
-
-          <select id="category">
-            <optgroup label="Income">
-              <option value="Salary">Salary</option>
-              <option value="Bonus">Bonus</option>
-              <option value="Overtime">Overtime</option>
-              <option value="Commission">Commission</option>
-              <option value="Freelance Income">Freelance Income</option>
-              <option value="Side Hustle Income">Side Hustle Income</option>
-              <option value="Interest Income">Interest Income</option>
-              <option value="Savings Account Interest">Savings Account Interest</option>
-              <option value="Fixed Deposit Interest">Fixed Deposit Interest</option>
-              <option value="Recurring Deposit Interest">Recurring Deposit Interest</option>
-              <option value="Dividend Income">Dividend Income</option>
-              <option value="Mutual Fund Profit">Mutual Fund Profit</option>
-              <option value="Stock Profit">Stock Profit</option>
-              <option value="Rental Income">Rental Income</option>
-              <option value="Gift Received">Gift Received</option>
-              <option value="Cash Gift">Cash Gift</option>
-              <option value="Refund">Refund</option>
-              <option value="Purchase Refund">Purchase Refund</option>
-              <option value="Tax Refund">Tax Refund</option>
-              <option value="Cashback">Cashback</option>
-              <option value="Rewards">Rewards</option>
-              <option value="Insurance Claim Received">Insurance Claim Received</option>
-              <option value="Scholarship">Scholarship</option>
-              <option value="Allowance">Allowance</option>
-              <option value="Pocket Money">Pocket Money</option>
-              <option value="Sale of Personal Item">Sale of Personal Item</option>
-              <option value="Sale of Vehicle">Sale of Vehicle</option>
-              <option value="Loan Received">Loan Received</option>
-              <option value="Investment Withdrawal">Investment Withdrawal</option>
-              <option value="Other Income">Other Income</option>
-            </optgroup>
-            <optgroup label="Expense">
-              <option value="Housing">Housing</option>
-              <option value="Rent">Rent</option>
-              <option value="Home Loan EMI">Home Loan EMI</option>
-              <option value="Maintenance">Maintenance</option>
-              <option value="Repairs">Repairs</option>
-              <option value="Furniture">Furniture</option>
-              <option value="Home Appliances">Home Appliances</option>
-              <option value="Food">Food</option>
-              <option value="Groceries">Groceries</option>
-              <option value="Restaurant">Restaurant</option>
-              <option value="Fast Food">Fast Food</option>
-              <option value="Cafe">Cafe</option>
-              <option value="Food Delivery">Food Delivery</option>
-              <option value="Snacks">Snacks</option>
-              <option value="Beverages">Beverages</option>
-              <option value="Transportation">Transportation</option>
-              <option value="Fuel">Fuel</option>
-              <option value="Public Transport">Public Transport</option>
-              <option value="Taxi / Auto / Cab">Taxi / Auto / Cab</option>
-              <option value="Parking">Parking</option>
-              <option value="Toll">Toll</option>
-              <option value="Vehicle Maintenance">Vehicle Maintenance</option>
-              <option value="Vehicle Insurance">Vehicle Insurance</option>
-              <option value="Bills &amp; Utilities">Bills &amp; Utilities</option>
-              <option value="Electricity">Electricity</option>
-              <option value="Water">Water</option>
-              <option value="Gas">Gas</option>
-              <option value="Mobile Recharge">Mobile Recharge</option>
-              <option value="Internet">Internet</option>
-              <option value="Broadband">Broadband</option>
-              <option value="Cable TV">Cable TV</option>
-              <option value="OTT Subscription">OTT Subscription</option>
-              <option value="Shopping">Shopping</option>
-              <option value="Clothes">Clothes</option>
-              <option value="Shoes">Shoes</option>
-              <option value="Accessories">Accessories</option>
-              <option value="Electronics">Electronics</option>
-              <option value="Gadgets">Gadgets</option>
-              <option value="Home Items">Home Items</option>
-              <option value="Healthcare">Healthcare</option>
-              <option value="Doctor Fees">Doctor Fees</option>
-              <option value="Medicines">Medicines</option>
-              <option value="Medical Tests">Medical Tests</option>
-              <option value="Hospital Expenses">Hospital Expenses</option>
-              <option value="Health Insurance">Health Insurance</option>
-              <option value="Education">Education</option>
-              <option value="Fees">Fees</option>
-              <option value="Courses">Courses</option>
-              <option value="Books">Books</option>
-              <option value="Stationery">Stationery</option>
-              <option value="Entertainment">Entertainment</option>
-              <option value="Movies">Movies</option>
-              <option value="Games">Games</option>
-              <option value="Events">Events</option>
-              <option value="Hobbies">Hobbies</option>
-              <option value="Subscriptions">Subscriptions</option>
-              <option value="Personal Care">Personal Care</option>
-              <option value="Haircut">Haircut</option>
-              <option value="Salon">Salon</option>
-              <option value="Cosmetics">Cosmetics</option>
-              <option value="Grooming">Grooming</option>
-              <option value="Gym">Gym</option>
-              <option value="Family">Family</option>
-              <option value="Parents Support">Parents Support</option>
-              <option value="Child Expenses">Child Expenses</option>
-              <option value="Financial">Financial</option>
-              <option value="Loan EMI">Loan EMI</option>
-              <option value="Credit Card Bill Payment">Credit Card Bill Payment</option>
-              <option value="Interest Paid">Interest Paid</option>
-              <option value="Bank Charges">Bank Charges</option>
-              <option value="Late Fees">Late Fees</option>
-              <option value="Penalties">Penalties</option>
-              <option value="Travel">Travel</option>
-              <option value="Flight">Flight</option>
-              <option value="Train">Train</option>
-              <option value="Bus">Bus</option>
-              <option value="Hotel">Hotel</option>
-              <option value="Vacation">Vacation</option>
-              <option value="Gifts &amp; Donations">Gifts &amp; Donations</option>
-              <option value="Gifts Given">Gifts Given</option>
-              <option value="Charity">Charity</option>
-              <option value="Religious Donation">Religious Donation</option>
-              <option value="Insurance">Insurance</option>
-              <option value="Life Insurance Premium">Life Insurance Premium</option>
-              <option value="Health Insurance Premium">Health Insurance Premium</option>
-              <option value="Vehicle Insurance Premium">Vehicle Insurance Premium</option>
-              <option value="Investments">Investments</option>
-              <option value="Mutual Fund Investment">Mutual Fund Investment</option>
-              <option value="Stock Investment">Stock Investment</option>
-              <option value="Gold Investment">Gold Investment</option>
-              <option value="Fixed Deposit">Fixed Deposit</option>
-              <option value="Taxes">Taxes</option>
-              <option value="Income Tax">Income Tax</option>
-              <option value="Professional Tax">Professional Tax</option>
-              <option value="Miscellaneous">Miscellaneous</option>
-              <option value="Emergency Expense">Emergency Expense</option>
-              <option value="Other Expense">Other Expense</option>
-            </optgroup>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label class="field-label">Notes</label>
-          <input id="note" type="text" class="note-input" placeholder="Add a brief note...">
-        </div>
-
-        <button class="hero-add-btn" onclick="addTransaction()">
-          <i data-lucide="plus"></i>
-          Add Transaction
-        </button>
-
-        <button class="split-btn" id="splitBtn" onclick="toggleSplitRow()" style="margin-top: 1rem; width: 100%;">
-          ✂ Split Expense
-        </button>
-      </div>
-
-      <div class="split-row" id="splitRow"
-        style="margin-top: 1.5rem; align-items: center; justify-content: center; gap: 1rem;">
-        <span style="color: var(--text-dim);">Split among</span>
-        <input id="splitCount" type="number" min="2" value="2"
-          style="width: 70px; padding: 0.6rem; border-radius: 0.5rem; background: var(--bg-deep); border: 1px solid var(--glass-border); color: #fff;">
-        <span style="color: var(--text-dim);">people</span>
-        <button class="add-btn" style="padding: 0.6rem 1.25rem; font-size: 0.9rem;"
-          onclick="addSplitTransaction()">Confirm</button>
-        <button class="filter-btn" style="padding: 0.6rem 1rem; color: var(--text-muted);"
-          onclick="toggleSplitRow()">Cancel</button>
-      </div>
-    </div>
-
-    <div id="txContainer" class="transaction-list"></div>
-    </section>
-
-    <!-- FAB -->
-    <div class="fab" id="fabAdd" onclick="toggleAddTxSection()">
-      <i data-lucide="plus"></i>
-    </div>
-
-    <!-- PROFILE -->
+    <!-- PROFILE PAGE -->
     <section id="profile"
       style="display:none; background: var(--bg-card); padding: 2.5rem; border-radius: 1.5rem; border: 1px solid var(--glass-border);">
       <div style="display: flex; justify-content: space-between; align-items: flex-start;">
         <h2 style="margin-top: 0; color: var(--accent-green);">Your Profile</h2>
         <button onclick="handleLogout()"
-          style="background: rgba(248, 113, 113, 0.1); border: 1px solid rgba(248, 113, 113, 0.2); color: var(--accent-red); padding: 0.5rem 1.25rem; border-radius: 0.75rem; cursor: pointer; font-weight: 600; transition: 0.3s;"
-          onmouseover="this.style.background='rgba(248, 113, 113, 0.2)'"
-          onmouseout="this.style.background='rgba(248, 113, 113, 0.1)'">
-          Logout
-        </button>
+          style="background: rgba(248, 113, 113, 0.1); border: 1px solid rgba(248, 113, 113, 0.2); color: var(--accent-red); padding: 0.5rem 1.25rem; border-radius: 0.75rem; cursor: pointer; font-weight: 600; transition: 0.3s;">Logout</button>
       </div>
       <div style="margin: 2rem 0; display: flex; flex-direction: column; gap: 1rem;">
         <p id="profile-name" style="font-size: 1.1rem; color: var(--text-main);">Username: ...</p>
@@ -345,13 +134,67 @@
 
   </main>
 
-  <!-- CDN Scripts (must load before app.js) -->
+  <!-- MODAL STRUCTURE (Global) -->
+  <div class="modal-backdrop" id="modalBackdrop" onclick="toggleAddTxSection()"></div>
+  <div class="add-transaction-section" id="addTxSection">
+    <div class="modal-header">
+      <h2>Add Transaction</h2>
+      <div class="close-modal" onclick="toggleAddTxSection()"><i data-lucide="x" style="width: 24px; height: 24px;"></i>
+      </div>
+    </div>
+    <div class="transaction-form">
+      <div class="form-group">
+        <label class="field-label">Amount</label>
+        <input id="amount" type="number" placeholder="0.00" min="0.01" step="0.01">
+        <span id="amount-error"
+          style="color: var(--accent-red); font-size: 0.8rem; margin-top: 0.5rem; height: 1.1rem; display: block;"></span>
+      </div>
+      <div class="form-group">
+        <label class="field-label">Category</label>
+        <select id="category">
+          <optgroup label="Income">
+            <option value="Salary">Salary</option>
+            <option value="Bonus">Bonus</option>
+            <option value="Freelance Income">Freelance Income</option>
+            <option value="Other Income">Other Income</option>
+          </optgroup>
+          <optgroup label="Expense">
+            <option value="Food">Food</option>
+            <option value="Housing">Housing</option>
+            <option value="Transportation">Transportation</option>
+            <option value="Shopping">Shopping</option>
+            <option value="Bills & Utilities">Bills & Utilities</option>
+            <option value="Entertainment">Entertainment</option>
+            <option value="Other Expense">Other Expense</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="field-label">Notes</label>
+        <input id="note" type="text" placeholder="Add a brief note...">
+      </div>
+      <button class="hero-add-btn" onclick="addTransaction()"><i data-lucide="plus"></i> Add Transaction</button>
+      <button class="split-btn" id="splitBtn" onclick="toggleSplitRow()" style="margin-top: 1rem; width: 100%;">✂ Split
+        Expense</button>
+    </div>
+    <div class="split-row" id="splitRow"
+      style="margin-top: 1.5rem; align-items: center; justify-content: center; gap: 1rem;">
+      <span style="color: var(--text-dim);">Split among</span>
+      <input id="splitCount" type="number" min="2" value="2"
+        style="width: 70px; padding: 0.6rem; border-radius: 0.5rem; background: var(--bg-deep); border: 1px solid var(--glass-border); color: #fff;">
+      <button class="add-btn" onclick="addSplitTransaction()">Confirm</button>
+      <button class="filter-btn" onclick="toggleSplitRow()">Cancel</button>
+    </div>
+  </div>
+
+  <!-- FAB -->
+  <div class="fab" id="fabAdd" onclick="toggleAddTxSection()"><i data-lucide="plus"></i></div>
+
+  <!-- SCRIPTS -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
-
-  <!-- App Script -->
   <script src="app.js"></script>
 
 </body>

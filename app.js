@@ -18,8 +18,8 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 /* ---------- SUPABASE INITIALIZATION ---------- */
-const SUPABASE_URL = "https://zskikcqzewieatvuxcgp.supabase.co";
-const SUPABASE_KEY = "sb_publishable_vifQ2Cdn_d7bvucFqQE7pQ_py6FdvkY";
+const SUPABASE_URL = "https://vahpisvskwmxsqwbzcmp.supabase.co";
+const SUPABASE_KEY = "sb_publishable_yCHBZUFETPQN5hAwH1x4dQ_TBXLdzQc";
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let transactions = [];
@@ -44,6 +44,7 @@ function switchAuthMode(mode) {
   const errorDiv = document.getElementById("auth-error");
 
   errorDiv.innerText = "";
+  errorDiv.style.color = "var(--accent-red)"; // Reset to red
   if (mode === 'login') {
     loginForm.classList.remove("hidden");
     signupForm.classList.add("hidden");
@@ -54,10 +55,14 @@ function switchAuthMode(mode) {
 }
 
 async function handleLogin() {
-  const username = document.getElementById("login-username").value.trim();
-  const password = document.getElementById("login-password").value;
+  const usernameField = document.getElementById("login-username");
+  const passwordField = document.getElementById("login-password");
+  const username = usernameField.value.trim();
+  const password = passwordField.value;
   const errorDiv = document.getElementById("auth-error");
+  
   errorDiv.innerText = "";
+  errorDiv.style.color = "var(--accent-red)";
 
   if (!username || !password) {
     errorDiv.innerText = "Please enter username and password.";
@@ -65,7 +70,6 @@ async function handleLogin() {
   }
 
   try {
-    // Step 1: Get email for the username from profiles table
     const { data, error: profileError } = await supabaseClient
       .from('profiles')
       .select('email')
@@ -77,24 +81,34 @@ async function handleLogin() {
       return;
     }
 
-    // Step 2: Login with email and password
     const { error } = await supabaseClient.auth.signInWithPassword({
       email: data.email,
       password: password
     });
 
     if (error) throw error;
+    
+    // Clear fields on success
+    usernameField.value = "";
+    passwordField.value = "";
   } catch (err) {
     errorDiv.innerText = err.message || "Invalid credentials.";
   }
 }
 
 async function handleSignup() {
-  const username = document.getElementById("signup-username").value.trim();
-  const email = document.getElementById("signup-email").value.trim();
-  const password = document.getElementById("signup-password").value;
+  const usernameField = document.getElementById("signup-username");
+  const emailField = document.getElementById("signup-email");
+  const passwordField = document.getElementById("signup-password");
+  
+  const username = usernameField.value.trim();
+  const email = emailField.value.trim();
+  const password = passwordField.value;
   const errorDiv = document.getElementById("auth-error");
-  errorDiv.innerText = "";
+  
+  errorDiv.innerText = "Processing...";
+  errorDiv.style.color = "var(--text-muted)";
+  errorDiv.style.color = "var(--accent-red)";
 
   if (!username || !email || !password) {
     errorDiv.innerText = "All fields are required.";
@@ -102,8 +116,36 @@ async function handleSignup() {
   }
 
   try {
-    // Supabase signUp with metadata for the trigger to pick up
-    const { error } = await supabaseClient.auth.signUp({
+    console.log("Starting signup check for username:", username);
+    
+    // Step 1: Check if username exists in profiles (Optional check, if it fails due to network, we'll see)
+    let existingUser = null;
+    try {
+      const { data, error } = await supabaseClient
+        .from('profiles')
+        .select('username')
+        .eq('username', username)
+        .maybeSingle();
+      
+      if (error) {
+        console.warn("Profile check returned an error (maybe SQL wasn't run?):", error);
+      } else {
+        existingUser = data;
+      }
+    } catch (checkErr) {
+      console.error("Critical error during profile check:", checkErr);
+      // We continue to signup anyway, let the auth layer handle emails
+    }
+
+    if (existingUser) {
+      errorDiv.innerText = "Username already taken. Please choose another.";
+      return;
+    }
+
+    console.log("Proceeding to auth.signUp with email:", email);
+    
+    // Step 2: Supabase signUp
+    const { data: authData, error: authError } = await supabaseClient.auth.signUp({
       email,
       password,
       options: {
@@ -111,12 +153,28 @@ async function handleSignup() {
       }
     });
 
-    if (error) throw error;
+    if (authError) {
+      console.error("Auth Signup Error:", authError);
+      throw authError;
+    }
+    
+    console.log("Signup success data:", authData);
     errorDiv.style.color = "var(--accent-green)";
-    errorDiv.innerText = "Signup successful! Check your email for verification (if enabled) or try logging in.";
+    errorDiv.innerText = "Signup successful! You can now log in.";
+    
+    // Clear fields
+    usernameField.value = "";
+    emailField.value = "";
+    passwordField.value = "";
+    
     setTimeout(() => switchAuthMode('login'), 2000);
   } catch (err) {
-    errorDiv.innerText = err.message;
+    console.error("Caught error in handleSignup:", err);
+    if (err.message === "Failed to fetch") {
+      errorDiv.innerText = "Network Error: Could not reach Supabase. Check your internet or project URL.";
+    } else {
+      errorDiv.innerText = err.message || "An unexpected error occurred.";
+    }
   }
 }
 
@@ -142,9 +200,11 @@ async function fetchTransactions() {
 }
 
 async function addTransaction() {
-  const amountVal = document.getElementById("amount").value;
+  const amountInput = document.getElementById("amount");
+  const noteInput = document.getElementById("note");
+  const amountVal = amountInput.value;
   const category = document.getElementById("category").value;
-  const note = document.getElementById("note").value.trim();
+  const note = noteInput.value.trim();
   const amountError = document.getElementById("amount-error");
   if (amountError) amountError.innerText = "";
 
@@ -165,8 +225,8 @@ async function addTransaction() {
       .insert([payload]);
 
     if (!error) {
-      document.getElementById("amount").value = "";
-      document.getElementById("note").value = "";
+      amountInput.value = "";
+      noteInput.value = "";
       onCategoryChange();
       toggleAddTxSection();
       fetchTransactions();
@@ -193,8 +253,7 @@ async function updateProfileDisplay() {
       document.getElementById("profile-name").innerText = `Username: ${data.username}`;
       document.getElementById("profile-email").innerText = `Email: ${data.email}`;
 
-      // Set initial in avatar
-      const initial = data.username.charAt(0).toUpperCase();
+      const initial = data.username ? data.username.charAt(0).toUpperCase() : '?';
       const avatar = document.querySelector(".nav-avatar");
       if (avatar) avatar.innerText = initial;
     }
@@ -228,48 +287,136 @@ const incomeCategories = [
 ];
 
 const categoryColors = {
-  "Salary": "#10B981", "Bonus": "#34D399", "Overtime": "#6EE7B7", "Commission": "#A7F3D0",
-  "Freelance Income": "#059669", "Side Hustle Income": "#10B981", "Interest Income": "#34D399",
-  "Savings Account Interest": "#6EE7B7", "Fixed Deposit Interest": "#A7F3D0", "Recurring Deposit Interest": "#059669",
-  "Dividend Income": "#10B981", "Mutual Fund Profit": "#34D399", "Stock Profit": "#6EE7B7",
-  "Rental Income": "#A7F3D0", "Gift Received": "#059669", "Cash Gift": "#10B981",
-  "Refund": "#34D399", "Purchase Refund": "#6EE7B7", "Tax Refund": "#A7F3D0",
-  "Cashback": "#059669", "Rewards": "#10B981", "Insurance Claim Received": "#34D399",
-  "Scholarship": "#6EE7B7", "Allowance": "#A7F3D0", "Pocket Money": "#059669",
-  "Sale of Personal Item": "#10B981", "Sale of Vehicle": "#34D399", "Loan Received": "#6EE7B7",
-  "Investment Withdrawal": "#A7F3D0", "Other Income": "#059669",
-  "Housing": "#EF4444", "Rent": "#F87171", "Home Loan EMI": "#FCA5A5", "Maintenance": "#FECACA",
-  "Repairs": "#DC2626", "Furniture": "#EF4444", "Home Appliances": "#F87171",
-  "Food": "#F59E0B", "Groceries": "#FBBF24", "Restaurant": "#FCD34D", "Fast Food": "#FDE68A",
-  "Cafe": "#D97706", "Food Delivery": "#F59E0B", "Snacks": "#FBBF24", "Beverages": "#FCD34D",
-  "Transportation": "#3B82F6", "Fuel": "#60A5FA", "Public Transport": "#93C5FD",
-  "Taxi / Auto / Cab": "#BFDBFE", "Parking": "#2563EB", "Toll": "#3B82F6",
-  "Vehicle Maintenance": "#60A5FA", "Vehicle Insurance": "#93C5FD",
-  "Bills & Utilities": "#8B5CF6", "Electricity": "#A78BFA", "Water": "#C4B5FD",
-  "Gas": "#DDD6FE", "Mobile Recharge": "#7C3AED", "Internet": "#8B5CF6",
-  "Broadband": "#A78BFA", "Cable TV": "#C4B5FD", "OTT Subscription": "#DDD6FE",
-  "Shopping": "#EC4899", "Clothes": "#F472B6", "Shoes": "#F9A8D4", "Accessories": "#FBCFE8",
-  "Electronics": "#DB2777", "Gadgets": "#EC4899", "Home Items": "#F472B6",
-  "Healthcare": "#14B8A6", "Doctor Fees": "#2DD4BF", "Medicines": "#5EEAD4",
-  "Medical Tests": "#99F6E4", "Hospital Expenses": "#0D9488", "Health Insurance": "#14B8A6",
-  "Education": "#6366F1", "Fees": "#818CF8", "Courses": "#A5B4FC",
-  "Books": "#C7D2FE", "Stationery": "#4F46E5",
-  "Entertainment": "#84CC16", "Movies": "#A3E635", "Games": "#BEF264",
-  "Events": "#D9F99D", "Hobbies": "#65A30D", "Subscriptions": "#84CC16",
-  "Personal Care": "#F97316", "Haircut": "#FB923C", "Salon": "#FDBA74",
-  "Cosmetics": "#FED7AA", "Grooming": "#EA580C", "Gym": "#F97316",
-  "Family": "#06B6D4", "Parents Support": "#22D3EE", "Child Expenses": "#67E8F9",
-  "Financial": "#64748B", "Loan EMI": "#94A3B8", "Credit Card Bill Payment": "#CBD5E1",
-  "Interest Paid": "#475569", "Bank Charges": "#64748B", "Late Fees": "#94A3B8", "Penalties": "#CBD5E1",
-  "Travel": "#F43F5E", "Flight": "#FB7185", "Train": "#FDA4AF",
-  "Bus": "#FECDD3", "Hotel": "#E11D48", "Vacation": "#F43F5E",
-  "Gifts & Donations": "#D946EF", "Gifts Given": "#E879F9", "Charity": "#F0ABFC",
-  "Religious Donation": "#F5D0FE", "Insurance": "#10B981", "Life Insurance Premium": "#34D399",
-  "Health Insurance Premium": "#6EE7B7", "Vehicle Insurance Premium": "#A7F3D0",
-  "Investments": "#3B82F6", "Mutual Fund Investment": "#60A5FA",
-  "Stock Investment": "#93C5FD", "Gold Investment": "#BFDBFE", "Fixed Deposit": "#2563EB",
-  "Taxes": "#EF4444", "Income Tax": "#F87171", "Professional Tax": "#FCA5A5",
-  "Miscellaneous": "#64748B", "Emergency Expense": "#94A3B8", "Other Expense": "#CBD5E1"
+  // Incomes - SHADES OF GREEN
+  "Salary": "#10B981",
+  "Bonus": "#34D399",
+  "Overtime": "#6EE7B7",
+  "Commission": "#10B981",
+  "Freelance Income": "#059669",
+  "Side Hustle Income": "#047857",
+  "Interest Income": "#A7F3D0",
+  "Savings Account Interest": "#34D399",
+  "Fixed Deposit Interest": "#6EE7B7",
+  "Recurring Deposit Interest": "#10B981",
+  "Dividend Income": "#059669",
+  "Mutual Fund Profit": "#34D399",
+  "Stock Profit": "#6EE7B7",
+  "Rental Income": "#A7F3D0",
+  "Gift Received": "#10B981",
+  "Cash Gift": "#059669",
+  "Refund": "#34D399",
+  "Purchase Refund": "#6EE7B7",
+  "Tax Refund": "#A7F3D0",
+  "Cashback": "#10B981",
+  "Rewards": "#059669",
+  "Insurance Claim Received": "#34D399",
+  "Scholarship": "#6EE7B7",
+  "Allowance": "#A7F3D0",
+  "Pocket Money": "#10B981",
+  "Sale of Personal Item": "#059669",
+  "Sale of Vehicle": "#34D399",
+  "Loan Received": "#6EE7B7",
+  "Investment Withdrawal": "#A7F3D0",
+  "Other Income": "#047857",
+
+  // Expenses - DIVERSE COLORS
+  "Housing": "#3B82F6", // Blue
+  "Rent": "#60A5FA",
+  "Home Loan EMI": "#93C5FD",
+  "Maintenance": "#2563EB",
+  "Repairs": "#1D4ED8",
+  "Furniture": "#3B82F6",
+  "Home Appliances": "#60A5FA",
+  "Food": "#F59E0B", // Amber
+  "Groceries": "#FBBF24",
+  "Restaurant": "#FCD34D",
+  "Fast Food": "#D97706",
+  "Cafe": "#B45309",
+  "Food Delivery": "#F59E0B",
+  "Snacks": "#FBBF24",
+  "Beverages": "#FCD34D",
+  "Transportation": "#EF4444", // Red
+  "Fuel": "#F87171",
+  "Public Transport": "#FCA5A5",
+  "Taxi / Auto / Cab": "#DC2626",
+  "Parking": "#B91C1C",
+  "Toll": "#EF4444",
+  "Vehicle Maintenance": "#F87171",
+  "Vehicle Insurance": "#FCA5A5",
+  "Bills & Utilities": "#8B5CF6", // Violet
+  "Electricity": "#A78BFA",
+  "Water": "#C4B5FD",
+  "Gas": "#7C3AED",
+  "Mobile Recharge": "#6D28D9",
+  "Internet": "#8B5CF6",
+  "Broadband": "#A78BFA",
+  "Cable TV": "#C4B5FD",
+  "OTT Subscription": "#7C3AED",
+  "Shopping": "#EC4899", // Pink
+  "Clothes": "#F472B6",
+  "Shoes": "#F9A8D4",
+  "Accessories": "#DB2777",
+  "Electronics": "#C026D3", // Fuchsia
+  "Gadgets": "#E879F9",
+  "Home Items": "#F0ABFC",
+  "Healthcare": "#14B8A6", // Teal
+  "Doctor Fees": "#2DD4BF",
+  "Medicines": "#5EEAD4",
+  "Medical Tests": "#0D9488",
+  "Hospital Expenses": "#0F766E",
+  "Health Insurance": "#14B8A6",
+  "Education": "#6366F1", // Indigo
+  "Fees": "#818CF8",
+  "Courses": "#A5B4FC",
+  "Books": "#4F46E5",
+  "Stationery": "#4338CA",
+  "Entertainment": "#84CC16", // Lime
+  "Movies": "#A3E635",
+  "Games": "#BEF264",
+  "Events": "#65A30D",
+  "Hobbies": "#4D7C0F",
+  "Subscriptions": "#84CC16",
+  "Personal Care": "#F97316", // Orange
+  "Haircut": "#FB923C",
+  "Salon": "#FDBA74",
+  "Cosmetics": "#EA580C",
+  "Grooming": "#C2410C",
+  "Gym": "#F97316",
+  "Family": "#06B6D4", // Cyan
+  "Parents Support": "#22D3EE",
+  "Child Expenses": "#67E8F9",
+  "Financial": "#64748B", // Slate
+  "Loan EMI": "#94A3B8",
+  "Credit Card Bill Payment": "#CBD5E1",
+  "Interest Paid": "#475569",
+  "Bank Charges": "#334155",
+  "Late Fees": "#64748B",
+  "Penalties": "#94A3B8",
+  "Travel": "#F43F5E", // Rose
+  "Flight": "#FB7185",
+  "Train": "#FDA4AF",
+  "Bus": "#E11D48",
+  "Hotel": "#F43F5E",
+  "Vacation": "#FB7185",
+  "Gifts & Donations": "#D946EF", // Fuchsia
+  "Gifts Given": "#E879F9",
+  "Charity": "#F0ABFC",
+  "Religious Donation": "#C026D3",
+  "Insurance": "#10B981", // Emerald (shared with income but usually specific)
+  "Life Insurance Premium": "#059669",
+  "Health Insurance Premium": "#047857",
+  "Vehicle Insurance Premium": "#064E3B",
+  "Investments": "#0EA5E9", // Sky
+  "Mutual Fund Investment": "#38BDF8",
+  "Stock Investment": "#7DD3FC",
+  "Gold Investment": "#0284C7",
+  "Fixed Deposit": "#0369A1",
+  "Taxes": "#DC2626", // Red-orange
+  "Income Tax": "#EF4444",
+  "Professional Tax": "#F87171",
+  "Miscellaneous": "#9ca3af", // Gray
+  "Emergency Expense": "#6b7280",
+  "Other Expense": "#4b5563"
 };
 
 function isIncome(category) {
@@ -426,7 +573,7 @@ function renderCharts(income, expense, catTotals) {
   if (barChart) barChart.destroy();
   const pieLabels = Object.keys(catTotals);
   const pieData = Object.values(catTotals);
-  const pieColors = pieLabels.map(c => categoryColors[c] || "#64748B");
+  const pieColors = pieLabels.map(c => categoryColors[c] || "#D3D0BC");
 
   pieChart = new Chart(document.getElementById("pieChart"), {
     type: "doughnut",
@@ -434,9 +581,9 @@ function renderCharts(income, expense, catTotals) {
       labels: pieLabels.length ? pieLabels : ["No Data"],
       datasets: [{
         data: pieData.length ? pieData : [1],
-        backgroundColor: pieLabels.length ? pieColors : ["#334155"],
+        backgroundColor: pieLabels.length ? pieColors : ["#1A4037"],
         borderWidth: 2,
-        borderColor: "#111C36"
+        borderColor: "#161616"
       }]
     },
     options: {
@@ -446,7 +593,7 @@ function renderCharts(income, expense, catTotals) {
       plugins: {
         legend: {
           position: 'right',
-          labels: { color: '#64748B', usePointStyle: true, padding: 15, font: { size: 12 } }
+          labels: { color: '#D3D0BC', usePointStyle: true, padding: 15, font: { size: 12 } }
         }
       }
     }
@@ -456,14 +603,14 @@ function renderCharts(income, expense, catTotals) {
     type: "bar",
     data: {
       labels: ["Income", "Expense"],
-      datasets: [{ data: [income, expense], backgroundColor: ["#10B981", "#F87171"], borderRadius: 12 }]
+      datasets: [{ data: [income, expense], backgroundColor: ["#10B981", "#EF4444"], borderRadius: 12 }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       scales: {
         y: { grid: { display: false }, ticks: { display: false }, border: { display: false } },
-        x: { grid: { display: false }, ticks: { color: '#64748B', font: { weight: '600' } } }
+        x: { grid: { display: false }, ticks: { color: '#D3D0BC', font: { weight: '600' } } }
       },
       plugins: { legend: { display: false } }
     }
@@ -490,6 +637,7 @@ function renderTransactions(listToRender) {
     const timeStr = dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
     const item = document.createElement("div");
     item.className = `tx-item ${isInc ? 'income' : 'expense'}`;
+    item.style.setProperty('--tx-status-color', color);
     let iconName = "shopping-bag";
     if (cat.toLowerCase().includes("food") || cat.toLowerCase().includes("dining") || cat.toLowerCase().includes("restaurant")) iconName = "utensils";
     if (cat.toLowerCase().includes("salary") || cat.toLowerCase().includes("income")) iconName = "wallet";
@@ -500,7 +648,7 @@ function renderTransactions(listToRender) {
       <div class="tx-icon"><i data-lucide="${iconName}" style="color: ${color}"></i></div>
       <div class="tx-details"><div class="tx-name">${cat}</div><div class="tx-date">${dateStr} • ${timeStr}</div></div>
       <div class="tx-amount-group">
-        <div class="tx-amount" style="color: ${isInc ? 'var(--accent-green)' : 'var(--accent-red)'}">
+        <div class="tx-amount" style="color: ${color}">
           ${isInc ? '+' : '-'}₹${Number(t.amount || 0).toLocaleString()}
         </div>
         ${t.note ? `<div class="tx-tag">${t.note}</div>` : `<div class="tx-tag">${isInc ? 'Income' : 'Expense'}</div>`}
