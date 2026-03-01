@@ -769,17 +769,21 @@ async function downloadReport() {
     },
     bodyStyles: {
       fontSize: 8,
-      textColor: [50, 50, 50]
+      textColor: [50, 50, 50],
+      cellPadding: 3
     },
     alternateRowStyles: {
       fillColor: [245, 245, 245]
     },
     columnStyles: {
-      0: { cellWidth: 40 },
-      3: { halign: 'right', cellWidth: 30 },
-      4: { cellWidth: 45 }
+      0: { cellWidth: 35 },
+      1: { cellWidth: 30 },
+      2: { cellWidth: 22 },
+      3: { halign: 'right', cellWidth: 28 },
+      4: { cellWidth: 'auto' }
     },
     margin: { left: 14, right: 14 },
+    tableWidth: 'auto',
     didParseCell: function(data) {
       // Color amounts green/red
       if (data.column.index === 3 && data.section === 'body') {
