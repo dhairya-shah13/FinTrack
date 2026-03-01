@@ -394,9 +394,18 @@ body {
   margin-bottom: 0.1rem;
 }
 
-.tx-date {
-  font-size: 0.8rem;
+.tx-date-col {
+  font-size: 0.85rem;
   color: var(--text-dim);
+  min-width: 120px;
+  text-align: center;
+}
+
+.tx-time-col {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  min-width: 80px;
+  text-align: center;
 }
 
 .tx-amount-group {

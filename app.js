@@ -712,7 +712,9 @@ function renderTransactions(listToRender) {
     if (cat.toLowerCase().includes("entertain") || cat.toLowerCase().includes("hobby") || cat.toLowerCase().includes("event") || cat.toLowerCase().includes("subscri")) iconName = "tv";
     item.innerHTML = `
       <div class="tx-icon"><i data-lucide="${iconName}" style="color: ${color}"></i></div>
-      <div class="tx-details"><div class="tx-name">${cat}</div><div class="tx-date">${dateStr} • ${timeStr}</div></div>
+      <div class="tx-details"><div class="tx-name">${cat}</div></div>
+      <div class="tx-date-col">${dateStr}</div>
+      <div class="tx-time-col">${timeStr}</div>
       <div class="tx-amount-group">
         <div class="tx-amount" style="color: ${color}">
           ${isInc ? '+' : '-'}₹${Number(t.amount || 0).toLocaleString()}
