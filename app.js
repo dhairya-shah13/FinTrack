@@ -935,6 +935,7 @@ function renderCharts(income, expense, catTotals) {
       cutout: '70%',
       plugins: {
         legend: {
+          display: window.innerWidth > 480,
           position: window.innerWidth <= 768 ? 'bottom' : 'right',
           labels: { color: '#D3D0BC', usePointStyle: true, padding: window.innerWidth <= 480 ? 8 : 15, font: { size: window.innerWidth <= 480 ? 10 : 12 } }
         }
