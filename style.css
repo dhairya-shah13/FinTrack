@@ -348,13 +348,41 @@ body {
   gap: 1rem;
 }
 
+/* Transaction Header Row */
+.tx-header-row {
+  display: grid;
+  grid-template-columns: 60px 1fr 140px 100px 160px;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.5rem 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.tx-header-row>div {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.tx-header-date,
+.tx-header-time {
+  text-align: center;
+}
+
+.tx-header-amount {
+  text-align: right;
+}
+
 .tx-item {
   background: var(--bg-card);
   padding: 1.25rem 1.5rem;
   border-radius: 1.25rem;
-  display: flex;
+  display: grid;
+  grid-template-columns: 60px 1fr 140px 100px 160px;
+  gap: 1rem;
   align-items: center;
-  gap: 1.25rem;
   border: 1px solid var(--glass-border);
   transition: 0.3s;
   position: relative;
@@ -397,14 +425,12 @@ body {
 .tx-date-col {
   font-size: 0.85rem;
   color: var(--text-dim);
-  min-width: 120px;
   text-align: center;
 }
 
 .tx-time-col {
   font-size: 0.85rem;
   color: var(--text-muted);
-  min-width: 80px;
   text-align: center;
 }
 
