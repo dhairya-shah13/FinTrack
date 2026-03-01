@@ -631,7 +631,7 @@ function getPeriodLabel(period) {
 }
 
 async function downloadReport() {
-  const period = document.getElementById("reportPeriodFilter").value;
+  const period = document.getElementById("timePeriodFilter").value;
   const filtered = getFilteredByPeriod(period);
 
   if (filtered.length === 0) {
