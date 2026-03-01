@@ -17,17 +17,27 @@ document.addEventListener('DOMContentLoaded', function () {
   onCategoryChange();
 });
 
-/* ---------- SUPABASE INITIALIZATION ---------- */
-const SUPABASE_URL = "https://vahpisvskwmxsqwbzcmp.supabase.co";
-const SUPABASE_KEY = "sb_publishable_yCHBZUFETPQN5hAwH1x4dQ_TBXLdzQc";
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+/* ---------- FIREBASE INITIALIZATION ---------- */
+const firebaseConfig = {
+  apiKey: "AIzaSyAbAxOFts_ixYNIuSLOvGDEne_JZlkNlV4",
+  authDomain: "fintrack-e0c62.firebaseapp.com",
+  projectId: "fintrack-e0c62",
+  storageBucket: "fintrack-e0c62.firebasestorage.app",
+  messagingSenderId: "1012328637288",
+  appId: "1:1012328637288:web:cc76134963fae0be4eecdd",
+  measurementId: "G-9XS4GQ23Y5"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
 
 let transactions = [];
 let currentUser = null;
 
 /* ---------- AUTH LOGIC ---------- */
 async function checkUser() {
-  const { data: { user } } = await supabaseClient.auth.getUser();
+  const user = auth.currentUser;
   if (user) {
     currentUser = user;
     document.getElementById("auth-overlay").classList.add("hidden");
@@ -71,46 +81,37 @@ async function handleLogin() {
   }
 
   try {
-    // first attempt: look up the real email address attached to the username
-    // use ILIKE so the check is case‑insensitive, and log the result for
-    // easier debugging when the lookup fails (most often because of RLS)
-    const { data, error: profileError } = await supabaseClient
-      .from('profiles')
-      .select('email')
-      .ilike('username', username)
-      .single();
+    // Check if the user entered a username instead of email
+    let loginEmail = username;
 
-    if (profileError) {
-      console.error('profile lookup error', profileError);
-      // if the error comes from row‑level security it will be surfaced here
-      if (profileError.message && profileError.message.toLowerCase().includes('polic')) {
-        errorDiv.innerText =
-          "Cannot search users by username due to database policy. " +
-          "Please sign in with your email or contact support.";
-        return;
+    // If input doesn't look like an email, look up the email from profiles
+    if (!username.includes('@')) {
+      const snapshot = await db.collection('profiles')
+        .where('username_lowercase', '==', username.toLowerCase())
+        .limit(1)
+        .get();
+
+      if (!snapshot.empty) {
+        loginEmail = snapshot.docs[0].data().email;
       }
-      // fall through to generic message below
+      // If not found, try using the input as-is (will fail at auth if wrong)
     }
 
-    // if we got an email back we use it, otherwise assume the user entered
-    // their email directly instead of a username
-    const loginEmail = data?.email || username;
     console.log("Attempting sign-in with email/identifier:", loginEmail);
 
-    const { error } = await supabaseClient.auth.signInWithPassword({
-      email: loginEmail,
-      password: password
-    });
-
-    if (error) throw error;
+    await auth.signInWithEmailAndPassword(loginEmail, password);
 
     // clear fields after successful login
     usernameField.value = "";
     passwordField.value = "";
   } catch (err) {
     console.error('login failed', err);
-    if (err.message === "Failed to fetch") {
-      errorDiv.innerText = "Network Error: Could not reach Supabase. Check your internet or project URL.";
+    if (err.code === 'auth/network-request-failed') {
+      errorDiv.innerText = "Network Error: Could not reach Firebase. Check your internet connection.";
+    } else if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+      errorDiv.innerText = "Invalid email/username or password.";
+    } else if (err.code === 'auth/invalid-email') {
+      errorDiv.innerText = "Please enter a valid email address.";
     } else {
       errorDiv.innerText = err.message || "Invalid credentials.";
     }
@@ -121,124 +122,106 @@ async function handleSignup() {
   const usernameField = document.getElementById("signup-username");
   const emailField = document.getElementById("signup-email");
   const passwordField = document.getElementById("signup-password");
-  
+
   const username = usernameField.value.trim();
   const email = emailField.value.trim();
   const password = passwordField.value;
   const errorDiv = document.getElementById("auth-error");
-  
+
   errorDiv.innerText = "Processing...";
   errorDiv.style.color = "var(--text-muted)";
-  errorDiv.style.color = "var(--accent-red)";
 
   if (!username || !email || !password) {
+    errorDiv.style.color = "var(--accent-red)";
     errorDiv.innerText = "All fields are required.";
     return;
   }
 
   try {
     console.log("Starting signup check for username:", username);
-    
-    // Step 1: Check if username exists in profiles (Optional check, if it fails due to network, we'll see)
-    let existingUser = null;
-    try {
-      const { data, error } = await supabaseClient
-        .from('profiles')
-        .select('username')
-        .eq('username', username)
-        .maybeSingle();
-      
-      if (error) {
-        console.warn("Profile check returned an error (maybe SQL wasn't run?):", error);
-      } else {
-        existingUser = data;
-      }
-    } catch (checkErr) {
-      console.error("Critical error during profile check:", checkErr);
-      // We continue to signup anyway, let the auth layer handle emails
-    }
 
-    if (existingUser) {
+    // Step 1: Check if username exists in profiles
+    const snapshot = await db.collection('profiles')
+      .where('username_lowercase', '==', username.toLowerCase())
+      .limit(1)
+      .get();
+
+    if (!snapshot.empty) {
+      errorDiv.style.color = "var(--accent-red)";
       errorDiv.innerText = "Username already taken. Please choose another.";
       return;
     }
 
-    console.log("Proceeding to auth.signUp with email:", email);
-    
-    // Step 2: Supabase signUp
-    const { data: authData, error: authError } = await supabaseClient.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { username: username }
-      }
+    console.log("Proceeding to auth.createUser with email:", email);
+
+    // Step 2: Firebase signUp
+    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+    const user = userCredential.user;
+
+    // Step 3: Create profile document in Firestore
+    await db.collection('profiles').doc(user.uid).set({
+      username: username,
+      username_lowercase: username.toLowerCase(),
+      email: email,
+      created_at: firebase.firestore.FieldValue.serverTimestamp()
     });
 
-    if (authError) {
-      console.error("Auth Signup Error:", authError);
-      throw authError;
-    }
-    
-    console.log("Signup success data:", authData);
+    console.log("Signup success for user:", user.uid);
     errorDiv.style.color = "var(--accent-green)";
     errorDiv.innerText = "Signup successful! You can now log in.";
-    
+
     // Clear fields
     usernameField.value = "";
     emailField.value = "";
     passwordField.value = "";
-    
+
+    // Sign out so user can log in manually
+    await auth.signOut();
     setTimeout(() => switchAuthMode('login'), 2000);
   } catch (err) {
     console.error("Caught error in handleSignup:", err);
-    if (err.message === "Failed to fetch") {
-      errorDiv.innerText = "Network Error: Could not reach Supabase. Check your internet or project URL.";
+    errorDiv.style.color = "var(--accent-red)";
+    if (err.code === 'auth/network-request-failed') {
+      errorDiv.innerText = "Network Error: Could not reach Firebase. Check your internet connection.";
+    } else if (err.code === 'auth/email-already-in-use') {
+      errorDiv.innerText = "This email is already registered. Please log in instead.";
+    } else if (err.code === 'auth/weak-password') {
+      errorDiv.innerText = "Password should be at least 6 characters.";
+    } else if (err.code === 'auth/invalid-email') {
+      errorDiv.innerText = "Please enter a valid email address.";
     } else {
       errorDiv.innerText = err.message || "An unexpected error occurred.";
     }
   }
 }
 
-// Proactive Connectivity Check
-async function testSupabaseConnection() {
-  try {
-    const { error } = await supabaseClient.from('profiles').select('count', { count: 'exact', head: true });
-    if (error && error.message === "Failed to fetch") {
-      console.error("Supabase Connectivity Test Failed: Failed to fetch");
-      const errorDiv = document.getElementById("auth-error");
-      if (errorDiv) {
-        errorDiv.innerText = "Initial Connection Warning: Cannot reach Supabase. Check your URL and Key.";
-        errorDiv.style.color = "var(--accent-red)";
-      }
-    } else {
-      console.log("Supabase Connectivity Test: Success or reachable.");
-    }
-  } catch (err) {
-    console.warn("Supabase Connectivity Test error (expected if not logged in or invalid URL):", err);
-  }
-}
-
-// Run test on load
-testSupabaseConnection();
-
 async function handleLogout() {
-  await supabaseClient.auth.signOut();
+  await auth.signOut();
   window.location.reload();
 }
 
-/* ---------- API INTERACTIONS (SUPABASE) ---------- */
+/* ---------- API INTERACTIONS (FIRESTORE) ---------- */
 async function fetchTransactions() {
   try {
-    const { data, error } = await supabaseClient
-      .from('transactions')
-      .select('*')
-      .order('created_at', { ascending: false });
+    const snapshot = await db.collection('transactions')
+      .where('user_id', '==', currentUser.uid)
+      .orderBy('created_at', 'desc')
+      .get();
 
-    if (error) throw error;
-    transactions = data || [];
+    transactions = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      // Convert Firestore Timestamp to ISO string for compatibility
+      created_at: doc.data().created_at ? doc.data().created_at.toDate().toISOString() : new Date().toISOString()
+    }));
+
     calculate();
   } catch (err) {
     console.error("Error loading transactions:", err);
+    // If index not ready yet, show a helpful message
+    if (err.code === 'failed-precondition') {
+      console.warn("Firestore index is being built. This may take a few minutes.");
+    }
   }
 }
 
@@ -259,23 +242,18 @@ async function addTransaction() {
     const payload = {
       amount,
       category,
-      user_id: currentUser.id
+      user_id: currentUser.uid,
+      created_at: firebase.firestore.FieldValue.serverTimestamp()
     };
     if (note) payload.note = note;
 
-    const { error } = await supabaseClient
-      .from('transactions')
-      .insert([payload]);
+    await db.collection('transactions').add(payload);
 
-    if (!error) {
-      amountInput.value = "";
-      noteInput.value = "";
-      onCategoryChange();
-      toggleAddTxSection();
-      fetchTransactions();
-    } else {
-      throw error;
-    }
+    amountInput.value = "";
+    noteInput.value = "";
+    onCategoryChange();
+    toggleAddTxSection();
+    fetchTransactions();
   } catch (err) {
     console.error("Error adding transaction:", err);
     if (amountError) amountError.innerText = "Failed to save to database.";
@@ -285,13 +263,10 @@ async function addTransaction() {
 async function updateProfileDisplay() {
   if (!currentUser) return;
   try {
-    const { data } = await supabaseClient
-      .from('profiles')
-      .select('username, email')
-      .eq('id', currentUser.id)
-      .single();
+    const doc = await db.collection('profiles').doc(currentUser.uid).get();
 
-    if (data) {
+    if (doc.exists) {
+      const data = doc.data();
       document.getElementById("user-welcome").innerText = `Welcome back, ${data.username}👋`;
       document.getElementById("profile-name").innerText = `Username: ${data.username}`;
       document.getElementById("profile-email").innerText = `Email: ${data.email}`;
@@ -306,18 +281,17 @@ async function updateProfileDisplay() {
 }
 
 // Initialize Auth Listener
-supabaseClient.auth.onAuthStateChange((event, session) => {
-  if (event === 'SIGNED_IN') {
-    checkUser();
-  } else if (event === 'SIGNED_OUT') {
+auth.onAuthStateChanged((user) => {
+  if (user) {
+    currentUser = user;
+    document.getElementById("auth-overlay").classList.add("hidden");
+    fetchTransactions();
+    updateProfileDisplay();
+  } else {
     currentUser = null;
     document.getElementById("auth-overlay").classList.remove("hidden");
   }
 });
-
-// Initial check
-checkUser();
-
 
 /* ---------- CATEGORY CONFIG ---------- */
 const incomeCategories = [
@@ -551,23 +525,19 @@ async function addSplitTransaction() {
       amount: userShare,
       category,
       note: splitNote,
-      user_id: currentUser.id
+      user_id: currentUser.uid,
+      created_at: firebase.firestore.FieldValue.serverTimestamp()
     };
-    const { error } = await supabaseClient
-      .from('transactions')
-      .insert([payload]);
 
-    if (!error) {
-      document.getElementById("amount").value = "";
-      document.getElementById("note").value = "";
-      if (document.getElementById("splitRow")) document.getElementById("splitRow").classList.remove("visible");
-      document.getElementById("splitCount").value = "2";
-      onCategoryChange();
-      toggleAddTxSection();
-      fetchTransactions();
-    } else {
-      throw error;
-    }
+    await db.collection('transactions').add(payload);
+
+    document.getElementById("amount").value = "";
+    document.getElementById("note").value = "";
+    if (document.getElementById("splitRow")) document.getElementById("splitRow").classList.remove("visible");
+    document.getElementById("splitCount").value = "2";
+    onCategoryChange();
+    toggleAddTxSection();
+    fetchTransactions();
   } catch (err) {
     console.error("Error adding split transaction:", err);
     if (amountError) amountError.innerText = "Failed to save to database.";
@@ -701,5 +671,3 @@ function renderTransactions(listToRender) {
   });
   lucide.createIcons();
 }
-
-fetchTransactions();
