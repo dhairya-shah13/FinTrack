@@ -1081,6 +1081,7 @@ body {
 
   .main-content {
     padding: 2rem 1.5rem;
+    overflow-x: hidden;
   }
 
   .dashboard-grid {
@@ -1093,6 +1094,19 @@ body {
 
   .chart-container {
     grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .chart-box {
+    height: 300px;
+    padding: 1.5rem;
+    overflow: hidden;
+  }
+
+  .chart-box canvas {
+    max-width: 100% !important;
+    max-height: 100% !important;
   }
 
   .actions-bar {
@@ -1195,7 +1209,6 @@ body {
     width: 100%;
   }
 
-  /* Hero Add Button */
   .hero-add-btn {
     padding: 0.85rem 1.5rem;
     font-size: 0.95rem;
@@ -1245,6 +1258,21 @@ body {
 
   .balance-label {
     font-size: 0.65rem;
+  }
+
+  .main-content {
+    padding: 1.25rem 1rem;
+    overflow-x: hidden;
+  }
+
+  .chart-container {
+    margin-top: 1.5rem;
+    gap: 1rem;
+  }
+
+  .chart-box {
+    height: 250px;
+    padding: 1rem;
   }
 
   .stat-card {
