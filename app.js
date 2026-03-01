@@ -888,16 +888,22 @@ function showPage(page) {
 }
 
 function renderCategories() {
-  const container = document.getElementById("categoriesList");
-  if (!container) return;
-  container.innerHTML = "";
+  const incomeContainer = document.getElementById("incomeCategoriesList");
+  const expenseContainer = document.getElementById("expenseCategoriesList");
+  if (!incomeContainer || !expenseContainer) return;
+
+  incomeContainer.innerHTML = "";
+  expenseContainer.innerHTML = "";
 
   // Sort categories alphabetically
   const sortedCategories = Object.keys(categoryColors).sort();
 
   sortedCategories.forEach(cat => {
     const color = categoryColors[cat];
-    const type = isIncome(cat) ? "Income" : "Expense";
+    const isInc = isIncome(cat);
+    const type = isInc ? "Income" : "Expense";
+    const container = isInc ? incomeContainer : expenseContainer;
+
     const card = document.createElement("div");
     card.className = "category-card";
     card.innerHTML = `

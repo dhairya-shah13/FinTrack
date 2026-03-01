@@ -111,11 +111,18 @@
 
     <!-- CATEGORIES PAGE -->
     <section id="categories" style="display:none;">
-      <div class="section-header">
-        <h2 style="margin: 0; color: var(--accent-green);">Expense & Income Categories</h2>
+      <div class="category-section">
+        <h2 style="margin: 0 0 1.5rem 0; color: var(--accent-green);">Income Categories</h2>
+        <div id="incomeCategoriesList" class="categories-grid">
+          <!-- Rendered via JS -->
+        </div>
       </div>
-      <div id="categoriesList" class="categories-grid">
-        <!-- Rendered via JS -->
+
+      <div class="category-section" style="margin-top: 3rem;">
+        <h2 style="margin: 0 0 1.5rem 0; color: var(--accent-red);">Expense Categories</h2>
+        <div id="expenseCategoriesList" class="categories-grid">
+          <!-- Rendered via JS -->
+        </div>
       </div>
     </section>
 
