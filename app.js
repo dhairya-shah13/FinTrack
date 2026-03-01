@@ -295,145 +295,186 @@ auth.onAuthStateChanged((user) => {
 
 /* ---------- CATEGORY CONFIG ---------- */
 const incomeCategories = [
-  "Salary", "Bonus", "Overtime", "Commission", "Freelance Income", "Side Hustle Income",
-  "Interest Income", "Savings Account Interest", "Fixed Deposit Interest", "Recurring Deposit Interest",
-  "Dividend Income", "Mutual Fund Profit", "Stock Profit", "Rental Income", "Gift Received",
-  "Cash Gift", "Refund", "Purchase Refund", "Tax Refund", "Cashback", "Rewards",
-  "Insurance Claim Received", "Scholarship", "Allowance", "Pocket Money", "Sale of Personal Item",
-  "Sale of Vehicle", "Loan Received", "Investment Withdrawal", "Other Income"
+  // Employment Income
+  "Salary", "Hourly Wages", "Overtime Pay", "Bonuses", "Commission",
+  "Tips", "Freelance Income", "Contract Work", "Consulting Income",
+  // Business Income
+  "Business Revenue", "Side Hustle Income", "Online Sales", "Service Income",
+  "Affiliate Income", "Ad Revenue", "Subscription Revenue",
+  // Investment Income
+  "Dividends", "Interest Income", "Capital Gains", "Rental Income",
+  "REIT Distributions", "Crypto Gains", "Bond Interest",
+  // Government & Benefits
+  "Unemployment Benefits", "Social Security", "Disability Benefits",
+  "Child Support Received", "Pension", "Stimulus Payments", "Tax Refund",
+  // Gifts & Transfers
+  "Gift Received", "Inheritance", "Family Support",
+  "Cashback Rewards", "Refunds/Reimbursements",
+  // Other
+  "Other Income"
 ];
 
 const categoryColors = {
-  // Incomes - SHADES OF GREEN
+  // ── INCOME ──────────────────────────────────
+
+  // Employment Income — Greens
   "Salary": "#10B981",
-  "Bonus": "#34D399",
-  "Overtime": "#6EE7B7",
-  "Commission": "#10B981",
-  "Freelance Income": "#059669",
-  "Side Hustle Income": "#047857",
-  "Interest Income": "#A7F3D0",
-  "Savings Account Interest": "#34D399",
-  "Fixed Deposit Interest": "#6EE7B7",
-  "Recurring Deposit Interest": "#10B981",
-  "Dividend Income": "#059669",
-  "Mutual Fund Profit": "#34D399",
-  "Stock Profit": "#6EE7B7",
-  "Rental Income": "#A7F3D0",
-  "Gift Received": "#10B981",
-  "Cash Gift": "#059669",
-  "Refund": "#34D399",
-  "Purchase Refund": "#6EE7B7",
-  "Tax Refund": "#A7F3D0",
-  "Cashback": "#10B981",
-  "Rewards": "#059669",
-  "Insurance Claim Received": "#34D399",
-  "Scholarship": "#6EE7B7",
-  "Allowance": "#A7F3D0",
-  "Pocket Money": "#10B981",
-  "Sale of Personal Item": "#059669",
-  "Sale of Vehicle": "#34D399",
-  "Loan Received": "#6EE7B7",
-  "Investment Withdrawal": "#A7F3D0",
+  "Hourly Wages": "#34D399",
+  "Overtime Pay": "#6EE7B7",
+  "Bonuses": "#059669",
+  "Commission": "#047857",
+  "Tips": "#A7F3D0",
+  "Freelance Income": "#10B981",
+  "Contract Work": "#34D399",
+  "Consulting Income": "#059669",
+
+  // Business Income — Teals
+  "Business Revenue": "#14B8A6",
+  "Side Hustle Income": "#2DD4BF",
+  "Online Sales": "#5EEAD4",
+  "Service Income": "#0D9488",
+  "Affiliate Income": "#0F766E",
+  "Ad Revenue": "#14B8A6",
+  "Subscription Revenue": "#2DD4BF",
+
+  // Investment Income — Cyans
+  "Dividends": "#06B6D4",
+  "Interest Income": "#22D3EE",
+  "Capital Gains": "#67E8F9",
+  "Rental Income": "#0891B2",
+  "REIT Distributions": "#0E7490",
+  "Crypto Gains": "#06B6D4",
+  "Bond Interest": "#22D3EE",
+
+  // Government & Benefits — Emeralds
+  "Unemployment Benefits": "#34D399",
+  "Social Security": "#6EE7B7",
+  "Disability Benefits": "#A7F3D0",
+  "Child Support Received": "#10B981",
+  "Pension": "#059669",
+  "Stimulus Payments": "#047857",
+  "Tax Refund": "#34D399",
+
+  // Gifts & Transfers — Limes
+  "Gift Received": "#84CC16",
+  "Inheritance": "#A3E635",
+  "Family Support": "#BEF264",
+  "Cashback Rewards": "#65A30D",
+  "Refunds/Reimbursements": "#4D7C0F",
+
+  // Other Income
   "Other Income": "#047857",
 
-  // Expenses - DIVERSE COLORS
-  "Housing": "#3B82F6", // Blue
-  "Rent": "#60A5FA",
-  "Home Loan EMI": "#93C5FD",
-  "Maintenance": "#2563EB",
-  "Repairs": "#1D4ED8",
-  "Furniture": "#3B82F6",
-  "Home Appliances": "#60A5FA",
-  "Food": "#F59E0B", // Amber
-  "Groceries": "#FBBF24",
-  "Restaurant": "#FCD34D",
-  "Fast Food": "#D97706",
-  "Cafe": "#B45309",
-  "Food Delivery": "#F59E0B",
-  "Snacks": "#FBBF24",
-  "Beverages": "#FCD34D",
-  "Transportation": "#EF4444", // Red
-  "Fuel": "#F87171",
-  "Public Transport": "#FCA5A5",
-  "Taxi / Auto / Cab": "#DC2626",
-  "Parking": "#B91C1C",
-  "Toll": "#EF4444",
-  "Vehicle Maintenance": "#F87171",
-  "Vehicle Insurance": "#FCA5A5",
-  "Bills & Utilities": "#8B5CF6", // Violet
-  "Electricity": "#A78BFA",
-  "Water": "#C4B5FD",
+  // ── EXPENSES ────────────────────────────────
+
+  // Housing — Blues
+  "Rent": "#3B82F6",
+  "Mortgage": "#60A5FA",
+  "Property Taxes": "#93C5FD",
+  "HOA Fees": "#2563EB",
+  "Home Insurance": "#1D4ED8",
+  "Repairs & Maintenance": "#3B82F6",
+  "Furniture": "#60A5FA",
+  "Appliances": "#93C5FD",
+
+  // Utilities — Violets
+  "Electricity": "#8B5CF6",
+  "Water": "#A78BFA",
   "Gas": "#7C3AED",
-  "Mobile Recharge": "#6D28D9",
-  "Internet": "#8B5CF6",
-  "Broadband": "#A78BFA",
+  "Internet": "#6D28D9",
   "Cable TV": "#C4B5FD",
-  "OTT Subscription": "#7C3AED",
-  "Shopping": "#EC4899", // Pink
-  "Clothes": "#F472B6",
-  "Shoes": "#F9A8D4",
-  "Accessories": "#DB2777",
-  "Electronics": "#C026D3", // Fuchsia
-  "Gadgets": "#E879F9",
-  "Home Items": "#F0ABFC",
-  "Healthcare": "#14B8A6", // Teal
-  "Doctor Fees": "#2DD4BF",
-  "Medicines": "#5EEAD4",
-  "Medical Tests": "#0D9488",
-  "Hospital Expenses": "#0F766E",
+  "Mobile Phone": "#8B5CF6",
+  "Trash Collection": "#A78BFA",
+
+  // Food — Ambers
+  "Groceries": "#F59E0B",
+  "Dining Out": "#FBBF24",
+  "Coffee": "#FCD34D",
+  "Takeout": "#D97706",
+  "Food Delivery": "#B45309",
+
+  // Transportation — Reds
+  "Fuel": "#EF4444",
+  "Public Transportation": "#F87171",
+  "Car Payment": "#FCA5A5",
+  "Car Insurance": "#DC2626",
+  "Maintenance & Repairs": "#B91C1C",
+  "Parking": "#EF4444",
+  "Tolls": "#F87171",
+  "Ride Sharing": "#FCA5A5",
+  "Vehicle Registration": "#DC2626",
+
+  // Health — Teals
   "Health Insurance": "#14B8A6",
-  "Education": "#6366F1", // Indigo
-  "Fees": "#818CF8",
-  "Courses": "#A5B4FC",
-  "Books": "#4F46E5",
-  "Stationery": "#4338CA",
-  "Entertainment": "#84CC16", // Lime
-  "Movies": "#A3E635",
-  "Games": "#BEF264",
-  "Events": "#65A30D",
-  "Hobbies": "#4D7C0F",
-  "Subscriptions": "#84CC16",
-  "Personal Care": "#F97316", // Orange
-  "Haircut": "#FB923C",
-  "Salon": "#FDBA74",
-  "Cosmetics": "#EA580C",
-  "Grooming": "#C2410C",
-  "Gym": "#F97316",
-  "Family": "#06B6D4", // Cyan
-  "Parents Support": "#22D3EE",
-  "Child Expenses": "#67E8F9",
-  "Financial": "#64748B", // Slate
-  "Loan EMI": "#94A3B8",
-  "Credit Card Bill Payment": "#CBD5E1",
-  "Interest Paid": "#475569",
-  "Bank Charges": "#334155",
-  "Late Fees": "#64748B",
-  "Penalties": "#94A3B8",
-  "Travel": "#F43F5E", // Rose
-  "Flight": "#FB7185",
-  "Train": "#FDA4AF",
-  "Bus": "#E11D48",
-  "Hotel": "#F43F5E",
-  "Vacation": "#FB7185",
-  "Gifts & Donations": "#D946EF", // Fuchsia
-  "Gifts Given": "#E879F9",
-  "Charity": "#F0ABFC",
-  "Religious Donation": "#C026D3",
-  "Insurance": "#10B981", // Emerald (shared with income but usually specific)
-  "Life Insurance Premium": "#059669",
-  "Health Insurance Premium": "#047857",
-  "Vehicle Insurance Premium": "#064E3B",
-  "Investments": "#0EA5E9", // Sky
-  "Mutual Fund Investment": "#38BDF8",
-  "Stock Investment": "#7DD3FC",
-  "Gold Investment": "#0284C7",
-  "Fixed Deposit": "#0369A1",
-  "Taxes": "#DC2626", // Red-orange
-  "Income Tax": "#EF4444",
-  "Professional Tax": "#F87171",
-  "Miscellaneous": "#9ca3af", // Gray
-  "Emergency Expense": "#6b7280",
-  "Other Expense": "#4b5563"
+  "Doctor Visits": "#2DD4BF",
+  "Dental": "#5EEAD4",
+  "Vision": "#0D9488",
+  "Medication": "#0F766E",
+  "Therapy": "#14B8A6",
+  "Gym Membership": "#2DD4BF",
+
+  // Personal & Lifestyle — Pinks
+  "Clothing": "#EC4899",
+  "Shoes": "#F472B6",
+  "Haircuts": "#F9A8D4",
+  "Cosmetics": "#DB2777",
+  "Subscriptions": "#BE185D",
+  "Hobbies": "#EC4899",
+  "Entertainment": "#F472B6",
+  "Events": "#F9A8D4",
+  "Travel": "#F43F5E",
+  "Vacations": "#FB7185",
+
+  // Financial — Slates
+  "Credit Card Payment": "#64748B",
+  "Loan Payment": "#94A3B8",
+  "Student Loan": "#CBD5E1",
+  "Bank Fees": "#475569",
+  "Interest Paid": "#334155",
+  "Investment Contributions": "#64748B",
+  "Retirement Contributions": "#94A3B8",
+
+  // Family & Kids — Cyans
+  "Childcare": "#06B6D4",
+  "School Fees": "#22D3EE",
+  "Supplies": "#67E8F9",
+  "Allowance": "#0891B2",
+  "Activities": "#0E7490",
+  "Babysitting": "#06B6D4",
+
+  // Insurance — Indigos
+  "Life Insurance": "#6366F1",
+  "Car Insurance Premium": "#818CF8",
+  "Home Insurance Premium": "#A5B4FC",
+  "Travel Insurance": "#4F46E5",
+  "Pet Insurance": "#4338CA",
+
+  // Taxes — Red-oranges
+  "Income Tax": "#DC2626",
+  "Self-Employment Tax": "#EF4444",
+  "Property Tax": "#F87171",
+  "Capital Gains Tax": "#B91C1C",
+
+  // Debt — Roses
+  "Personal Loan Payment": "#F43F5E",
+  "Payday Loan": "#FB7185",
+  "Buy-Now-Pay-Later": "#FDA4AF",
+  "Debt Settlement": "#E11D48",
+
+  // Giving — Fuchsias
+  "Donations": "#D946EF",
+  "Charity": "#E879F9",
+  "Religious Contributions": "#F0ABFC",
+  "Gifts Given": "#C026D3",
+
+  // Pets — Oranges
+  "Pet Food": "#F97316",
+  "Vet Visits": "#FB923C",
+  "Pet Grooming": "#FDBA74",
+  "Pet Supplies": "#EA580C",
+
+  // Miscellaneous — Grays
+  "Miscellaneous": "#9CA3AF"
 };
 
 function isIncome(category) {
@@ -652,11 +693,23 @@ function renderTransactions(listToRender) {
     item.className = `tx-item ${isInc ? 'income' : 'expense'}`;
     item.style.setProperty('--tx-status-color', color);
     let iconName = "shopping-bag";
-    if (cat.toLowerCase().includes("food") || cat.toLowerCase().includes("dining") || cat.toLowerCase().includes("restaurant")) iconName = "utensils";
-    if (cat.toLowerCase().includes("salary") || cat.toLowerCase().includes("income")) iconName = "wallet";
-    if (cat.toLowerCase().includes("transport") || cat.toLowerCase().includes("travel") || cat.toLowerCase().includes("taxi")) iconName = "car";
-    if (cat.toLowerCase().includes("bill") || cat.toLowerCase().includes("utility") || cat.toLowerCase().includes("mobile")) iconName = "zap";
-    if (cat.toLowerCase().includes("shopping") || cat.toLowerCase().includes("clothes")) iconName = "shopping-cart";
+    if (cat.toLowerCase().includes("grocer") || cat.toLowerCase().includes("dining") || cat.toLowerCase().includes("takeout") || cat.toLowerCase().includes("food")) iconName = "utensils";
+    if (cat.toLowerCase().includes("coffee")) iconName = "coffee";
+    if (cat.toLowerCase().includes("salary") || cat.toLowerCase().includes("income") || cat.toLowerCase().includes("wage") || cat.toLowerCase().includes("bonus") || cat.toLowerCase().includes("revenue")) iconName = "wallet";
+    if (cat.toLowerCase().includes("transport") || cat.toLowerCase().includes("travel") || cat.toLowerCase().includes("ride") || cat.toLowerCase().includes("fuel") || cat.toLowerCase().includes("car payment") || cat.toLowerCase().includes("parking")) iconName = "car";
+    if (cat.toLowerCase().includes("electric") || cat.toLowerCase().includes("water") || cat.toLowerCase().includes("gas") || cat.toLowerCase().includes("internet") || cat.toLowerCase().includes("mobile") || cat.toLowerCase().includes("cable")) iconName = "zap";
+    if (cat.toLowerCase().includes("cloth") || cat.toLowerCase().includes("shoes") || cat.toLowerCase().includes("shopping")) iconName = "shopping-cart";
+    if (cat.toLowerCase().includes("health") || cat.toLowerCase().includes("doctor") || cat.toLowerCase().includes("dental") || cat.toLowerCase().includes("medic") || cat.toLowerCase().includes("therapy") || cat.toLowerCase().includes("vision")) iconName = "heart-pulse";
+    if (cat.toLowerCase().includes("insurance") || cat.toLowerCase().includes("premium")) iconName = "shield";
+    if (cat.toLowerCase().includes("pet") || cat.toLowerCase().includes("vet")) iconName = "paw-print";
+    if (cat.toLowerCase().includes("loan") || cat.toLowerCase().includes("credit") || cat.toLowerCase().includes("bank") || cat.toLowerCase().includes("debt") || cat.toLowerCase().includes("interest paid")) iconName = "landmark";
+    if (cat.toLowerCase().includes("donat") || cat.toLowerCase().includes("charit") || cat.toLowerCase().includes("gift") || cat.toLowerCase().includes("religious")) iconName = "heart";
+    if (cat.toLowerCase().includes("tax")) iconName = "receipt";
+    if (cat.toLowerCase().includes("gym") || cat.toLowerCase().includes("membership")) iconName = "dumbbell";
+    if (cat.toLowerCase().includes("rent") || cat.toLowerCase().includes("mortgage") || cat.toLowerCase().includes("hoa") || cat.toLowerCase().includes("furniture") || cat.toLowerCase().includes("appliance")) iconName = "home";
+    if (cat.toLowerCase().includes("child") || cat.toLowerCase().includes("school") || cat.toLowerCase().includes("babysit") || cat.toLowerCase().includes("allowance")) iconName = "baby";
+    if (cat.toLowerCase().includes("vacation")) iconName = "plane";
+    if (cat.toLowerCase().includes("entertain") || cat.toLowerCase().includes("hobby") || cat.toLowerCase().includes("event") || cat.toLowerCase().includes("subscri")) iconName = "tv";
     item.innerHTML = `
       <div class="tx-icon"><i data-lucide="${iconName}" style="color: ${color}"></i></div>
       <div class="tx-details"><div class="tx-name">${cat}</div><div class="tx-date">${dateStr} • ${timeStr}</div></div>
