@@ -9,6 +9,18 @@
   --glass-border: rgba(211, 208, 188, 0.1);
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  overflow-x: hidden;
+  width: 100%;
+}
+
 body {
   font-family: 'DM Sans', sans-serif;
   background: var(--bg-deep);
@@ -946,6 +958,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 1rem;
 }
 
 .auth-card {
