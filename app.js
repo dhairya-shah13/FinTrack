@@ -978,7 +978,9 @@ function renderCharts(income, expense, catTotals) {
             label: function(context) {
               const label = context.label || '';
               const value = context.parsed || 0;
-              return ` ${label}: ₹${value.toLocaleString()}`;
+              const total = context.dataset.data.reduce((a, b) => a + b, 0);
+              const percentage = ((value / total) * 100).toFixed(1);
+              return ` ${label}: ₹${value.toLocaleString()} (${percentage}%)`;
             }
           }
         }
