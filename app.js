@@ -777,6 +777,11 @@ async function downloadReport(period) {
     head: [['Category', 'Date', 'Time', 'Amount', 'Note']],
     body: tableData,
     theme: 'grid',
+    styles: {
+      font: 'helvetica',
+      overflow: 'linebreak',
+      cellPadding: 3
+    },
     headStyles: {
       fillColor: [26, 64, 55],
       textColor: 255,
@@ -785,23 +790,21 @@ async function downloadReport(period) {
     },
     bodyStyles: {
       fontSize: 8,
-      textColor: [50, 50, 50],
-      cellPadding: 3
+      textColor: [50, 50, 50]
     },
     alternateRowStyles: {
       fillColor: [245, 245, 245]
     },
     columnStyles: {
-      0: { cellWidth: 32, overflow: 'linebreak' },
-      1: { cellWidth: 28, overflow: 'linebreak' },
-      2: { cellWidth: 20, overflow: 'linebreak' },
-      3: { halign: 'right', cellWidth: 25, overflow: 'linebreak' },
-      4: { cellWidth: 'auto', overflow: 'linebreak' }
+      0: { cellWidth: 32 },
+      1: { cellWidth: 28 },
+      2: { cellWidth: 20 },
+      3: { halign: 'center', cellWidth: 25 },
+      4: { cellWidth: 'auto', fontSize: 7 }
     },
     margin: { left: 14, right: 14 },
     tableWidth: 'auto',
     didParseCell: function(data) {
-      // Color amounts green/red
       if (data.column.index === 3 && data.section === 'body') {
         const val = data.cell.raw;
         if (val.startsWith('+')) {
