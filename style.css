@@ -1047,3 +1047,312 @@ body {
 .hidden {
   display: none !important;
 }
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+/* ---------- TABLET (≤ 768px) ---------- */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 1rem 1.5rem;
+  }
+
+  .nav-links {
+    gap: 1.5rem;
+  }
+
+  .nav-links a {
+    font-size: 0.85rem;
+  }
+
+  .main-content {
+    padding: 2rem 1.5rem;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .balance-amount {
+    font-size: 2.5rem;
+  }
+
+  .chart-container {
+    grid-template-columns: 1fr;
+  }
+
+  .actions-bar {
+    flex-wrap: wrap;
+  }
+
+  .category-pills {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 0.5rem;
+    flex-wrap: nowrap;
+  }
+
+  .pill {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .tx-filter-group {
+    width: 100%;
+  }
+
+  .time-filter-select {
+    flex: 1;
+  }
+
+  .report-dropdown-wrapper {
+    width: auto;
+  }
+
+  .tx-header-row {
+    display: none;
+  }
+
+  .tx-item {
+    grid-template-columns: 48px 1fr auto;
+    grid-template-rows: auto auto;
+    gap: 0.25rem 0.75rem;
+    padding: 1rem 1.25rem;
+  }
+
+  .tx-icon {
+    grid-row: 1 / 3;
+    width: 40px;
+    height: 40px;
+  }
+
+  .tx-details {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .tx-date-col {
+    grid-column: 2;
+    grid-row: 2;
+    text-align: left;
+    font-size: 0.75rem;
+  }
+
+  .tx-time-col {
+    grid-column: 2;
+    grid-row: 2;
+    text-align: left;
+    font-size: 0.75rem;
+    display: inline;
+  }
+
+  .tx-date-col::after {
+    content: " • ";
+  }
+
+  .tx-amount-group {
+    grid-column: 3;
+    grid-row: 1 / 3;
+    align-self: center;
+  }
+
+  .add-transaction-section {
+    width: 95%;
+    padding: 2rem;
+    border-radius: 1.5rem;
+  }
+
+  .modal-header h2 {
+    font-size: 1.4rem;
+  }
+
+  .split-row {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .split-row button {
+    width: 100%;
+  }
+
+  /* Hero Add Button */
+  .hero-add-btn {
+    padding: 0.85rem 1.5rem;
+    font-size: 0.95rem;
+  }
+}
+
+/* ---------- MOBILE (≤ 480px) ---------- */
+@media (max-width: 480px) {
+  .navbar {
+    padding: 0.75rem 1rem;
+  }
+
+  .logo {
+    font-size: 1.25rem;
+  }
+
+  .logo-sub {
+    font-size: 0.55rem;
+    letter-spacing: 1.5px;
+  }
+
+  .nav-links {
+    gap: 1rem;
+  }
+
+  .nav-links a {
+    font-size: 0.8rem;
+  }
+
+  .nav-actions {
+    gap: 0.75rem;
+  }
+
+  .nav-avatar {
+    width: 34px;
+    height: 34px;
+    font-size: 0.85rem;
+  }
+
+  .main-content {
+    padding: 1.25rem 1rem;
+  }
+
+  .balance-amount {
+    font-size: 2rem;
+  }
+
+  .balance-label {
+    font-size: 0.65rem;
+  }
+
+  .stat-card {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .stat-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .stat-info .stat-value {
+    font-size: 1.1rem;
+  }
+
+  .section-header {
+    gap: 0.75rem;
+  }
+
+  .tx-filter-group,
+  .report-dropdown-wrapper {
+    width: 100%;
+  }
+
+  .time-filter-select {
+    width: 100%;
+  }
+
+  .download-report-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .report-dropdown-menu {
+    width: 100%;
+    right: 0;
+    left: 0;
+  }
+
+  .tx-item {
+    grid-template-columns: 40px 1fr auto;
+    padding: 0.85rem 1rem;
+    border-radius: 1rem;
+  }
+
+  .tx-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .tx-name {
+    font-size: 0.85rem;
+  }
+
+  .tx-amount {
+    font-size: 0.9rem;
+  }
+
+  .tx-tag {
+    font-size: 0.6rem;
+    padding: 0.15rem 0.4rem;
+  }
+
+  .add-transaction-section {
+    width: 100%;
+    max-width: 100%;
+    padding: 1.5rem;
+    border-radius: 1.25rem 1.25rem 0 0;
+    top: auto;
+    bottom: 0;
+    transform: translate(-50%, 0);
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .modal-header h2 {
+    font-size: 1.25rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.25rem;
+  }
+
+  .field-label {
+    font-size: 0.65rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .fab {
+    width: 50px;
+    height: 50px;
+    bottom: 1.25rem;
+    right: 1.25rem;
+  }
+
+  .auth-card {
+    padding: 2rem 1.5rem;
+    border-radius: 1.5rem;
+  }
+
+  .auth-tab {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .category-pills {
+    gap: 0.5rem;
+  }
+
+  .pill {
+    padding: 0.45rem 1rem;
+    font-size: 0.8rem;
+  }
+
+  .search-input {
+    font-size: 0.9rem;
+    padding: 0.85rem 0.85rem 0.85rem 3rem;
+  }
+}
