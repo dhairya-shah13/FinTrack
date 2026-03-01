@@ -377,6 +377,43 @@ body {
   color: var(--text-main);
 }
 
+/* Filter & Report Group Layout */
+.tx-filter-group,
+.tx-report-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Download Report Button */
+.download-report-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.25rem;
+  border-radius: 0.75rem;
+  border: none;
+  background: linear-gradient(135deg, var(--accent-green), #e6a76a);
+  color: var(--bg-deep);
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(252, 198, 158, 0.2);
+  white-space: nowrap;
+}
+
+.download-report-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(252, 198, 158, 0.35);
+  filter: brightness(1.05);
+}
+
+.download-report-btn:active {
+  transform: translateY(0);
+}
+
 .transaction-list {
   display: flex;
   flex-direction: column;

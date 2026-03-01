@@ -584,6 +584,230 @@ function filterByTimePeriod(period) {
   renderTransactions(filtered);
 }
 
+function getFilteredByPeriod(period) {
+  if (period === "all") return [...transactions];
+
+  const now = new Date();
+  let startDate, endDate;
+
+  if (period === "this-week") {
+    startDate = new Date(now);
+    const day = startDate.getDay();
+    const diff = day === 0 ? 6 : day - 1;
+    startDate.setDate(startDate.getDate() - diff);
+    startDate.setHours(0, 0, 0, 0);
+    endDate = now;
+  } else if (period === "last-week") {
+    endDate = new Date(now);
+    const day = endDate.getDay();
+    const diff = day === 0 ? 6 : day - 1;
+    endDate.setDate(endDate.getDate() - diff);
+    endDate.setHours(0, 0, 0, 0);
+    startDate = new Date(endDate);
+    startDate.setDate(startDate.getDate() - 7);
+  } else if (period === "this-month") {
+    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+    endDate = now;
+  } else if (period === "last-month") {
+    startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    endDate = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
+  }
+
+  return transactions.filter(t => {
+    const txDate = new Date(t.created_at);
+    return txDate >= startDate && txDate <= endDate;
+  });
+}
+
+function getPeriodLabel(period) {
+  const labels = {
+    "all": "All Transactions",
+    "this-week": "This Week",
+    "last-week": "Last Week",
+    "this-month": "This Month",
+    "last-month": "Last Month"
+  };
+  return labels[period] || "Report";
+}
+
+async function downloadReport() {
+  const period = document.getElementById("reportPeriodFilter").value;
+  const filtered = getFilteredByPeriod(period);
+
+  if (filtered.length === 0) {
+    alert("No transactions found for the selected period.");
+    return;
+  }
+
+  // Calculate totals
+  let income = 0, expense = 0;
+  const catTotals = {};
+  filtered.forEach(t => {
+    const amt = Number(t.amount);
+    const cat = t.category || "Miscellaneous";
+    if (isIncome(cat)) { income += amt; } else { expense += amt; }
+    if (!catTotals[cat]) catTotals[cat] = 0;
+    catTotals[cat] += amt;
+  });
+  const balance = income - expense;
+
+  // Render pie chart to hidden canvas
+  const canvas = document.getElementById("reportPieChart");
+  canvas.style.display = "block";
+  canvas.width = 400;
+  canvas.height = 400;
+
+  const pieLabels = Object.keys(catTotals);
+  const pieData = Object.values(catTotals);
+  const pieColors = pieLabels.map(c => categoryColors[c] || "#D3D0BC");
+
+  const tempChart = new Chart(canvas, {
+    type: "doughnut",
+    data: {
+      labels: pieLabels,
+      datasets: [{
+        data: pieData,
+        backgroundColor: pieColors,
+        borderWidth: 1,
+        borderColor: "#ffffff"
+      }]
+    },
+    options: {
+      responsive: false,
+      animation: false,
+      plugins: {
+        legend: {
+          position: 'right',
+          labels: { color: '#333', font: { size: 10 } }
+        }
+      }
+    }
+  });
+
+  // Wait for chart to render
+  await new Promise(resolve => setTimeout(resolve, 500));
+
+  const chartImage = canvas.toDataURL("image/png");
+  tempChart.destroy();
+  canvas.style.display = "none";
+
+  // Generate PDF
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF('p', 'mm', 'a4');
+  const pageWidth = doc.internal.pageSize.getWidth();
+
+  // Title
+  doc.setFontSize(24);
+  doc.setTextColor(26, 64, 55); // Dark green
+  doc.text("FinTrack", 14, 20);
+
+  doc.setFontSize(14);
+  doc.setTextColor(100);
+  doc.text(`Transaction Report — ${getPeriodLabel(period)}`, 14, 30);
+
+  doc.setFontSize(10);
+  doc.setTextColor(150);
+  doc.text(`Generated on ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`, 14, 37);
+
+  // Summary boxes
+  doc.setDrawColor(220);
+  doc.setFillColor(240, 253, 244); // Light green bg
+  doc.roundedRect(14, 44, 55, 22, 3, 3, 'FD');
+  doc.setFontSize(9);
+  doc.setTextColor(100);
+  doc.text("INCOME", 18, 51);
+  doc.setFontSize(14);
+  doc.setTextColor(16, 185, 129); // Green
+  doc.text(`₹${income.toLocaleString()}`, 18, 60);
+
+  doc.setFillColor(254, 242, 242); // Light red bg
+  doc.roundedRect(75, 44, 55, 22, 3, 3, 'FD');
+  doc.setFontSize(9);
+  doc.setTextColor(100);
+  doc.text("EXPENSE", 79, 51);
+  doc.setFontSize(14);
+  doc.setTextColor(225, 29, 72); // Red
+  doc.text(`₹${expense.toLocaleString()}`, 79, 60);
+
+  doc.setFillColor(239, 246, 255); // Light blue bg
+  doc.roundedRect(136, 44, 60, 22, 3, 3, 'FD');
+  doc.setFontSize(9);
+  doc.setTextColor(100);
+  doc.text("BALANCE", 140, 51);
+  doc.setFontSize(14);
+  doc.setTextColor(balance >= 0 ? 16 : 225, balance >= 0 ? 185 : 29, balance >= 0 ? 129 : 72);
+  doc.text(`₹${balance.toLocaleString()}`, 140, 60);
+
+  // Pie chart
+  doc.addImage(chartImage, "PNG", 30, 72, 150, 100);
+
+  // Transaction table
+  const tableData = filtered
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+    .map(t => {
+      const d = new Date(t.created_at);
+      const cat = t.category || "Miscellaneous";
+      return [
+        cat,
+        d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+        d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+        `${isIncome(cat) ? '+' : '-'}₹${Number(t.amount).toLocaleString()}`,
+        t.note || (isIncome(cat) ? 'Income' : 'Expense')
+      ];
+    });
+
+  doc.autoTable({
+    startY: 178,
+    head: [['Category', 'Date', 'Time', 'Amount', 'Note']],
+    body: tableData,
+    theme: 'grid',
+    headStyles: {
+      fillColor: [26, 64, 55],
+      textColor: 255,
+      fontStyle: 'bold',
+      fontSize: 9
+    },
+    bodyStyles: {
+      fontSize: 8,
+      textColor: [50, 50, 50]
+    },
+    alternateRowStyles: {
+      fillColor: [245, 245, 245]
+    },
+    columnStyles: {
+      0: { cellWidth: 40 },
+      3: { halign: 'right', cellWidth: 30 },
+      4: { cellWidth: 45 }
+    },
+    margin: { left: 14, right: 14 },
+    didParseCell: function(data) {
+      // Color amounts green/red
+      if (data.column.index === 3 && data.section === 'body') {
+        const val = data.cell.raw;
+        if (val.startsWith('+')) {
+          data.cell.styles.textColor = [16, 185, 129];
+        } else {
+          data.cell.styles.textColor = [225, 29, 72];
+        }
+        data.cell.styles.fontStyle = 'bold';
+      }
+    }
+  });
+
+  // Footer
+  const pageCount = doc.internal.getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i);
+    doc.setFontSize(8);
+    doc.setTextColor(180);
+    doc.text(`FinTrack Report • Page ${i} of ${pageCount}`, pageWidth / 2, doc.internal.pageSize.getHeight() - 8, { align: 'center' });
+  }
+
+  // Save
+  const periodSlug = period.replace('-', '_');
+  doc.save(`FinTrack_Report_${periodSlug}.pdf`);
+}
+
 async function addSplitTransaction() {
   const amountVal = document.getElementById("amount").value;
   const category = document.getElementById("category").value;
