@@ -630,8 +630,24 @@ function getPeriodLabel(period) {
   return labels[period] || "Report";
 }
 
-async function downloadReport() {
-  const period = document.getElementById("timePeriodFilter").value;
+function toggleReportMenu() {
+  const menu = document.getElementById("reportMenu");
+  menu.style.display = menu.style.display === "none" ? "block" : "none";
+}
+
+// Close menu on outside click
+document.addEventListener("click", function(e) {
+  const wrapper = document.querySelector(".report-dropdown-wrapper");
+  const menu = document.getElementById("reportMenu");
+  if (menu && wrapper && !wrapper.contains(e.target)) {
+    menu.style.display = "none";
+  }
+});
+
+async function downloadReport(period) {
+  // Close the menu
+  document.getElementById("reportMenu").style.display = "none";
+
   const filtered = getFilteredByPeriod(period);
 
   if (filtered.length === 0) {
@@ -776,10 +792,10 @@ async function downloadReport() {
       fillColor: [245, 245, 245]
     },
     columnStyles: {
-      0: { cellWidth: 35 },
-      1: { cellWidth: 30 },
-      2: { cellWidth: 22 },
-      3: { halign: 'right', cellWidth: 28 },
+      0: { cellWidth: 32, overflow: 'linebreak' },
+      1: { cellWidth: 28, overflow: 'linebreak' },
+      2: { cellWidth: 20, overflow: 'linebreak' },
+      3: { halign: 'right', cellWidth: 25, overflow: 'linebreak' },
       4: { cellWidth: 'auto', overflow: 'linebreak' }
     },
     margin: { left: 14, right: 14 },

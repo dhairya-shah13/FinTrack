@@ -410,8 +410,36 @@ body {
   filter: brightness(1.05);
 }
 
-.download-report-btn:active {
-  transform: translateY(0);
+/* Report Dropdown */
+.report-dropdown-wrapper {
+  position: relative;
+}
+
+.report-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--glass-border);
+  border-radius: 0.75rem;
+  padding: 0.5rem 0;
+  min-width: 180px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  z-index: 100;
+}
+
+.report-menu-item {
+  padding: 0.65rem 1.25rem;
+  font-size: 0.85rem;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: 0.2s;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.report-menu-item:hover {
+  background: rgba(252, 198, 158, 0.1);
+  color: var(--accent-warm);
 }
 
 .transaction-list {
