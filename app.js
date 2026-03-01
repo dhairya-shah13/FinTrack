@@ -780,7 +780,7 @@ async function downloadReport() {
       1: { cellWidth: 30 },
       2: { cellWidth: 22 },
       3: { halign: 'right', cellWidth: 28 },
-      4: { cellWidth: 'auto' }
+      4: { cellWidth: 'auto', overflow: 'linebreak' }
     },
     margin: { left: 14, right: 14 },
     tableWidth: 'auto',
