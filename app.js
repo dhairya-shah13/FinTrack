@@ -877,9 +877,38 @@ async function addSplitTransaction() {
 /* ---------- PAGE SWITCH ---------- */
 function showPage(page) {
   document.querySelectorAll("section").forEach(s => s.style.display = "none");
-  document.getElementById(page).style.display = "block";
+  const target = document.getElementById(page);
+  if (target) target.style.display = "block";
   document.querySelectorAll(".nav-links a").forEach(a => a.classList.remove("active"));
   if (event && event.target) event.target.classList.add("active");
+
+  if (page === 'categories') {
+    renderCategories();
+  }
+}
+
+function renderCategories() {
+  const container = document.getElementById("categoriesList");
+  if (!container) return;
+  container.innerHTML = "";
+
+  // Sort categories alphabetically
+  const sortedCategories = Object.keys(categoryColors).sort();
+
+  sortedCategories.forEach(cat => {
+    const color = categoryColors[cat];
+    const type = isIncome(cat) ? "Income" : "Expense";
+    const card = document.createElement("div");
+    card.className = "category-card";
+    card.innerHTML = `
+      <div class="category-dot" style="background: ${color}"></div>
+      <div class="category-info">
+        <div class="category-name">${cat}</div>
+        <div class="category-type">${type}</div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
 }
 
 /* ---------- CALCULATIONS ---------- */

@@ -58,6 +58,7 @@
     <div class="nav-links">
       <a class="active" onclick="showPage('dashboard')">Dashboard</a>
       <a onclick="showPage('transactions')">Transactions</a>
+      <a onclick="showPage('categories')">Categories</a>
     </div>
     <div class="nav-actions">
       <div class="nav-avatar" onclick="showPage('profile')"></div>
@@ -105,6 +106,16 @@
       <div class="chart-container">
         <div class="chart-box"><canvas id="pieChart"></canvas></div>
         <div class="chart-box"><canvas id="barChart"></canvas></div>
+      </div>
+    </section>
+
+    <!-- CATEGORIES PAGE -->
+    <section id="categories" style="display:none;">
+      <div class="section-header">
+        <h2 style="margin: 0; color: var(--accent-green);">Expense & Income Categories</h2>
+      </div>
+      <div id="categoriesList" class="categories-grid">
+        <!-- Rendered via JS -->
       </div>
     </section>
 
