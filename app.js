@@ -542,6 +542,48 @@ function filterTransactions(query) {
   renderTransactions(filtered);
 }
 
+function filterByTimePeriod(period) {
+  if (period === "all") {
+    renderTransactions(transactions);
+    return;
+  }
+
+  const now = new Date();
+  let startDate, endDate;
+
+  if (period === "this-week") {
+    // Start of this week (Monday)
+    startDate = new Date(now);
+    const day = startDate.getDay();
+    const diff = day === 0 ? 6 : day - 1; // Monday = 0 offset
+    startDate.setDate(startDate.getDate() - diff);
+    startDate.setHours(0, 0, 0, 0);
+    endDate = now;
+  } else if (period === "last-week") {
+    // Start of last week (Monday) to end of last week (Sunday)
+    endDate = new Date(now);
+    const day = endDate.getDay();
+    const diff = day === 0 ? 6 : day - 1;
+    endDate.setDate(endDate.getDate() - diff);
+    endDate.setHours(0, 0, 0, 0);
+    startDate = new Date(endDate);
+    startDate.setDate(startDate.getDate() - 7);
+  } else if (period === "this-month") {
+    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+    endDate = now;
+  } else if (period === "last-month") {
+    startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    endDate = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
+  }
+
+  const filtered = transactions.filter(t => {
+    const txDate = new Date(t.created_at);
+    return txDate >= startDate && txDate <= endDate;
+  });
+
+  renderTransactions(filtered);
+}
+
 async function addSplitTransaction() {
   const amountVal = document.getElementById("amount").value;
   const category = document.getElementById("category").value;
