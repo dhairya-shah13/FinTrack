@@ -1,206 +1,39 @@
-lucide.createIcons();
-
-/* ---------- CHOICES.JS INITIALIZATION ---------- */
+/* ========== CHOICES.JS INITIALIZATION ========== */
 document.addEventListener('DOMContentLoaded', function () {
   const element = document.getElementById('category');
-  const choices = new Choices(element, {
-    searchEnabled: true,
-    itemSelectText: '',
-    shouldSort: false,
-    searchPlaceholderValue: 'Search categories...',
-  });
+  if (element) {
+    const choices = new Choices(element, {
+      searchEnabled: true,
+      itemSelectText: '',
+      shouldSort: false,
+      searchPlaceholderValue: 'Search categories...',
+    });
+    element.addEventListener('change', onCategoryChange);
+    onCategoryChange();
+  }
 
-  // Choices.js hides the original select, so we listen to its forwarded change event
-  element.addEventListener('change', onCategoryChange);
-
-  // Trigger once to set initial state
-  onCategoryChange();
+  // Initialize lucide icons
+  if (typeof lucide !== 'undefined') {
+    lucide.createIcons();
+  }
 });
 
-/* ---------- FIREBASE INITIALIZATION ---------- */
-const firebaseConfig = {
-  apiKey: "AIzaSyAbAxOFts_ixYNIuSLOvGDEne_JZlkNlV4",
-  authDomain: "fintrack-e0c62.firebaseapp.com",
-  projectId: "fintrack-e0c62",
-  storageBucket: "fintrack-e0c62.firebasestorage.app",
-  messagingSenderId: "1012328637288",
-  appId: "1:1012328637288:web:cc76134963fae0be4eecdd",
-  measurementId: "G-9XS4GQ23Y5"
-};
-
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
-
+/* ========== GLOBAL STATE ========== */
 let transactions = [];
-let currentUser = null;
 
-/* ---------- AUTH LOGIC ---------- */
-async function checkUser() {
-  const user = auth.currentUser;
-  if (user) {
-    currentUser = user;
-    document.getElementById("auth-overlay").classList.add("hidden");
-    fetchTransactions();
-    updateProfileDisplay();
-  } else {
-    document.getElementById("auth-overlay").classList.remove("hidden");
+/* ========== PAGE INIT (called by shared.js onAuthStateChanged) ========== */
+function onUserReady(user) {
+  fetchTransactions();
+  updateProfileDisplay();
+
+  // Auto-render categories if on categories page
+  const categoriesSection = document.getElementById('categories');
+  if (categoriesSection) {
+    renderCategories();
   }
 }
 
-function switchAuthMode(mode) {
-  const loginForm = document.getElementById("login-form");
-  const signupForm = document.getElementById("signup-form");
-  const errorDiv = document.getElementById("auth-error");
-
-  errorDiv.innerText = "";
-  errorDiv.style.color = "var(--accent-red)"; // Reset to red
-  if (mode === 'login') {
-    loginForm.classList.remove("hidden");
-    signupForm.classList.add("hidden");
-  } else {
-    loginForm.classList.add("hidden");
-    signupForm.classList.remove("hidden");
-  }
-}
-
-async function handleLogin() {
-  const usernameField = document.getElementById("login-username");
-  const passwordField = document.getElementById("login-password");
-  let username = usernameField.value.trim();
-  const password = passwordField.value;
-  const errorDiv = document.getElementById("auth-error");
-
-  // reset any previous message
-  errorDiv.innerText = "";
-  errorDiv.style.color = "var(--accent-red)";
-
-  if (!username || !password) {
-    errorDiv.innerText = "Please enter email/username and password.";
-    return;
-  }
-
-  try {
-    // Check if the user entered a username instead of email
-    let loginEmail = username;
-
-    // If input doesn't look like an email, look up the email from profiles
-    if (!username.includes('@')) {
-      const snapshot = await db.collection('profiles')
-        .where('username_lowercase', '==', username.toLowerCase())
-        .limit(1)
-        .get();
-
-      if (!snapshot.empty) {
-        loginEmail = snapshot.docs[0].data().email;
-      }
-      // If not found, try using the input as-is (will fail at auth if wrong)
-    }
-
-    console.log("Attempting sign-in with email/identifier:", loginEmail);
-
-    await auth.signInWithEmailAndPassword(loginEmail, password);
-
-    // clear fields after successful login
-    usernameField.value = "";
-    passwordField.value = "";
-  } catch (err) {
-    console.error('login failed', err);
-    if (err.code === 'auth/network-request-failed') {
-      errorDiv.innerText = "Network Error: Could not reach Firebase. Check your internet connection.";
-    } else if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
-      errorDiv.innerText = "Invalid email/username or password.";
-    } else if (err.code === 'auth/invalid-email') {
-      errorDiv.innerText = "Please enter a valid email address.";
-    } else {
-      errorDiv.innerText = err.message || "Invalid credentials.";
-    }
-  }
-}
-
-async function handleSignup() {
-  const usernameField = document.getElementById("signup-username");
-  const emailField = document.getElementById("signup-email");
-  const passwordField = document.getElementById("signup-password");
-
-  const username = usernameField.value.trim();
-  const email = emailField.value.trim();
-  const password = passwordField.value;
-  const errorDiv = document.getElementById("auth-error");
-
-  errorDiv.innerText = "Processing...";
-  errorDiv.style.color = "var(--text-muted)";
-
-  if (!username || !email || !password) {
-    errorDiv.style.color = "var(--accent-red)";
-    errorDiv.innerText = "All fields are required.";
-    return;
-  }
-
-  try {
-    console.log("Starting signup check for username:", username);
-
-    // Step 1: Check if username exists in profiles
-    const snapshot = await db.collection('profiles')
-      .where('username_lowercase', '==', username.toLowerCase())
-      .limit(1)
-      .get();
-
-    if (!snapshot.empty) {
-      errorDiv.style.color = "var(--accent-red)";
-      errorDiv.innerText = "Username already taken. Please choose another.";
-      return;
-    }
-
-    console.log("Proceeding to auth.createUser with email:", email);
-
-    // Step 2: Firebase signUp
-    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-    const user = userCredential.user;
-
-    // Step 3: Create profile document in Firestore
-    await db.collection('profiles').doc(user.uid).set({
-      username: username,
-      username_lowercase: username.toLowerCase(),
-      email: email,
-      created_at: firebase.firestore.FieldValue.serverTimestamp()
-    });
-
-    console.log("Signup success for user:", user.uid);
-    errorDiv.style.color = "var(--accent-green)";
-    errorDiv.innerText = "Signup successful! You can now log in.";
-
-    // Clear fields
-    usernameField.value = "";
-    emailField.value = "";
-    passwordField.value = "";
-
-    // Sign out so user can log in manually
-    await auth.signOut();
-    setTimeout(() => switchAuthMode('login'), 2000);
-  } catch (err) {
-    console.error("Caught error in handleSignup:", err);
-    errorDiv.style.color = "var(--accent-red)";
-    if (err.code === 'auth/network-request-failed') {
-      errorDiv.innerText = "Network Error: Could not reach Firebase. Check your internet connection.";
-    } else if (err.code === 'auth/email-already-in-use') {
-      errorDiv.innerText = "This email is already registered. Please log in instead.";
-    } else if (err.code === 'auth/weak-password') {
-      errorDiv.innerText = "Password should be at least 6 characters.";
-    } else if (err.code === 'auth/invalid-email') {
-      errorDiv.innerText = "Please enter a valid email address.";
-    } else {
-      errorDiv.innerText = err.message || "An unexpected error occurred.";
-    }
-  }
-}
-
-async function handleLogout() {
-  await auth.signOut();
-  window.location.reload();
-}
-
-/* ---------- API INTERACTIONS (FIRESTORE) ---------- */
+/* ========== API INTERACTIONS (FIRESTORE) ========== */
 async function fetchTransactions() {
   try {
     const snapshot = await db.collection('transactions')
@@ -211,14 +44,12 @@ async function fetchTransactions() {
     transactions = snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
-      // Convert Firestore Timestamp to ISO string for compatibility
       created_at: doc.data().created_at ? doc.data().created_at.toDate().toISOString() : new Date().toISOString()
     }));
 
     calculate();
   } catch (err) {
     console.error("Error loading transactions:", err);
-    // If index not ready yet, show a helpful message
     if (err.code === 'failed-precondition') {
       console.warn("Firestore index is being built. This may take a few minutes.");
     }
@@ -260,228 +91,7 @@ async function addTransaction() {
   }
 }
 
-async function updateProfileDisplay() {
-  if (!currentUser) return;
-  try {
-    const doc = await db.collection('profiles').doc(currentUser.uid).get();
-
-    if (doc.exists) {
-      const data = doc.data();
-      document.getElementById("user-welcome").innerText = `Welcome back, ${data.username}👋`;
-      document.getElementById("profile-name").innerText = `Username: ${data.username}`;
-      document.getElementById("profile-email").innerText = `Email: ${data.email}`;
-
-      const initial = data.username ? data.username.charAt(0).toUpperCase() : '?';
-      const avatar = document.querySelector(".nav-avatar");
-      if (avatar) avatar.innerText = initial;
-    }
-  } catch (err) {
-    console.error("Error updating profile display:", err);
-  }
-}
-
-// Initialize Auth Listener
-auth.onAuthStateChanged((user) => {
-  if (user) {
-    currentUser = user;
-    document.getElementById("auth-overlay").classList.add("hidden");
-    fetchTransactions();
-    updateProfileDisplay();
-  } else {
-    currentUser = null;
-    document.getElementById("auth-overlay").classList.remove("hidden");
-  }
-});
-
-/* ---------- CATEGORY CONFIG ---------- */
-const incomeCategories = [
-  // Employment Income
-  "Salary", "Hourly Wages", "Overtime Pay", "Bonuses", "Commission",
-  "Tips", "Freelance Income", "Contract Work", "Consulting Income",
-  // Business Income
-  "Business Revenue", "Side Hustle Income", "Online Sales", "Service Income",
-  "Affiliate Income", "Ad Revenue", "Subscription Revenue",
-  // Investment Income
-  "Dividends", "Interest Income", "Capital Gains", "Rental Income",
-  "REIT Distributions", "Crypto Gains", "Bond Interest",
-  // Government & Benefits
-  "Unemployment Benefits", "Social Security", "Disability Benefits",
-  "Child Support Received", "Pension", "Stimulus Payments", "Tax Refund",
-  // Gifts & Transfers
-  "Gift Received", "Inheritance", "Family Support",
-  "Cashback Rewards", "Refunds/Reimbursements",
-  // Other
-  "Other Income"
-];
-
-const categoryColors = {
-  // ── INCOME ──────────────────────────────────
-
-  // Employment Income — Greens
-  "Salary": "#10B981",
-  "Hourly Wages": "#34D399",
-  "Overtime Pay": "#6EE7B7",
-  "Bonuses": "#059669",
-  "Commission": "#047857",
-  "Tips": "#A7F3D0",
-  "Freelance Income": "#10B981",
-  "Contract Work": "#34D399",
-  "Consulting Income": "#059669",
-
-  // Business Income — Teals
-  "Business Revenue": "#14B8A6",
-  "Side Hustle Income": "#2DD4BF",
-  "Online Sales": "#5EEAD4",
-  "Service Income": "#0D9488",
-  "Affiliate Income": "#0F766E",
-  "Ad Revenue": "#14B8A6",
-  "Subscription Revenue": "#2DD4BF",
-
-  // Investment Income — Cyans
-  "Dividends": "#06B6D4",
-  "Interest Income": "#22D3EE",
-  "Capital Gains": "#67E8F9",
-  "Rental Income": "#0891B2",
-  "REIT Distributions": "#0E7490",
-  "Crypto Gains": "#06B6D4",
-  "Bond Interest": "#22D3EE",
-
-  // Government & Benefits — Emeralds
-  "Unemployment Benefits": "#34D399",
-  "Social Security": "#6EE7B7",
-  "Disability Benefits": "#A7F3D0",
-  "Child Support Received": "#10B981",
-  "Pension": "#059669",
-  "Stimulus Payments": "#047857",
-  "Tax Refund": "#34D399",
-
-  // Gifts & Transfers — Limes
-  "Gift Received": "#84CC16",
-  "Inheritance": "#A3E635",
-  "Family Support": "#BEF264",
-  "Cashback Rewards": "#65A30D",
-  "Refunds/Reimbursements": "#4D7C0F",
-
-  // Other Income
-  "Other Income": "#047857",
-
-  // ── EXPENSES ────────────────────────────────
-
-  // Housing — Blues
-  "Rent": "#3B82F6",
-  "Mortgage": "#60A5FA",
-  "Property Taxes": "#93C5FD",
-  "HOA Fees": "#2563EB",
-  "Home Insurance": "#1D4ED8",
-  "Repairs & Maintenance": "#3B82F6",
-  "Furniture": "#60A5FA",
-  "Appliances": "#93C5FD",
-
-  // Utilities — Violets
-  "Electricity": "#8B5CF6",
-  "Water": "#A78BFA",
-  "Gas": "#7C3AED",
-  "Internet": "#6D28D9",
-  "Cable TV": "#C4B5FD",
-  "Mobile Phone": "#8B5CF6",
-  "Trash Collection": "#A78BFA",
-
-  // Food — Ambers
-  "Groceries": "#F59E0B",
-  "Dining Out": "#FBBF24",
-  "Coffee": "#FCD34D",
-  "Takeout": "#D97706",
-  "Food Delivery": "#B45309",
-
-  // Transportation — Reds
-  "Fuel": "#EF4444",
-  "Public Transportation": "#F87171",
-  "Car Payment": "#FCA5A5",
-  "Car Insurance": "#DC2626",
-  "Maintenance & Repairs": "#B91C1C",
-  "Parking": "#EF4444",
-  "Tolls": "#F87171",
-  "Ride Sharing": "#FCA5A5",
-  "Vehicle Registration": "#DC2626",
-
-  // Health — Teals
-  "Health Insurance": "#14B8A6",
-  "Doctor Visits": "#2DD4BF",
-  "Dental": "#5EEAD4",
-  "Vision": "#0D9488",
-  "Medication": "#0F766E",
-  "Therapy": "#14B8A6",
-  "Gym Membership": "#2DD4BF",
-
-  // Personal & Lifestyle — Pinks
-  "Clothing": "#EC4899",
-  "Shoes": "#F472B6",
-  "Haircuts": "#F9A8D4",
-  "Cosmetics": "#DB2777",
-  "Subscriptions": "#BE185D",
-  "Hobbies": "#EC4899",
-  "Entertainment": "#F472B6",
-  "Events": "#F9A8D4",
-  "Travel": "#F43F5E",
-  "Vacations": "#FB7185",
-
-  // Financial — Slates
-  "Credit Card Payment": "#64748B",
-  "Loan Payment": "#94A3B8",
-  "Student Loan": "#CBD5E1",
-  "Bank Fees": "#475569",
-  "Interest Paid": "#334155",
-  "Investment Contributions": "#64748B",
-  "Retirement Contributions": "#94A3B8",
-
-  // Family & Kids — Cyans
-  "Childcare": "#06B6D4",
-  "School Fees": "#22D3EE",
-  "Supplies": "#67E8F9",
-  "Allowance": "#0891B2",
-  "Activities": "#0E7490",
-  "Babysitting": "#06B6D4",
-
-  // Insurance — Indigos
-  "Life Insurance": "#6366F1",
-  "Car Insurance Premium": "#818CF8",
-  "Home Insurance Premium": "#A5B4FC",
-  "Travel Insurance": "#4F46E5",
-  "Pet Insurance": "#4338CA",
-
-  // Taxes — Red-oranges
-  "Income Tax": "#DC2626",
-  "Self-Employment Tax": "#EF4444",
-  "Property Tax": "#F87171",
-  "Capital Gains Tax": "#B91C1C",
-
-  // Debt — Roses
-  "Personal Loan Payment": "#F43F5E",
-  "Payday Loan": "#FB7185",
-  "Buy-Now-Pay-Later": "#FDA4AF",
-  "Debt Settlement": "#E11D48",
-
-  // Giving — Fuchsias
-  "Donations": "#D946EF",
-  "Charity": "#E879F9",
-  "Religious Contributions": "#F0ABFC",
-  "Gifts Given": "#C026D3",
-
-  // Pets — Oranges
-  "Pet Food": "#F97316",
-  "Vet Visits": "#FB923C",
-  "Pet Grooming": "#FDBA74",
-  "Pet Supplies": "#EA580C",
-
-  // Miscellaneous — Grays
-  "Miscellaneous": "#9CA3AF"
-};
-
-function isIncome(category) {
-  return incomeCategories.includes(category);
-}
-
-/* ---------- UI LOGIC ---------- */
+/* ========== UI LOGIC ========== */
 function toggleAddTxSection() {
   const section = document.getElementById("addTxSection");
   const backdrop = document.getElementById("modalBackdrop");
@@ -498,27 +108,33 @@ function toggleAddTxSection() {
       backdrop.style.display = "block";
       if (fabIcon) fabIcon.setAttribute("data-lucide", "x");
     }
-    lucide.createIcons();
+    if (typeof lucide !== 'undefined') lucide.createIcons();
   }
 }
 
 function onCategoryChange() {
-  const cat = document.getElementById("category").value;
+  const catEl = document.getElementById("category");
+  if (!catEl) return;
+  const cat = catEl.value;
   const noteInput = document.getElementById("note");
   const splitBtn = document.getElementById("splitBtn");
   const splitRow = document.getElementById("splitRow");
 
-  if (cat === "Miscellaneous" || cat === "Other") {
-    noteInput.placeholder = cat === "Miscellaneous" ? "Describe the expense..." : "Describe the income...";
-  } else {
-    noteInput.placeholder = "Add a brief note...";
+  if (noteInput) {
+    if (cat === "Miscellaneous" || cat === "Other") {
+      noteInput.placeholder = cat === "Miscellaneous" ? "Describe the expense..." : "Describe the income...";
+    } else {
+      noteInput.placeholder = "Add a brief note...";
+    }
   }
 
-  if (!isIncome(cat)) {
-    splitBtn.classList.add("visible");
-  } else {
-    splitBtn.classList.remove("visible");
-    splitRow.classList.remove("visible");
+  if (splitBtn) {
+    if (!isIncome(cat)) {
+      splitBtn.classList.add("visible");
+    } else {
+      splitBtn.classList.remove("visible");
+      if (splitRow) splitRow.classList.remove("visible");
+    }
   }
 }
 
@@ -552,15 +168,13 @@ function filterByTimePeriod(period) {
   let startDate, endDate;
 
   if (period === "this-week") {
-    // Start of this week (Monday)
     startDate = new Date(now);
     const day = startDate.getDay();
-    const diff = day === 0 ? 6 : day - 1; // Monday = 0 offset
+    const diff = day === 0 ? 6 : day - 1;
     startDate.setDate(startDate.getDate() - diff);
     startDate.setHours(0, 0, 0, 0);
     endDate = now;
   } else if (period === "last-week") {
-    // Start of last week (Monday) to end of last week (Sunday)
     endDate = new Date(now);
     const day = endDate.getDay();
     const diff = day === 0 ? 6 : day - 1;
@@ -632,7 +246,7 @@ function getPeriodLabel(period) {
 
 function toggleReportMenu() {
   const menu = document.getElementById("reportMenu");
-  menu.style.display = menu.style.display === "none" ? "block" : "none";
+  if (menu) menu.style.display = menu.style.display === "none" ? "block" : "none";
 }
 
 // Close menu on outside click
@@ -645,8 +259,8 @@ document.addEventListener("click", function(e) {
 });
 
 async function downloadReport(period) {
-  // Close the menu
-  document.getElementById("reportMenu").style.display = "none";
+  const menu = document.getElementById("reportMenu");
+  if (menu) menu.style.display = "none";
 
   const filtered = getFilteredByPeriod(period);
 
@@ -655,7 +269,6 @@ async function downloadReport(period) {
     return;
   }
 
-  // Calculate totals
   let income = 0, expense = 0;
   const catTotals = {};
   filtered.forEach(t => {
@@ -667,8 +280,8 @@ async function downloadReport(period) {
   });
   const balance = income - expense;
 
-  // Render pie chart to hidden canvas
   const canvas = document.getElementById("reportPieChart");
+  if (!canvas) { alert("Report generation not available on this page."); return; }
   canvas.style.display = "block";
   canvas.width = 400;
   canvas.height = 400;
@@ -700,21 +313,18 @@ async function downloadReport(period) {
     }
   });
 
-  // Wait for chart to render
   await new Promise(resolve => setTimeout(resolve, 500));
 
   const chartImage = canvas.toDataURL("image/png");
   tempChart.destroy();
   canvas.style.display = "none";
 
-  // Generate PDF
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF('p', 'mm', 'a4');
   const pageWidth = doc.internal.pageSize.getWidth();
 
-  // Title
   doc.setFontSize(24);
-  doc.setTextColor(26, 64, 55); // Dark green
+  doc.setTextColor(26, 64, 55);
   doc.text("FinTrack", 14, 20);
 
   doc.setFontSize(14);
@@ -725,27 +335,26 @@ async function downloadReport(period) {
   doc.setTextColor(150);
   doc.text(`Generated on ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`, 14, 37);
 
-  // Summary boxes
   doc.setDrawColor(220);
-  doc.setFillColor(240, 253, 244); // Light green bg
+  doc.setFillColor(240, 253, 244);
   doc.roundedRect(14, 44, 55, 22, 3, 3, 'FD');
   doc.setFontSize(9);
   doc.setTextColor(100);
   doc.text("INCOME", 18, 51);
   doc.setFontSize(14);
-  doc.setTextColor(16, 185, 129); // Green
+  doc.setTextColor(16, 185, 129);
   doc.text(`₹${income.toLocaleString()}`, 18, 60);
 
-  doc.setFillColor(254, 242, 242); // Light red bg
+  doc.setFillColor(254, 242, 242);
   doc.roundedRect(75, 44, 55, 22, 3, 3, 'FD');
   doc.setFontSize(9);
   doc.setTextColor(100);
   doc.text("EXPENSE", 79, 51);
   doc.setFontSize(14);
-  doc.setTextColor(225, 29, 72); // Red
+  doc.setTextColor(225, 29, 72);
   doc.text(`₹${expense.toLocaleString()}`, 79, 60);
 
-  doc.setFillColor(239, 246, 255); // Light blue bg
+  doc.setFillColor(239, 246, 255);
   doc.roundedRect(136, 44, 60, 22, 3, 3, 'FD');
   doc.setFontSize(9);
   doc.setTextColor(100);
@@ -754,10 +363,8 @@ async function downloadReport(period) {
   doc.setTextColor(balance >= 0 ? 16 : 225, balance >= 0 ? 185 : 29, balance >= 0 ? 129 : 72);
   doc.text(`₹${balance.toLocaleString()}`, 140, 60);
 
-  // Pie chart
   doc.addImage(chartImage, "PNG", 30, 72, 150, 100);
 
-  // Transaction table
   const tableData = filtered
     .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
     .map(t => {
@@ -817,7 +424,6 @@ async function downloadReport(period) {
     }
   });
 
-  // Footer
   const pageCount = doc.internal.getNumberOfPages();
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
@@ -826,7 +432,6 @@ async function downloadReport(period) {
     doc.text(`FinTrack Report • Page ${i} of ${pageCount}`, pageWidth / 2, doc.internal.pageSize.getHeight() - 8, { align: 'center' });
   }
 
-  // Save
   const periodSlug = period.replace('-', '_');
   doc.save(`FinTrack_Report_${periodSlug}.pdf`);
 }
@@ -874,19 +479,7 @@ async function addSplitTransaction() {
   }
 }
 
-/* ---------- PAGE SWITCH ---------- */
-function showPage(page) {
-  document.querySelectorAll("section").forEach(s => s.style.display = "none");
-  const target = document.getElementById(page);
-  if (target) target.style.display = "block";
-  document.querySelectorAll(".nav-links a").forEach(a => a.classList.remove("active"));
-  if (event && event.target) event.target.classList.add("active");
-
-  if (page === 'categories') {
-    renderCategories();
-  }
-}
-
+/* ========== CATEGORIES RENDER ========== */
 function renderCategories() {
   const incomeContainer = document.getElementById("incomeCategoriesList");
   const expenseContainer = document.getElementById("expenseCategoriesList");
@@ -895,7 +488,6 @@ function renderCategories() {
   incomeContainer.innerHTML = "";
   expenseContainer.innerHTML = "";
 
-  // Sort categories alphabetically
   const sortedCategories = Object.keys(categoryColors).sort();
 
   sortedCategories.forEach(cat => {
@@ -917,7 +509,7 @@ function renderCategories() {
   });
 }
 
-/* ---------- CALCULATIONS ---------- */
+/* ========== CALCULATIONS ========== */
 function calculate() {
   let income = 0, expense = 0;
   const catTotals = {};
@@ -944,16 +536,20 @@ function calculate() {
   renderTransactions(transactions);
 }
 
-/* ---------- CHARTS ---------- */
+/* ========== CHARTS ========== */
 let pieChart, barChart;
 function renderCharts(income, expense, catTotals) {
+  const pieCanvas = document.getElementById("pieChart");
+  const barCanvas = document.getElementById("barChart");
+  if (!pieCanvas || !barCanvas) return; // Skip if not on dashboard page
+
   if (pieChart) pieChart.destroy();
   if (barChart) barChart.destroy();
   const pieLabels = Object.keys(catTotals);
   const pieData = Object.values(catTotals);
   const pieColors = pieLabels.map(c => categoryColors[c] || "#D3D0BC");
 
-  pieChart = new Chart(document.getElementById("pieChart"), {
+  pieChart = new Chart(pieCanvas, {
     type: "doughnut",
     data: {
       labels: pieLabels.length ? pieLabels : ["No Data"],
@@ -988,7 +584,7 @@ function renderCharts(income, expense, catTotals) {
     }
   });
 
-  barChart = new Chart(document.getElementById("barChart"), {
+  barChart = new Chart(barCanvas, {
     type: "bar",
     data: {
       labels: ["Income", "Expense"],
@@ -1006,7 +602,7 @@ function renderCharts(income, expense, catTotals) {
   });
 }
 
-/* ---------- TRANSACTIONS RENDER ---------- */
+/* ========== TRANSACTIONS RENDER ========== */
 function renderTransactions(listToRender) {
   const container = document.getElementById("txContainer");
   if (!container) return;
@@ -1059,5 +655,5 @@ function renderTransactions(listToRender) {
     `;
     container.appendChild(item);
   });
-  lucide.createIcons();
+  if (typeof lucide !== 'undefined') lucide.createIcons();
 }

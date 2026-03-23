@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>FinTrack — Categories</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="View all income and expense categories on FinTrack.">
+
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet">
+
+  <!-- App Styles -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="logo-container">
+      <div class="logo">FinTrack</div>
+      <div class="logo-sub">Categories</div>
+    </div>
+    <div class="nav-links">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="transactions.html">Transactions</a>
+      <a href="categories.html" class="active">Categories</a>
+    </div>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <i data-lucide="moon"></i>
+      </button>
+      <div class="nav-avatar" onclick="window.location.href='profile.html'"></div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <!-- CATEGORIES PAGE -->
+    <section id="categories">
+      <div class="category-section">
+        <h2 style="margin: 0 0 1.5rem 0; color: var(--accent-green);">Income Categories</h2>
+        <div id="incomeCategoriesList" class="categories-grid">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+
+      <div class="category-section" style="margin-top: 3rem;">
+        <h2 style="margin: 0 0 1.5rem 0; color: var(--accent-red);">Expense Categories</h2>
+        <div id="expenseCategoriesList" class="categories-grid">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- SCRIPTS -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="shared.js"></script>
+  <script src="app.js"></script>
+
+</body>
+
+</html>
