@@ -25,6 +25,33 @@ function updateThemeIcon() {
 
 document.addEventListener('DOMContentLoaded', updateThemeIcon);
 
+/* ========== MOBILE NAV MANAGEMENT ========== */
+function toggleMobileNav() {
+  const navLinks = document.querySelector('.nav-links');
+  const hamburger = document.getElementById('hamburgerBtn');
+  if (!navLinks || !hamburger) return;
+  navLinks.classList.toggle('mobile-open');
+  hamburger.classList.toggle('active');
+  // Prevent body scroll when menu is open
+  document.body.style.overflow = navLinks.classList.contains('mobile-open') ? 'hidden' : '';
+}
+
+// Close mobile nav when a link is clicked
+document.addEventListener('DOMContentLoaded', function() {
+  const navLinks = document.querySelectorAll('.nav-links a');
+  navLinks.forEach(link => {
+    link.addEventListener('click', function() {
+      const nav = document.querySelector('.nav-links');
+      const hamburger = document.getElementById('hamburgerBtn');
+      if (nav && nav.classList.contains('mobile-open')) {
+        nav.classList.remove('mobile-open');
+        if (hamburger) hamburger.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    });
+  });
+});
+
 /* ========== FIREBASE INITIALIZATION ========== */
 const firebaseConfig = {
   apiKey: "AIzaSyAbAxOFts_ixYNIuSLOvGDEne_JZlkNlV4",
