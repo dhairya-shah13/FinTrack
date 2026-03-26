@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>FinTrack — Enterprise Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="FinTrack Enterprise Dashboard — Business financial overview, revenue, expenses, and assets.">
+
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet">
+
+  <!-- Choices.js CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+
+  <!-- App Styles -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="logo-container">
+      <div class="logo">FinTrack</div>
+      <div class="logo-sub">Enterprise</div>
+    </div>
+    <div class="nav-links">
+      <a href="enterprise-dashboard.html" class="active">Dashboard</a>
+      <a href="enterprise-transactions.html">Transactions</a>
+      <a href="enterprise-categories.html">Categories</a>
+      <a href="bills.html">Bills</a>
+      <a href="assets.html">Assets</a>
+    </div>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <i data-lucide="moon"></i>
+      </button>
+      <div class="nav-avatar" onclick="window.location.href='profile.html'"></div>
+      <button class="hamburger" id="hamburgerBtn" onclick="toggleMobileNav()" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <!-- ENTERPRISE DASHBOARD -->
+    <section id="dashboard">
+      <div class="section-header">
+        <h1 id="user-welcome" style="font-size: 1.5rem; margin: 0; color: var(--text-main);">Welcome back👋</h1>
+        <div class="enterprise-badge">Enterprise</div>
+      </div>
+
+      <!-- Summary Cards -->
+      <div class="enterprise-summary-grid">
+        <div class="summary-card summary-revenue">
+          <div class="summary-icon"><i data-lucide="trending-up"></i></div>
+          <div class="summary-info">
+            <div class="summary-label">Total Revenue</div>
+            <div class="summary-value" id="total-revenue">₹0</div>
+          </div>
+        </div>
+        <div class="summary-card summary-expense">
+          <div class="summary-icon"><i data-lucide="trending-down"></i></div>
+          <div class="summary-info">
+            <div class="summary-label">Total Expenses</div>
+            <div class="summary-value" id="total-expenses">₹0</div>
+          </div>
+        </div>
+        <div class="summary-card summary-assets">
+          <div class="summary-icon"><i data-lucide="landmark"></i></div>
+          <div class="summary-info">
+            <div class="summary-label">Asset Value</div>
+            <div class="summary-value" id="total-asset-value">₹0</div>
+          </div>
+        </div>
+        <div class="summary-card summary-bills">
+          <div class="summary-icon"><i data-lucide="receipt"></i></div>
+          <div class="summary-info">
+            <div class="summary-label">Total Bills</div>
+            <div class="summary-value" id="total-bills">0</div>
+          </div>
+        </div>
+        <div class="summary-card summary-count">
+          <div class="summary-icon"><i data-lucide="boxes"></i></div>
+          <div class="summary-info">
+            <div class="summary-label">Asset Count</div>
+            <div class="summary-value" id="asset-count">0</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-container">
+        <div class="chart-box"><canvas id="pieChart"></canvas></div>
+        <div class="chart-box"><canvas id="barChart"></canvas></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL STRUCTURE -->
+  <div class="modal-backdrop" id="modalBackdrop" onclick="toggleAddTxSection()"></div>
+  <div class="add-transaction-section" id="addTxSection">
+    <div class="modal-header">
+      <h2>Add Enterprise Transaction</h2>
+      <div class="close-modal" onclick="toggleAddTxSection()"><i data-lucide="x" style="width: 24px; height: 24px;"></i></div>
+    </div>
+    <div class="transaction-form">
+      <div class="form-group">
+        <label class="field-label">Amount</label>
+        <input id="amount" type="number" placeholder="0.00" min="0.01" step="0.01">
+        <span id="amount-error"
+          style="color: var(--accent-red); font-size: 0.8rem; margin-top: 0.5rem; height: 1.1rem; display: block;"></span>
+      </div>
+      <div class="form-group">
+        <label class="field-label">Bill Number <span style="color: var(--accent-red);">*</span></label>
+        <input id="bill-number" type="text" placeholder="Enter bill number (e.g. INV-1023)">
+      </div>
+      <div class="form-group">
+        <label class="field-label">Category</label>
+        <select id="category">
+          <optgroup label="Income">
+            <option value="Revenue">Revenue</option>
+            <option value="Client Payments">Client Payments</option>
+          </optgroup>
+          <optgroup label="Operations">
+            <option value="Accounts Receivable">Accounts Receivable</option>
+            <option value="Accounts Payable">Accounts Payable</option>
+            <option value="Payroll">Payroll</option>
+            <option value="Rent / Lease">Rent / Lease</option>
+            <option value="Utilities">Utilities</option>
+            <option value="Taxes">Taxes</option>
+          </optgroup>
+          <optgroup label="Business Costs">
+            <option value="Software / SaaS">Software / SaaS</option>
+            <option value="Office Supplies">Office Supplies</option>
+            <option value="Travel">Travel</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Insurance">Insurance</option>
+            <option value="Legal / Compliance">Legal / Compliance</option>
+          </optgroup>
+          <optgroup label="Assets & Inventory">
+            <option value="Equipment">Equipment</option>
+            <option value="Maintenance">Maintenance</option>
+            <option value="Inventory">Inventory</option>
+            <option value="Assets">Assets</option>
+          </optgroup>
+          <optgroup label="Payments">
+            <option value="Vendor Payments">Vendor Payments</option>
+          </optgroup>
+          <optgroup label="Other">
+            <option value="Liabilities">Liabilities</option>
+            <option value="Miscellaneous Business Expenses">Miscellaneous Business Expenses</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="field-label">Notes</label>
+        <input id="note" type="text" placeholder="Add a brief note...">
+      </div>
+      <button class="hero-add-btn" onclick="addEnterpriseTransaction()"><i data-lucide="plus"></i> Add Transaction</button>
+    </div>
+  </div>
+
+  <!-- FAB -->
+  <div class="fab" id="fabAdd" onclick="toggleAddTxSection()"><i data-lucide="plus"></i></div>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+  <script src="shared.js"></script>
+  <script src="enterprise.js"></script>
+
+</body>
+
+</html>

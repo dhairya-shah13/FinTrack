@@ -1980,3 +1980,543 @@ body {
     font-size: 0.9rem !important;
   }
 }
+
+/* ============================================
+   ENTERPRISE STYLES
+   ============================================ */
+
+/* ===== ACCOUNT TYPE SELECTOR (Signup) ===== */
+.account-type-selector {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.account-type-option {
+  flex: 1;
+  cursor: pointer;
+}
+
+.account-type-option input[type="radio"] {
+  display: none;
+}
+
+.account-type-card {
+  background: var(--input-bg);
+  border: 2px solid var(--glass-border);
+  border-radius: 1rem;
+  padding: 1rem 0.75rem;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.account-type-option input[type="radio"]:checked + .account-type-card {
+  border-color: var(--accent-green);
+  background: var(--surface-2);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .account-type-option input[type="radio"]:checked + .account-type-card {
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
+}
+
+.account-type-card:hover {
+  border-color: var(--text-muted);
+}
+
+.account-type-icon {
+  font-size: 1.75rem;
+  margin-bottom: 0.35rem;
+}
+
+.account-type-label {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text-main);
+}
+
+.account-type-desc {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+
+/* ===== ENTERPRISE BADGE ===== */
+.enterprise-badge {
+  background: linear-gradient(135deg, #059669, #10B981);
+  color: #ffffff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  padding: 0.35rem 0.85rem;
+  border-radius: 2rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* ===== ENTERPRISE SUMMARY GRID ===== */
+.enterprise-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.summary-card {
+  background: var(--bg-card);
+  padding: 1.5rem;
+  border-radius: 1.25rem;
+  border: 1px solid var(--glass-border);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.summary-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-soft);
+}
+
+.summary-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.summary-revenue .summary-icon {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10B981;
+}
+
+.summary-expense .summary-icon {
+  background: rgba(239, 68, 68, 0.1);
+  color: #EF4444;
+}
+
+.summary-assets .summary-icon {
+  background: rgba(5, 150, 105, 0.1);
+  color: #059669;
+}
+
+.summary-bills .summary-icon {
+  background: rgba(99, 102, 241, 0.1);
+  color: #6366F1;
+}
+
+.summary-count .summary-icon {
+  background: rgba(245, 158, 11, 0.1);
+  color: #F59E0B;
+}
+
+.summary-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.summary-value {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-top: 0.15rem;
+}
+
+/* ===== BILL NUMBER BADGE (on transactions) ===== */
+.tx-bill-badge {
+  font-size: 0.65rem;
+  background: rgba(99, 102, 241, 0.1);
+  color: #6366F1;
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.4rem;
+  font-weight: 600;
+  display: inline-block;
+  margin-top: 0.2rem;
+}
+
+/* ===== ASSET MANAGEMENT ===== */
+.asset-group {
+  margin-bottom: 2rem;
+}
+
+.asset-group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: var(--surface);
+  border-radius: 1rem 1rem 0 0;
+  border: 1px solid var(--glass-border);
+  border-bottom: none;
+}
+
+.asset-group-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text-main);
+}
+
+.asset-group-meta {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.asset-card {
+  background: var(--bg-card);
+  border: 1px solid var(--glass-border);
+  border-top: none;
+  padding: 1.25rem 1.5rem;
+  transition: background 0.2s;
+}
+
+.asset-card:last-child {
+  border-radius: 0 0 1rem 1rem;
+}
+
+.asset-card:hover {
+  background: var(--surface);
+}
+
+.asset-card-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.asset-card-icon {
+  width: 40px;
+  height: 40px;
+  background: rgba(5, 150, 105, 0.1);
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.asset-card-info {
+  flex: 1;
+}
+
+.asset-card-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-main);
+}
+
+.asset-card-date {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.asset-card-value {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #059669;
+}
+
+.asset-card-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+  padding-left: 3.5rem;
+}
+
+.asset-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--glass-border);
+}
+
+.maintenance-info {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.maintenance-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 0.6rem;
+  border: 1px solid rgba(5, 150, 105, 0.3);
+  background: rgba(5, 150, 105, 0.08);
+  color: #059669;
+  font-weight: 600;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.maintenance-btn:hover {
+  background: rgba(5, 150, 105, 0.15);
+  transform: translateY(-1px);
+}
+
+/* ===== BILL MANAGEMENT ===== */
+.bill-search-bar {
+  margin-bottom: 1.5rem;
+}
+
+.bill-group {
+  margin-bottom: 1rem;
+  border-radius: 1.25rem;
+  border: 1px solid var(--glass-border);
+  overflow: hidden;
+  transition: box-shadow 0.3s;
+}
+
+.bill-group:hover {
+  box-shadow: var(--shadow-soft);
+}
+
+.bill-group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  background: var(--bg-card);
+  cursor: pointer;
+  transition: background 0.2s;
+  user-select: none;
+}
+
+.bill-group-header:hover {
+  background: var(--surface);
+}
+
+.bill-group-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.bill-group-number {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text-main);
+}
+
+.bill-group-date {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.bill-group-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.bill-group-total {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--text-main);
+}
+
+.bill-chevron {
+  transition: transform 0.3s;
+}
+
+.bill-group.expanded .bill-chevron {
+  transform: rotate(180deg);
+}
+
+.bill-group-body {
+  display: none;
+  padding: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--glass-border);
+}
+
+.bill-group.expanded .bill-group-body {
+  display: block;
+}
+
+.bill-tx-row {
+  display: grid;
+  grid-template-columns: 1fr 120px 120px;
+  gap: 0.5rem;
+  padding: 0.85rem 1.5rem;
+  border-bottom: 1px solid var(--glass-border);
+  align-items: center;
+}
+
+.bill-tx-row:last-child {
+  border-bottom: none;
+}
+
+.bill-tx-cat {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.bill-tx-date {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.bill-tx-amount {
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-align: right;
+}
+
+.bill-tx-note {
+  grid-column: 1 / -1;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  padding-top: 0.15rem;
+}
+
+/* ===== ENTERPRISE RESPONSIVE ===== */
+
+@media (max-width: 1024px) {
+  .enterprise-summary-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .enterprise-summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .account-type-selector {
+    gap: 0.5rem;
+  }
+
+  .account-type-card {
+    padding: 0.85rem 0.5rem;
+  }
+
+  .account-type-icon {
+    font-size: 1.5rem;
+  }
+
+  .asset-card-header {
+    flex-wrap: wrap;
+  }
+
+  .asset-card-value {
+    width: 100%;
+    margin-top: 0.5rem;
+    padding-left: 3.5rem;
+  }
+
+  .asset-card-desc {
+    padding-left: 0;
+  }
+
+  .asset-card-footer {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+
+  .bill-tx-row {
+    grid-template-columns: 1fr auto;
+    gap: 0.25rem;
+  }
+
+  .bill-tx-date {
+    text-align: right;
+  }
+
+  .bill-tx-amount {
+    grid-column: 1 / -1;
+    text-align: left;
+  }
+}
+
+@media (max-width: 480px) {
+  .enterprise-summary-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .summary-card {
+    padding: 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .summary-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .summary-value {
+    font-size: 1.1rem;
+  }
+
+  .asset-group-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 1rem;
+  }
+
+  .bill-group-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 1rem;
+  }
+
+  .bill-group-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .enterprise-badge {
+    font-size: 0.6rem;
+    padding: 0.25rem 0.65rem;
+  }
+}
+
+@media (max-width: 375px) {
+  .enterprise-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-card {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .account-type-card {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .account-type-label {
+    font-size: 0.85rem;
+  }
+
+  .account-type-desc {
+    font-size: 0.6rem;
+  }
+}

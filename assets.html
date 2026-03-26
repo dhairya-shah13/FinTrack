@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>FinTrack — Asset Management</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Manage enterprise assets on FinTrack — track assets, maintenance, and values.">
+
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet">
+
+  <!-- App Styles -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="logo-container">
+      <div class="logo">FinTrack</div>
+      <div class="logo-sub">Asset Management</div>
+    </div>
+    <div class="nav-links">
+      <a href="enterprise-dashboard.html">Dashboard</a>
+      <a href="enterprise-transactions.html">Transactions</a>
+      <a href="enterprise-categories.html">Categories</a>
+      <a href="bills.html">Bills</a>
+      <a href="assets.html" class="active">Assets</a>
+    </div>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <i data-lucide="moon"></i>
+      </button>
+      <div class="nav-avatar" onclick="window.location.href='profile.html'"></div>
+      <button class="hamburger" id="hamburgerBtn" onclick="toggleMobileNav()" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <section id="asset-management">
+      <div class="section-header" style="margin-bottom: 2rem;">
+        <h1 style="font-size: 1.5rem; margin: 0; color: var(--text-main);">Asset Management</h1>
+        <div class="enterprise-badge">Enterprise</div>
+      </div>
+
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem;">
+        Assets are auto-created from enterprise transactions with category "Assets". Grouped by Bill Number.
+      </p>
+
+      <div id="assetsContainer">
+        <!-- Rendered via JS -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- SCRIPTS -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="shared.js"></script>
+  <script src="enterprise.js"></script>
+
+</body>
+
+</html>

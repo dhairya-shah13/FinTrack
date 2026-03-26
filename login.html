@@ -36,6 +36,26 @@
       <div id="signup-form" class="auth-form hidden">
         <h2 style="margin-bottom: 0.5rem; font-size: 1.5rem;">Create Account</h2>
         <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.9rem;">Join FinTrack today</p>
+
+        <div class="account-type-selector">
+          <label class="account-type-option">
+            <input type="radio" name="account-type" value="personal" checked>
+            <div class="account-type-card">
+              <div class="account-type-icon">👤</div>
+              <div class="account-type-label">Personal</div>
+              <div class="account-type-desc">Track personal finances</div>
+            </div>
+          </label>
+          <label class="account-type-option">
+            <input type="radio" name="account-type" value="enterprise">
+            <div class="account-type-card">
+              <div class="account-type-icon">🏢</div>
+              <div class="account-type-label">Enterprise</div>
+              <div class="account-type-desc">Business finance tools</div>
+            </div>
+          </label>
+        </div>
+
         <input type="text" id="signup-username" class="auth-input" placeholder="Username (unique)">
         <input type="email" id="signup-email" class="auth-input" placeholder="Email">
         <input type="password" id="signup-password" class="auth-input" placeholder="Password">

@@ -68,26 +68,106 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 
 let currentUser = null;
+let currentAccountType = null;
+
+/* ========== ENTERPRISE CATEGORY CONFIG ========== */
+const enterpriseIncomeCategories = ["Revenue", "Client Payments"];
+
+const enterpriseCategoryColors = {
+  "Revenue": "#10B981",
+  "Client Payments": "#34D399",
+  "Accounts Receivable": "#3B82F6",
+  "Accounts Payable": "#60A5FA",
+  "Payroll": "#8B5CF6",
+  "Rent / Lease": "#A78BFA",
+  "Utilities": "#6366F1",
+  "Taxes": "#DC2626",
+  "Software / SaaS": "#06B6D4",
+  "Office Supplies": "#F59E0B",
+  "Travel": "#F43F5E",
+  "Marketing": "#EC4899",
+  "Insurance": "#14B8A6",
+  "Legal / Compliance": "#64748B",
+  "Equipment": "#EF4444",
+  "Maintenance": "#FB923C",
+  "Inventory": "#FBBF24",
+  "Vendor Payments": "#94A3B8",
+  "Assets": "#059669",
+  "Liabilities": "#E11D48",
+  "Miscellaneous Business Expenses": "#9CA3AF"
+};
+
+function isEnterpriseIncome(category) {
+  return enterpriseIncomeCategories.includes(category);
+}
+
+/* ========== ACCOUNT TYPE HELPERS ========== */
+async function getAccountType(uid) {
+  // Check cache first
+  const cached = localStorage.getItem('fintrack-account-type');
+  if (cached) return cached;
+
+  try {
+    const doc = await db.collection('profiles').doc(uid).get();
+    if (doc.exists) {
+      const type = doc.data().account_type || 'personal';
+      localStorage.setItem('fintrack-account-type', type);
+      return type;
+    }
+  } catch (err) {
+    console.error('Error fetching account type:', err);
+  }
+  return 'personal';
+}
+
+function isEnterprisePage() {
+  const page = window.location.pathname.split('/').pop() || '';
+  return page.startsWith('enterprise-') || page === 'assets.html' || page === 'bills.html';
+}
+
+function isPersonalPage() {
+  const page = window.location.pathname.split('/').pop() || '';
+  return ['dashboard.html', 'transactions.html', 'categories.html', 'profile.html'].includes(page);
+}
 
 /* ========== AUTH STATE MANAGEMENT ========== */
 const currentPage = window.location.pathname.split('/').pop() || 'index.html';
 const isLoginPage = (currentPage === 'login.html');
 const isIndexPage = (currentPage === 'index.html' || currentPage === '' || currentPage === '/');
 
-auth.onAuthStateChanged((user) => {
+auth.onAuthStateChanged(async (user) => {
   if (user) {
     currentUser = user;
-    // If on login page or index, redirect to dashboard
+    currentAccountType = await getAccountType(user.uid);
+
+    // If on login page or index, redirect based on account type
     if (isLoginPage || isIndexPage) {
+      if (currentAccountType === 'enterprise') {
+        window.location.href = 'enterprise-dashboard.html';
+      } else {
+        window.location.href = 'dashboard.html';
+      }
+      return;
+    }
+
+    // Redirect if user is on wrong mode pages
+    if (currentAccountType === 'enterprise' && isPersonalPage() && currentPage !== 'profile.html') {
+      window.location.href = 'enterprise-dashboard.html';
+      return;
+    }
+    if (currentAccountType === 'personal' && isEnterprisePage()) {
       window.location.href = 'dashboard.html';
       return;
     }
-    // User is logged in on an app page — run page init if defined
+
+    // User is logged in on a correct page — run page init if defined
     if (typeof onUserReady === 'function') {
       onUserReady(user);
     }
   } else {
     currentUser = null;
+    currentAccountType = null;
+    localStorage.removeItem('fintrack-account-type');
     // If not on login page, redirect to login
     if (!isLoginPage) {
       window.location.href = 'login.html';
@@ -170,6 +250,10 @@ async function handleSignup() {
   const password = passwordField.value;
   const errorDiv = document.getElementById("auth-error");
 
+  // Get selected account type
+  const accountTypeEl = document.querySelector('input[name="account-type"]:checked');
+  const accountType = accountTypeEl ? accountTypeEl.value : 'personal';
+
   errorDiv.innerText = "Processing...";
   errorDiv.style.color = "var(--text-muted)";
 
@@ -198,6 +282,7 @@ async function handleSignup() {
       username: username,
       username_lowercase: username.toLowerCase(),
       email: email,
+      account_type: accountType,
       created_at: firebase.firestore.FieldValue.serverTimestamp()
     });
 
@@ -228,6 +313,7 @@ async function handleSignup() {
 }
 
 async function handleLogout() {
+  localStorage.removeItem('fintrack-account-type');
   await auth.signOut();
   window.location.href = 'login.html';
 }
@@ -330,11 +416,16 @@ async function updateProfileDisplay() {
       const welcomeEl = document.getElementById("user-welcome");
       const profileName = document.getElementById("profile-name");
       const profileEmail = document.getElementById("profile-email");
+      const profileType = document.getElementById("profile-account-type");
       const avatar = document.querySelector(".nav-avatar");
 
       if (welcomeEl) welcomeEl.innerText = `Welcome back, ${data.username}👋`;
       if (profileName) profileName.innerText = `Username: ${data.username}`;
       if (profileEmail) profileEmail.innerText = `Email: ${data.email}`;
+      if (profileType) {
+        const typeLabel = (data.account_type || 'personal') === 'enterprise' ? 'Enterprise' : 'Personal';
+        profileType.innerText = `Account Type: ${typeLabel}`;
+      }
 
       const initial = data.username ? data.username.charAt(0).toUpperCase() : '?';
       if (avatar) avatar.innerText = initial;

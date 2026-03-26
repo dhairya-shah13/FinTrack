@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>FinTrack — Enterprise Transactions</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="View and manage all enterprise transactions on FinTrack.">
+
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet">
+
+  <!-- Choices.js CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+
+  <!-- App Styles -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="logo-container">
+      <div class="logo">FinTrack</div>
+      <div class="logo-sub">Enterprise Transactions</div>
+    </div>
+    <div class="nav-links">
+      <a href="enterprise-dashboard.html">Dashboard</a>
+      <a href="enterprise-transactions.html" class="active">Transactions</a>
+      <a href="enterprise-categories.html">Categories</a>
+      <a href="bills.html">Bills</a>
+      <a href="assets.html">Assets</a>
+    </div>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <i data-lucide="moon"></i>
+      </button>
+      <div class="nav-avatar" onclick="window.location.href='profile.html'"></div>
+      <button class="hamburger" id="hamburgerBtn" onclick="toggleMobileNav()" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <!-- TRANSACTIONS PAGE -->
+    <section id="transactions">
+      <div class="section-header" style="justify-content: flex-start; gap: 1rem;">
+        <div class="tx-filter-group">
+          <select id="timePeriodFilter" class="time-filter-select" onchange="filterEnterpriseByTimePeriod(this.value)">
+            <option value="all">All Transactions</option>
+            <option value="this-week">This Week</option>
+            <option value="last-week">Last Week</option>
+            <option value="this-month">This Month</option>
+            <option value="last-month">Last Month</option>
+          </select>
+        </div>
+        <div class="report-dropdown-wrapper">
+          <button class="download-report-btn" onclick="toggleEnterpriseReportMenu()">
+            <i data-lucide="download" style="width:16px;height:16px;"></i> Download Report
+          </button>
+          <div id="reportMenu" class="report-dropdown-menu" style="display:none;">
+            <div class="report-menu-item" onclick="downloadEnterpriseReport('all')">Entire Report</div>
+            <div class="report-menu-item" onclick="downloadEnterpriseReport('this-week')">This Week</div>
+            <div class="report-menu-item" onclick="downloadEnterpriseReport('last-week')">Last Week</div>
+            <div class="report-menu-item" onclick="downloadEnterpriseReport('this-month')">This Month</div>
+            <div class="report-menu-item" onclick="downloadEnterpriseReport('last-month')">Last Month</div>
+          </div>
+        </div>
+        <div class="enterprise-badge" style="margin-left: auto;">Enterprise</div>
+      </div>
+      <div class="tx-header-row">
+        <div class="tx-header-spacer"></div>
+        <div class="tx-header-category">Category</div>
+        <div class="tx-header-date">Date</div>
+        <div class="tx-header-time">Time</div>
+        <div class="tx-header-amount">Amount</div>
+      </div>
+      <div id="txContainer" class="transaction-list"></div>
+    </section>
+
+  </main>
+
+  <!-- MODAL STRUCTURE -->
+  <div class="modal-backdrop" id="modalBackdrop" onclick="toggleAddTxSection()"></div>
+  <div class="add-transaction-section" id="addTxSection">
+    <div class="modal-header">
+      <h2>Add Enterprise Transaction</h2>
+      <div class="close-modal" onclick="toggleAddTxSection()"><i data-lucide="x" style="width: 24px; height: 24px;"></i></div>
+    </div>
+    <div class="transaction-form">
+      <div class="form-group">
+        <label class="field-label">Amount</label>
+        <input id="amount" type="number" placeholder="0.00" min="0.01" step="0.01">
+        <span id="amount-error"
+          style="color: var(--accent-red); font-size: 0.8rem; margin-top: 0.5rem; height: 1.1rem; display: block;"></span>
+      </div>
+      <div class="form-group">
+        <label class="field-label">Bill Number <span style="color: var(--accent-red);">*</span></label>
+        <input id="bill-number" type="text" placeholder="Enter bill number (e.g. INV-1023)">
+      </div>
+      <div class="form-group">
+        <label class="field-label">Category</label>
+        <select id="category">
+          <optgroup label="Income">
+            <option value="Revenue">Revenue</option>
+            <option value="Client Payments">Client Payments</option>
+          </optgroup>
+          <optgroup label="Operations">
+            <option value="Accounts Receivable">Accounts Receivable</option>
+            <option value="Accounts Payable">Accounts Payable</option>
+            <option value="Payroll">Payroll</option>
+            <option value="Rent / Lease">Rent / Lease</option>
+            <option value="Utilities">Utilities</option>
+            <option value="Taxes">Taxes</option>
+          </optgroup>
+          <optgroup label="Business Costs">
+            <option value="Software / SaaS">Software / SaaS</option>
+            <option value="Office Supplies">Office Supplies</option>
+            <option value="Travel">Travel</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Insurance">Insurance</option>
+            <option value="Legal / Compliance">Legal / Compliance</option>
+          </optgroup>
+          <optgroup label="Assets & Inventory">
+            <option value="Equipment">Equipment</option>
+            <option value="Maintenance">Maintenance</option>
+            <option value="Inventory">Inventory</option>
+            <option value="Assets">Assets</option>
+          </optgroup>
+          <optgroup label="Payments">
+            <option value="Vendor Payments">Vendor Payments</option>
+          </optgroup>
+          <optgroup label="Other">
+            <option value="Liabilities">Liabilities</option>
+            <option value="Miscellaneous Business Expenses">Miscellaneous Business Expenses</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="field-label">Notes</label>
+        <input id="note" type="text" placeholder="Add a brief note...">
+      </div>
+      <button class="hero-add-btn" onclick="addEnterpriseTransaction()"><i data-lucide="plus"></i> Add Transaction</button>
+    </div>
+  </div>
+
+  <!-- FAB -->
+  <div class="fab" id="fabAdd" onclick="toggleAddTxSection()"><i data-lucide="plus"></i></div>
+
+  <!-- Hidden canvas for PDF chart rendering -->
+  <canvas id="reportPieChart" width="400" height="400" style="display:none;"></canvas>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  <script src="shared.js"></script>
+  <script src="enterprise.js"></script>
+
+</body>
+
+</html>
