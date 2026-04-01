@@ -63,21 +63,26 @@ async function fetchEnterpriseTransactions() {
     }));
 
     // Auto-derive assets from transactions
+    const maintenanceTxs = enterpriseTransactions.filter(t => t.category === "Maintenance" && t.asset_id);
     assets = enterpriseTransactions
       .filter(t => t.category === "Assets")
-      .map(t => ({
-        id: t.id,
-        user_id: t.user_id,
-        name: t.note || `Asset - ${t.bill_number || 'Unknown'}`,
-        purchase_date: t.created_at,
-        value: t.amount,
-        category: "Assets",
-        description: t.note || "",
-        maintenance_count: 0,
-        bill_number: t.bill_number,
-        transaction_id: t.id,
-        created_at: t.created_at
-      }));
+      .map(t => {
+        const assetMaintenance = maintenanceTxs.filter(m => m.asset_id === t.id);
+        return {
+          id: t.id,
+          user_id: t.user_id,
+          name: t.note || `Asset - ${t.bill_number || 'Unknown'}`,
+          purchase_date: t.created_at,
+          value: t.amount,
+          category: "Assets",
+          description: t.note || "",
+          maintenance_count: assetMaintenance.length,
+          maintenance_spend: assetMaintenance.reduce((sum, m) => sum + Number(m.amount || 0), 0),
+          bill_number: t.bill_number,
+          transaction_id: t.id,
+          created_at: t.created_at
+        };
+      });
 
     const page = window.location.pathname.split('/').pop() || '';
     if (page === 'enterprise-dashboard.html') {
@@ -462,6 +467,8 @@ function renderAssets() {
     groupAssets.forEach(asset => {
       const dateObj = new Date(asset.purchase_date || asset.created_at);
       const dateStr = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      const mCount = asset.maintenance_count || 0;
+      const mSpend = asset.maintenance_spend || 0;
 
       const card = document.createElement("div");
       card.className = "asset-card";
@@ -476,11 +483,17 @@ function renderAssets() {
         </div>
         ${asset.description ? `<div class="asset-card-desc">${asset.description}</div>` : ''}
         <div class="asset-card-footer">
-          <div class="maintenance-info">
-            <i data-lucide="wrench" style="width:14px;height:14px;color:var(--text-muted);"></i>
-            <span>Maintenance: <strong>${asset.maintenance_count || 0}</strong></span>
+          <div class="maintenance-stats">
+            <div class="maintenance-info">
+              <i data-lucide="wrench" style="width:14px;height:14px;color:var(--text-muted);"></i>
+              <span>Maintenance: <strong>${mCount}</strong></span>
+            </div>
+            <div class="maintenance-info maintenance-spend-info">
+              <i data-lucide="indian-rupee" style="width:14px;height:14px;color:var(--text-muted);"></i>
+              <span>Spent: <strong>₹${mSpend.toLocaleString()}</strong></span>
+            </div>
           </div>
-          <button class="maintenance-btn" onclick="incrementMaintenance('${asset.id}')">
+          <button class="maintenance-btn" onclick="openMaintenanceModal('${asset.id}', '${(asset.name || 'Asset').replace(/'/g, "\\'")}'  )">
             <i data-lucide="plus" style="width:14px;height:14px;"></i> Maintenance
           </button>
         </div>
@@ -494,23 +507,125 @@ function renderAssets() {
   if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
-async function incrementMaintenance(assetId) {
-  try {
-    const assetRef = db.collection('assets').doc(assetId);
-    await assetRef.update({
-      maintenance_count: firebase.firestore.FieldValue.increment(1)
-    });
+/* ========== MAINTENANCE MODAL ========== */
+let maintenanceAssetId = null;
+let maintenanceAssetName = '';
 
-    // Update local state
-    const asset = assets.find(a => a.id === assetId);
-    if (asset) {
-      asset.maintenance_count = (asset.maintenance_count || 0) + 1;
-    }
-    renderAssets();
-  } catch (err) {
-    console.error("Error incrementing maintenance:", err);
-    alert("Failed to update maintenance count.");
+function openMaintenanceModal(assetId, assetName) {
+  maintenanceAssetId = assetId;
+  maintenanceAssetName = assetName || 'Asset';
+  const modal = document.getElementById('maintenanceModal');
+  const backdrop = document.getElementById('maintenanceBackdrop');
+  const titleEl = document.getElementById('maintenanceAssetTitle');
+  const noteInput = document.getElementById('maintenanceNote');
+  const amountInput = document.getElementById('maintenanceAmount');
+  const errorEl = document.getElementById('maintenance-error');
+
+  if (titleEl) titleEl.innerText = `Add Maintenance — ${maintenanceAssetName}`;
+  if (noteInput) noteInput.value = '';
+  if (amountInput) amountInput.value = '';
+  if (errorEl) errorEl.innerText = '';
+
+  if (modal) modal.style.display = 'block';
+  if (backdrop) backdrop.style.display = 'block';
+}
+
+function closeMaintenanceModal() {
+  const modal = document.getElementById('maintenanceModal');
+  const backdrop = document.getElementById('maintenanceBackdrop');
+  if (modal) modal.style.display = 'none';
+  if (backdrop) backdrop.style.display = 'none';
+  maintenanceAssetId = null;
+  maintenanceAssetName = '';
+}
+
+async function submitMaintenance() {
+  const noteInput = document.getElementById('maintenanceNote');
+  const amountInput = document.getElementById('maintenanceAmount');
+  const errorEl = document.getElementById('maintenance-error');
+  const submitBtn = document.getElementById('maintenanceSubmitBtn');
+
+  const note = (noteInput ? noteInput.value.trim() : '');
+  const amountVal = amountInput ? amountInput.value : '';
+
+  // Validation
+  if (!note) {
+    if (errorEl) errorEl.innerText = 'Please enter a maintenance note.';
+    return;
   }
+  if (!amountVal) {
+    if (errorEl) errorEl.innerText = 'Please enter the maintenance amount.';
+    return;
+  }
+  const amount = Number(amountVal);
+  if (isNaN(amount) || amount <= 0) {
+    if (errorEl) errorEl.innerText = 'Amount must be a number greater than 0.';
+    return;
+  }
+  if (!maintenanceAssetId) {
+    if (errorEl) errorEl.innerText = 'No asset selected. Please try again.';
+    return;
+  }
+
+  // Find the parent asset to get its bill_number
+  const parentAsset = assets.find(a => a.id === maintenanceAssetId);
+  const billNumber = parentAsset ? parentAsset.bill_number : '';
+
+  // Disable submit button during save
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerText = 'Saving...';
+  }
+
+  try {
+    const payload = {
+      amount,
+      category: 'Maintenance',
+      note: `[${maintenanceAssetName}] ${note}`,
+      asset_id: maintenanceAssetId,
+      user_id: currentUser.uid,
+      created_at: firebase.firestore.FieldValue.serverTimestamp()
+    };
+    if (billNumber) payload.bill_number = billNumber;
+
+    await db.collection('transactions').add(payload);
+
+    closeMaintenanceModal();
+    showToast('Maintenance entry added successfully!');
+
+    // Re-fetch all transactions to update everything
+    await fetchEnterpriseTransactions();
+  } catch (err) {
+    console.error('Error adding maintenance transaction:', err);
+    if (errorEl) errorEl.innerText = 'Failed to save. Please try again.';
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<i data-lucide="check" style="width:16px;height:16px;"></i> Save Maintenance';
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+  }
+}
+
+/* ========== TOAST NOTIFICATION ========== */
+function showToast(message) {
+  let container = document.getElementById('toastContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toastContainer';
+    document.body.appendChild(container);
+  }
+  const toast = document.createElement('div');
+  toast.className = 'toast-notification';
+  toast.innerHTML = `<i data-lucide="check-circle" style="width:18px;height:18px;color:#10B981;flex-shrink:0;"></i><span>${message}</span>`;
+  container.appendChild(toast);
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+
+  // Auto-remove after 3s
+  setTimeout(() => {
+    toast.classList.add('toast-exit');
+    setTimeout(() => toast.remove(), 400);
+  }, 3000);
 }
 
 /* ========== BILL MANAGEMENT ========== */

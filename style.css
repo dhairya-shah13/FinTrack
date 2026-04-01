@@ -2273,6 +2273,166 @@ body {
   transform: translateY(-1px);
 }
 
+/* ===== MAINTENANCE STATS LAYOUT ===== */
+.maintenance-stats {
+  display: flex;
+  gap: 1.25rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.maintenance-spend-info strong {
+  color: #FB923C;
+}
+
+/* ===== MAINTENANCE MODAL ===== */
+.maintenance-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 480px;
+  padding: 3rem;
+  background: var(--bg-card);
+  border-radius: 2.5rem;
+  border: 1px solid var(--glass-border);
+  display: none;
+  z-index: 10001;
+  animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: var(--shadow-heavy);
+  color: var(--text-main);
+}
+
+@keyframes modalSlideUp {
+  from { opacity: 0; transform: translate(-50%, -45%); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+.maintenance-modal .transaction-form input {
+  width: 100%;
+  padding: 0.9rem 1.25rem;
+  border-radius: 1rem;
+  border: 1px solid var(--glass-border);
+  background: var(--input-bg);
+  color: var(--text-main);
+  font-size: 1rem;
+  outline: none;
+  transition: 0.3s;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.maintenance-modal .transaction-form input:focus {
+  border-color: var(--accent-green);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .maintenance-modal .transaction-form input:focus {
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
+}
+
+.maintenance-modal-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.maintenance-cancel-btn {
+  flex: 1;
+  padding: 1rem;
+  border: 1px solid var(--glass-border);
+  border-radius: 1rem;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.maintenance-cancel-btn:hover {
+  background: var(--surface-2);
+  color: var(--text-main);
+}
+
+.maintenance-submit-btn {
+  flex: 2;
+}
+
+/* ===== TOAST NOTIFICATIONS ===== */
+#toastContainer {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+  pointer-events: none;
+}
+
+.toast-notification {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--bg-card);
+  border: 1px solid var(--glass-border);
+  padding: 0.85rem 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-main);
+  animation: toastSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: auto;
+}
+
+[data-theme="dark"] .toast-notification {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.toast-exit {
+  animation: toastSlideOut 0.4s ease forwards;
+}
+
+@keyframes toastSlideIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes toastSlideOut {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(20px); }
+}
+
+/* ===== MAINTENANCE MODAL RESPONSIVE ===== */
+@media (max-width: 480px) {
+  .maintenance-modal {
+    width: 100%;
+    max-width: 100%;
+    padding: 1.5rem;
+    border-radius: 1.25rem 1.25rem 0 0;
+    top: auto;
+    bottom: 0;
+    transform: translate(-50%, 0);
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .maintenance-modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .maintenance-submit-btn,
+  .maintenance-cancel-btn {
+    flex: unset;
+    width: 100%;
+  }
+}
+
 /* ===== BILL MANAGEMENT ===== */
 .bill-search-bar {
   margin-bottom: 1.5rem;
