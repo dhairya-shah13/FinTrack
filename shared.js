@@ -434,3 +434,50 @@ async function updateProfileDisplay() {
     console.error("Error updating profile display:", err);
   }
 }
+
+/* ========== APP DOWNLOAD UTILS ========== */
+function toggleDownloadDropdown(event) {
+  if (event) event.stopPropagation();
+  const dropdown = document.getElementById('downloadDropdown');
+  if (!dropdown) return;
+  if (dropdown.style.display === 'none' || dropdown.style.display === '') {
+    dropdown.style.display = 'flex';
+  } else {
+    dropdown.style.display = 'none';
+  }
+}
+
+document.addEventListener('click', function(event) {
+  const wrapper = document.querySelector('.download-dropdown-wrapper');
+  if (wrapper && !wrapper.contains(event.target)) {
+    const dropdown = document.getElementById('downloadDropdown');
+    if (dropdown && dropdown.style.display === 'flex') {
+      dropdown.style.display = 'none';
+    }
+  }
+});
+
+function openIosTutorial() {
+  const dropdown = document.getElementById('downloadDropdown');
+  if (dropdown) dropdown.style.display = 'none';
+  
+  const backdrop = document.getElementById('modalBackdrop');
+  if (backdrop) {
+    backdrop.style.display = 'block';
+    backdrop.onclick = closeIosTutorial;
+  }
+  
+  const iosModal = document.getElementById('iosTutorialSection');
+  if (iosModal) iosModal.style.display = 'block';
+}
+
+function closeIosTutorial() {
+  const backdrop = document.getElementById('modalBackdrop');
+  if (backdrop) {
+    backdrop.style.display = 'none';
+    backdrop.onclick = window.toggleAddTxSection; 
+  }
+  
+  const iosModal = document.getElementById('iosTutorialSection');
+  if (iosModal) iosModal.style.display = 'none';
+}

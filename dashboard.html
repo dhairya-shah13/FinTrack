@@ -50,13 +50,18 @@
     <section id="dashboard">
       <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
         <h1 id="user-welcome" style="font-size: 1.5rem; margin: 0; color: var(--text-main);">Welcome back👋</h1>
-        <div style="display: flex; gap: 0.5rem; align-items: center;">
-          <a href="FinTrack.apk" download class="hero-add-btn" style="text-decoration: none; padding: 0.5rem 1rem; width: auto; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 0.5rem; background: #3ddc84; color: #000; border: none;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M17.523 15.3414C17.523 16.0305 16.9642 16.5893 16.275 16.5893C15.5859 16.5893 15.027 16.0305 15.027 15.3414C15.027 14.6522 15.5859 14.0934 16.275 14.0934C16.9642 14.0934 17.523 14.6522 17.523 15.3414ZM8.9729 16.5893C8.2837 16.5893 7.7249 16.0305 7.7249 15.3414C7.7249 14.6522 8.2837 14.0934 8.9729 14.0934C9.6621 14.0934 10.221 14.6522 10.221 15.3414C10.221 16.0305 9.6621 16.5893 8.9729 16.5893ZM17.9715 10.8712L19.8247 7.6631C19.9248 7.4891 19.8661 7.2657 19.6922 7.1656C19.5182 7.0654 19.2947 7.1242 19.1946 7.2982L17.3101 10.5606C15.7533 9.8437 13.9829 9.4267 12.124 9.4267C10.2652 9.4267 8.4947 9.8437 6.938 10.5606L5.0534 7.2982C4.9533 7.1242 4.7299 7.0654 4.5559 7.1656C4.3819 7.2657 4.3232 7.4891 4.4233 7.6631L6.2766 10.8712C2.756 12.81 0.3541 16.4022 0 20.6696H24.248C23.894 16.4022 21.492 12.81 17.9715 10.8712Z"/></svg> Android
-          </a>
-          <a href="FinTrack.ipa" download class="hero-add-btn" style="text-decoration: none; padding: 0.5rem 1rem; width: auto; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 0.5rem; background: var(--bg-card); color: var(--text-main); border: 1px solid var(--glass-border);">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M16.149 12.0125C16.1774 10.1557 17.6583 9.2435 17.7288 9.1979C16.852 7.9177 15.5204 7.7411 15.0505 7.7126C13.9056 7.5959 12.7845 8.3845 12.193 8.3845C11.5878 8.3845 10.6698 7.724 9.7118 7.7383C8.4842 7.7554 7.3421 8.451 6.7139 9.5517C5.4337 11.7801 6.3867 15.0747 7.6409 16.8927C8.2541 17.7818 8.9669 18.7849 9.9084 18.7478C10.8214 18.7107 11.1714 18.1578 12.2612 18.1578C13.3368 18.1578 13.6584 18.7478 14.614 18.7278C15.5838 18.7107 16.2085 17.8217 16.8075 16.924C17.5005 15.9182 17.7885 14.938 17.8028 14.8867C17.7772 14.8781 16.1205 14.2478 16.149 12.0125ZM13.8868 6.1362C14.3903 5.5246 14.7317 4.6865 14.6376 3.8428C13.9149 3.8713 13.0188 4.3263 12.4954 4.9293C12.0261 5.4639 11.6251 6.326 11.7334 7.1537C12.5401 7.2165 13.3838 6.7472 13.8868 6.1362Z"/></svg> iOS
-          </a>
+        <div class="download-dropdown-wrapper" style="position: relative;">
+          <button class="hero-add-btn" onclick="toggleDownloadDropdown(event)" style="display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none; padding: 0.5rem 1rem; width: auto; font-size: 0.9rem;">
+            <i data-lucide="download" style="width: 16px; height: 16px;"></i> Download App
+          </button>
+          <div id="downloadDropdown" class="report-dropdown-menu" style="display: none; padding: 0.5rem; border-radius: 1rem; width: max-content; margin-top: 0.5rem; border: 1px solid var(--glass-border); background: var(--bg-card); flex-direction: column; gap: 0.5rem; position: absolute; right: 0;">
+            <a href="FinTrack.apk" download style="text-decoration: none; padding: 0.6rem 1rem; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem; background: #3ddc84; color: #000; border-radius: 0.5rem; font-weight: 600;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M17.523 15.3414C17.523 16.0305 16.9642 16.5893 16.275 16.5893C15.5859 16.5893 15.027 16.0305 15.027 15.3414C15.027 14.6522 15.5859 14.0934 16.275 14.0934C16.9642 14.0934 17.523 14.6522 17.523 15.3414ZM8.9729 16.5893C8.2837 16.5893 7.7249 16.0305 7.7249 15.3414C7.7249 14.6522 8.2837 14.0934 8.9729 14.0934C9.6621 14.0934 10.221 14.6522 10.221 15.3414C10.221 16.0305 9.6621 16.5893 8.9729 16.5893ZM17.9715 10.8712L19.8247 7.6631C19.9248 7.4891 19.8661 7.2657 19.6922 7.1656C19.5182 7.0654 19.2947 7.1242 19.1946 7.2982L17.3101 10.5606C15.7533 9.8437 13.9829 9.4267 12.124 9.4267C10.2652 9.4267 8.4947 9.8437 6.938 10.5606L5.0534 7.2982C4.9533 7.1242 4.7299 7.0654 4.5559 7.1656C4.3819 7.2657 4.3232 7.4891 4.4233 7.6631L6.2766 10.8712C2.756 12.81 0.3541 16.4022 0 20.6696H24.248C23.894 16.4022 21.492 12.81 17.9715 10.8712Z"/></svg> Android
+            </a>
+            <button onclick="openIosTutorial()" style="border: none; cursor: pointer; padding: 0.6rem 1rem; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem; background: var(--surface-2); color: var(--text-main); border-radius: 0.5rem; font-family: inherit; font-weight: 600;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M16.149 12.0125C16.1774 10.1557 17.6583 9.2435 17.7288 9.1979C16.852 7.9177 15.5204 7.7411 15.0505 7.7126C13.9056 7.5959 12.7845 8.3845 12.193 8.3845C11.5878 8.3845 10.6698 7.724 9.7118 7.7383C8.4842 7.7554 7.3421 8.451 6.7139 9.5517C5.4337 11.7801 6.3867 15.0747 7.6409 16.8927C8.2541 17.7818 8.9669 18.7849 9.9084 18.7478C10.8214 18.7107 11.1714 18.1578 12.2612 18.1578C13.3368 18.1578 13.6584 18.7478 14.614 18.7278C15.5838 18.7107 16.2085 17.8217 16.8075 16.924C17.5005 15.9182 17.7885 14.938 17.8028 14.8867C17.7772 14.8781 16.1205 14.2478 16.149 12.0125ZM13.8868 6.1362C14.3903 5.5246 14.7317 4.6865 14.6376 3.8428C13.9149 3.8713 13.0188 4.3263 12.4954 4.9293C12.0261 5.4639 11.6251 6.326 11.7334 7.1537C12.5401 7.2165 13.3838 6.7472 13.8868 6.1362Z"/></svg> iOS
+            </button>
+          </div>
         </div>
       </div>
 
@@ -290,6 +295,26 @@
       <button class="add-btn" onclick="addSplitTransaction()">Confirm</button>
       <button class="filter-btn" onclick="toggleSplitRow()">Cancel</button>
     </div>
+  </div>
+
+  <!-- IOS TUTORIAL MODAL -->
+  <div class="add-transaction-section" id="iosTutorialSection" style="text-align: center; max-width: 400px; padding: 2.5rem;">
+    <div class="modal-header" style="justify-content: center; position: relative; margin-bottom: 2rem;">
+      <h2 style="font-size: 1.5rem;">Install on iOS</h2>
+      <div class="close-modal" onclick="closeIosTutorial()" style="position: absolute; right: 0; top: 0;"><i data-lucide="x" style="width: 24px; height: 24px;"></i></div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 1rem; color: var(--text-main); text-align: left; font-size: 0.95rem;">
+      <p style="margin: 0; color: var(--text-dim);">To install FinTrack on your iPhone or iPad, simply follow these steps in Safari:</p>
+      <div style="display: flex; align-items: center; gap: 1rem; background: var(--surface); padding: 1rem; border-radius: 1rem; border: 1px solid var(--glass-border);">
+        <i data-lucide="share" style="color: var(--accent-green); min-width: 24px;"></i>
+        <span><strong>Step 1:</strong> Tap the <b>Share</b> icon at the bottom of your screen.</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 1rem; background: var(--surface); padding: 1rem; border-radius: 1rem; border: 1px solid var(--glass-border);">
+        <i data-lucide="plus-square" style="color: var(--accent-green); min-width: 24px;"></i>
+        <span><strong>Step 2:</strong> Scroll down and tap <b>Add to Home Screen</b>.</span>
+      </div>
+    </div>
+    <button class="hero-add-btn" onclick="closeIosTutorial()" style="margin-top: 2rem; width: 100%;">Got it!</button>
   </div>
 
   <!-- FAB -->
