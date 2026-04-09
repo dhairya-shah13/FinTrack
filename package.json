@@ -1,5 +1,10 @@
 {
   "dependencies": {
+    "@capacitor/core": "^8.3.0",
     "puppeteer": "^24.40.0"
+  },
+  "devDependencies": {
+    "@capacitor/android": "^8.3.0",
+    "@capacitor/cli": "^8.3.0"
   }
 }

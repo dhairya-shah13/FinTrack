@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>FinTrack — Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Log in or sign up for FinTrack — your personal finance tracker.">
+
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet">
+
+  <!-- App Styles -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- AUTH SECTION (full screen, no overlay needed) -->
+  <div id="auth-overlay">
+    <div class="auth-card">
+      <div class="logo" style="margin-bottom: 2.5rem; font-size: 2.5rem;">FinTrack</div>
+
+      <div id="login-form" class="auth-form">
+        <h2 style="margin-bottom: 0.5rem; font-size: 1.5rem;">Welcome Back</h2>
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.9rem;">Log in to manage your finances</p>
+        <input type="text" id="login-username" class="auth-input" placeholder="Email or username">
+        <input type="password" id="login-password" class="auth-input" placeholder="Password">
+        <button class="auth-btn" onclick="handleLogin()">Log In</button>
+        <div class="auth-toggle">Don't have an account? <span onclick="switchAuthMode('signup')">Click here to
+            sign-up</span></div>
+      </div>
+
+      <div id="signup-form" class="auth-form hidden">
+        <h2 style="margin-bottom: 0.5rem; font-size: 1.5rem;">Create Account</h2>
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.9rem;">Join FinTrack today</p>
+
+        <div class="account-type-selector">
+          <label class="account-type-option">
+            <input type="radio" name="account-type" value="personal" checked>
+            <div class="account-type-card">
+              <div class="account-type-icon">👤</div>
+              <div class="account-type-label">Personal</div>
+              <div class="account-type-desc">Track personal finances</div>
+            </div>
+          </label>
+          <label class="account-type-option">
+            <input type="radio" name="account-type" value="enterprise">
+            <div class="account-type-card">
+              <div class="account-type-icon">🏢</div>
+              <div class="account-type-label">Enterprise</div>
+              <div class="account-type-desc">Business finance tools</div>
+            </div>
+          </label>
+        </div>
+
+        <input type="text" id="signup-username" class="auth-input" placeholder="Username (unique)">
+        <input type="email" id="signup-email" class="auth-input" placeholder="Email">
+        <input type="password" id="signup-password" class="auth-input" placeholder="Password">
+        <button class="auth-btn" onclick="handleSignup()">Sign Up</button>
+        <div class="auth-toggle">Already have an account? <span onclick="switchAuthMode('login')">Login</span></div>
+      </div>
+
+      <div id="auth-error" class="auth-error"></div>
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="shared.js"></script>
+
+</body>
+
+</html>

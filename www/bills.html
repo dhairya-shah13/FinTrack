@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>FinTrack — Bill Management</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Manage enterprise bills on FinTrack — view transactions grouped by bill number.">
+
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet">
+
+  <!-- App Styles -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="logo-container">
+      <div class="logo">FinTrack</div>
+      <div class="logo-sub">Bill Management</div>
+    </div>
+    <div class="nav-links">
+      <a href="enterprise-dashboard.html">Dashboard</a>
+      <a href="enterprise-transactions.html">Transactions</a>
+      <a href="enterprise-categories.html">Categories</a>
+      <a href="bills.html" class="active">Bills</a>
+      <a href="assets.html">Assets</a>
+    </div>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <i data-lucide="moon"></i>
+      </button>
+      <div class="nav-avatar" onclick="window.location.href='profile.html'"></div>
+      <button class="hamburger" id="hamburgerBtn" onclick="toggleMobileNav()" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <section id="bill-management">
+      <div class="section-header" style="margin-bottom: 2rem;">
+        <h1 style="font-size: 1.5rem; margin: 0; color: var(--text-main);">Bill Management</h1>
+        <div class="enterprise-badge">Enterprise</div>
+      </div>
+
+      <div class="bill-search-bar">
+        <div class="search-wrapper">
+          <i data-lucide="search" style="width:18px;height:18px;"></i>
+          <input type="text" id="billSearch" class="search-input" placeholder="Search bills by number, category, or note..." oninput="searchBills()">
+        </div>
+      </div>
+
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem;">
+        Transactions are grouped by Bill Number. Click a bill group to expand and view its transactions.
+      </p>
+
+      <div id="billsContainer">
+        <!-- Rendered via JS -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- SCRIPTS -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="shared.js"></script>
+  <script src="enterprise.js"></script>
+
+</body>
+
+</html>
