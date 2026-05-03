@@ -181,6 +181,8 @@ function switchAuthMode(mode) {
   const loginForm = document.getElementById("login-form");
   const signupForm = document.getElementById("signup-form");
   const errorDiv = document.getElementById("auth-error");
+  const tabLogin = document.getElementById("tab-login");
+  const tabSignup = document.getElementById("tab-signup");
 
   if (errorDiv) {
     errorDiv.innerText = "";
@@ -189,9 +191,13 @@ function switchAuthMode(mode) {
   if (mode === 'login') {
     if (loginForm) loginForm.classList.remove("hidden");
     if (signupForm) signupForm.classList.add("hidden");
+    if (tabLogin) tabLogin.classList.add("active");
+    if (tabSignup) tabSignup.classList.remove("active");
   } else {
     if (loginForm) loginForm.classList.add("hidden");
     if (signupForm) signupForm.classList.remove("hidden");
+    if (tabLogin) tabLogin.classList.remove("active");
+    if (tabSignup) tabSignup.classList.add("active");
   }
 }
 
@@ -480,4 +486,44 @@ function closeIosTutorial() {
   
   const iosModal = document.getElementById('iosTutorialSection');
   if (iosModal) iosModal.style.display = 'none';
+}
+
+/* ========== PDF FONT LOADING (₹ support) ========== */
+let _pdfFontCache = null;
+
+async function loadPDFFont(doc) {
+  try {
+    if (!_pdfFontCache) {
+      const [regResp, boldResp] = await Promise.all([
+        fetch('/fonts/NotoSans-Regular.ttf'),
+        fetch('/fonts/NotoSans-Bold.ttf')
+      ]);
+      if (!regResp.ok || !boldResp.ok) throw new Error('Font fetch failed: ' + regResp.status);
+      _pdfFontCache = {
+        regular: await regResp.arrayBuffer(),
+        bold: await boldResp.arrayBuffer()
+      };
+    }
+    const toBase64 = (buf) => {
+      const bytes = new Uint8Array(buf);
+      let bin = '';
+      for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+      return btoa(bin);
+    };
+    doc.addFileToVFS('NotoSans-Regular.ttf', toBase64(_pdfFontCache.regular));
+    doc.addFileToVFS('NotoSans-Bold.ttf', toBase64(_pdfFontCache.bold));
+    doc.addFont('NotoSans-Regular.ttf', 'NotoSans', 'normal');
+    doc.addFont('NotoSans-Bold.ttf', 'NotoSans', 'bold');
+    return 'NotoSans';
+  } catch (e) {
+    console.error('PDF font load failed:', e);
+    return 'helvetica';
+  }
+}
+
+/* ========== INDIAN CURRENCY FORMATTER ========== */
+const _inrFormatter = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 });
+
+function formatINR(amount) {
+  return _inrFormatter.format(Math.abs(Number(amount)));
 }

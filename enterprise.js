@@ -251,11 +251,11 @@ function calculateEnterprise() {
   const billCountEl = document.getElementById("total-bills");
   const assetCountEl = document.getElementById("asset-count");
 
-  if (revenueEl) revenueEl.innerText = "₹" + revenue.toLocaleString();
-  if (expenseEl) expenseEl.innerText = "₹" + expenses.toLocaleString();
-  if (assetValueEl) assetValueEl.innerText = "₹" + totalAssetValue.toLocaleString();
-  if (billCountEl) billCountEl.innerText = billCount.toLocaleString();
-  if (assetCountEl) assetCountEl.innerText = assetCount.toLocaleString();
+  if (revenueEl) revenueEl.innerText = "₹" + revenue.toLocaleString('en-IN');
+  if (expenseEl) expenseEl.innerText = "₹" + expenses.toLocaleString('en-IN');
+  if (assetValueEl) assetValueEl.innerText = "₹" + totalAssetValue.toLocaleString('en-IN');
+  if (billCountEl) billCountEl.innerText = billCount.toLocaleString('en-IN');
+  if (assetCountEl) assetCountEl.innerText = assetCount.toLocaleString('en-IN');
 
   renderEnterpriseCharts(revenue, expenses, catTotals);
   renderEnterpriseTransactions(enterpriseTransactions);
@@ -299,7 +299,7 @@ function renderEnterpriseCharts(revenue, expenses, catTotals) {
               const value = context.parsed || 0;
               const total = context.dataset.data.reduce((a, b) => a + b, 0);
               const percentage = ((value / total) * 100).toFixed(1);
-              return ` ${label}: ₹${value.toLocaleString()} (${percentage}%)`;
+              return ` ${label}: ₹${value.toLocaleString('en-IN')} (${percentage}%)`;
             }
           }
         }
@@ -311,7 +311,7 @@ function renderEnterpriseCharts(revenue, expenses, catTotals) {
     type: "bar",
     data: {
       labels: ["Revenue", "Expenses"],
-      datasets: [{ data: [revenue, expenses], backgroundColor: ["#10B981", "#EF4444"], borderRadius: 12 }]
+      datasets: [{ data: [revenue, expenses], backgroundColor: ["#22C55E", "#EF4444"], borderRadius: 12 }]
     },
     options: {
       responsive: true,
@@ -377,7 +377,7 @@ function renderEnterpriseTransactions(listToRender) {
       <div class="tx-time-col">${timeStr}</div>
       <div class="tx-amount-group">
         <div class="tx-amount" style="color: ${color}">
-          ${isInc ? '+' : '-'}₹${Number(t.amount || 0).toLocaleString()}
+          ${isInc ? '+' : '-'}₹${Number(t.amount || 0).toLocaleString('en-IN')}
         </div>
         ${t.note ? `<div class="tx-tag">${t.note}</div>` : `<div class="tx-tag">${isInc ? 'Income' : 'Expense'}</div>`}
       </div>
@@ -459,7 +459,7 @@ function renderAssets() {
         <div class="asset-group-meta">
           <span>${groupAssets.length} asset${groupAssets.length > 1 ? 's' : ''}</span>
           <span>•</span>
-          <span>₹${totalValue.toLocaleString()}</span>
+          <span>₹${totalValue.toLocaleString('en-IN')}</span>
         </div>
       </div>
     `;
@@ -479,7 +479,7 @@ function renderAssets() {
             <div class="asset-card-name">${asset.name || 'Unnamed Asset'}</div>
             <div class="asset-card-date">${dateStr}</div>
           </div>
-          <div class="asset-card-value">₹${Number(asset.value || 0).toLocaleString()}</div>
+          <div class="asset-card-value">₹${Number(asset.value || 0).toLocaleString('en-IN')}</div>
         </div>
         ${asset.description ? `<div class="asset-card-desc">${asset.description}</div>` : ''}
         <div class="asset-card-footer">
@@ -490,7 +490,7 @@ function renderAssets() {
             </div>
             <div class="maintenance-info maintenance-spend-info">
               <i data-lucide="indian-rupee" style="width:14px;height:14px;color:var(--text-muted);"></i>
-              <span>Spent: <strong>₹${mSpend.toLocaleString()}</strong></span>
+              <span>Spent: <strong>₹${mSpend.toLocaleString('en-IN')}</strong></span>
             </div>
           </div>
           <button class="maintenance-btn" onclick="openMaintenanceModal('${asset.id}', '${(asset.name || 'Asset').replace(/'/g, "\\'")}'  )">
@@ -688,7 +688,7 @@ function renderBillGroups() {
           </div>
         </div>
         <div class="bill-group-right">
-          <div class="bill-group-total">₹${totalAmount.toLocaleString()}</div>
+          <div class="bill-group-total">₹${totalAmount.toLocaleString('en-IN')}</div>
           <i data-lucide="chevron-down" class="bill-chevron" style="width:18px;height:18px;color:var(--text-muted);"></i>
         </div>
       </div>
@@ -702,7 +702,7 @@ function renderBillGroups() {
             <div class="bill-tx-row">
               <div class="bill-tx-cat" style="color: ${color}">${cat}</div>
               <div class="bill-tx-date">${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
-              <div class="bill-tx-amount" style="color: ${color}">${isInc ? '+' : '-'}₹${Number(t.amount).toLocaleString()}</div>
+              <div class="bill-tx-amount" style="color: ${color}">${isInc ? '+' : '-'}₹${Number(t.amount).toLocaleString('en-IN')}</div>
               ${t.note ? `<div class="bill-tx-note">${t.note}</div>` : ''}
             </div>
           `;
@@ -801,12 +801,15 @@ async function downloadEnterpriseReport(period) {
     catTotals[cat] += amt;
   });
   const balance = income - expense;
+  const txCount = filtered.length;
+  const generatedDate = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
+  // --- Generate chart image ---
   const canvas = document.getElementById("reportPieChart");
   if (!canvas) { alert("Report generation not available on this page."); return; }
   canvas.style.display = "block";
-  canvas.width = 400;
-  canvas.height = 400;
+  canvas.width = 300;
+  canvas.height = 300;
 
   const pieLabels = Object.keys(catTotals);
   const pieData = Object.values(catTotals);
@@ -828,8 +831,8 @@ async function downloadEnterpriseReport(period) {
       animation: false,
       plugins: {
         legend: {
-          position: 'right',
-          labels: { color: '#333', font: { size: 10 } }
+          position: 'bottom',
+          labels: { color: '#4B5563', font: { size: 8 }, padding: 8 }
         }
       }
     }
@@ -841,117 +844,261 @@ async function downloadEnterpriseReport(period) {
   tempChart.destroy();
   canvas.style.display = "none";
 
+  // --- Build PDF ---
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF('p', 'mm', 'a4');
-  const pageWidth = doc.internal.pageSize.getWidth();
+  const pdfFont = await loadPDFFont(doc);
+  doc.setFont(pdfFont, 'normal');
+  const pw = doc.internal.pageSize.getWidth();
+  const ph = doc.internal.pageSize.getHeight();
+  const ml = 20, mr = 20;
+  const cw = pw - ml - mr;
 
-  doc.setFontSize(24);
-  doc.setTextColor(26, 64, 55);
-  doc.text("FinTrack", 14, 20);
+  // =============================================
+  // PAGE 1 — EXECUTIVE SUMMARY
+  // =============================================
 
-  doc.setFontSize(14);
-  doc.setTextColor(100);
-  doc.text(`Enterprise Transaction Report — ${getEnterprisePeriodLabel(period)}`, 14, 30);
+  // --- Header rule ---
+  let y = 20;
+  doc.setDrawColor(17, 24, 39);
+  doc.setLineWidth(0.6);
+  doc.line(ml, y, pw - mr, y);
 
-  doc.setFontSize(10);
-  doc.setTextColor(150);
-  doc.text(`Generated on ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`, 14, 37);
+  // --- Title block ---
+  y += 8;
+  doc.setFont(pdfFont, 'bold');
+  doc.setFontSize(20);
+  doc.setTextColor(17, 24, 39);
+  doc.text("FinTrack", ml, y);
 
-  doc.setDrawColor(220);
-  doc.setFillColor(240, 253, 244);
-  doc.roundedRect(14, 44, 55, 22, 3, 3, 'FD');
+  doc.setFont(pdfFont, 'normal');
   doc.setFontSize(9);
-  doc.setTextColor(100);
-  doc.text("REVENUE", 18, 51);
-  doc.setFontSize(14);
-  doc.setTextColor(16, 185, 129);
-  doc.text(`₹${income.toLocaleString()}`, 18, 60);
+  doc.setTextColor(107, 114, 128);
+  doc.text("Enterprise Transaction Report", pw - mr, y - 4, { align: 'right' });
 
-  doc.setFillColor(254, 242, 242);
-  doc.roundedRect(75, 44, 55, 22, 3, 3, 'FD');
   doc.setFontSize(9);
-  doc.setTextColor(100);
-  doc.text("EXPENSES", 79, 51);
-  doc.setFontSize(14);
-  doc.setTextColor(225, 29, 72);
-  doc.text(`₹${expense.toLocaleString()}`, 79, 60);
+  doc.setTextColor(107, 114, 128);
+  doc.text(getEnterprisePeriodLabel(period), pw - mr, y + 1, { align: 'right' });
 
-  doc.setFillColor(239, 246, 255);
-  doc.roundedRect(136, 44, 60, 22, 3, 3, 'FD');
+  doc.setFontSize(8);
+  doc.setTextColor(156, 163, 175);
+  doc.text(`Generated ${generatedDate}`, pw - mr, y + 6, { align: 'right' });
+
+  // --- Thin separator ---
+  y += 12;
+  doc.setDrawColor(229, 231, 235);
+  doc.setLineWidth(0.3);
+  doc.line(ml, y, pw - mr, y);
+
+  // --- FINANCIAL SUMMARY section ---
+  y += 10;
+  doc.setFont(pdfFont, 'bold');
   doc.setFontSize(9);
-  doc.setTextColor(100);
-  doc.text("NET CASH FLOW", 140, 51);
-  doc.setFontSize(14);
-  doc.setTextColor(balance >= 0 ? 16 : 225, balance >= 0 ? 185 : 29, balance >= 0 ? 129 : 72);
-  doc.text(`₹${balance.toLocaleString()}`, 140, 60);
+  doc.setTextColor(107, 114, 128);
+  doc.text("FINANCIAL SUMMARY", ml, y);
 
-  doc.addImage(chartImage, "PNG", 30, 72, 150, 100);
+  y += 8;
+  const summaryCol1 = ml;
+  const summaryCol2 = ml + cw * 0.25;
+  const summaryCol3 = ml + cw * 0.5;
+  const summaryCol4 = ml + cw * 0.75;
 
+  function drawSummaryBlock(x, label, value, valueColor) {
+    doc.setFont(pdfFont, 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(156, 163, 175);
+    doc.text(label, x, y);
+    doc.setFont(pdfFont, 'bold');
+    doc.setFontSize(14);
+    doc.setTextColor(valueColor[0], valueColor[1], valueColor[2]);
+    doc.text(value, x, y + 7);
+  }
+
+  drawSummaryBlock(summaryCol1, "TOTAL REVENUE", `\u20B9${formatINR(income)}`, [22, 163, 74]);
+  drawSummaryBlock(summaryCol2, "TOTAL EXPENSES", `\u20B9${formatINR(expense)}`, [220, 38, 38]);
+  drawSummaryBlock(summaryCol3, "NET CASH FLOW", `\u20B9${formatINR(balance)}`, balance >= 0 ? [22, 163, 74] : [220, 38, 38]);
+  drawSummaryBlock(summaryCol4, "TRANSACTIONS", `${txCount}`, [17, 24, 39]);
+
+  // --- Underline below summary ---
+  y += 14;
+  doc.setDrawColor(229, 231, 235);
+  doc.setLineWidth(0.3);
+  doc.line(ml, y, pw - mr, y);
+
+  // --- Category Breakdown heading ---
+  y += 10;
+  doc.setFont(pdfFont, 'bold');
+  doc.setFontSize(9);
+  doc.setTextColor(107, 114, 128);
+  doc.text("CATEGORY BREAKDOWN", ml, y);
+
+  y += 6;
+
+  const catEntries = Object.entries(catTotals).sort((a, b) => b[1] - a[1]);
+  const totalAll = income + expense;
+
+  catEntries.forEach(([cat, amt]) => {
+    const isInc = isEnterpriseIncome(cat);
+    const pct = totalAll > 0 ? ((amt / totalAll) * 100).toFixed(1) : '0.0';
+
+    doc.setFont(pdfFont, 'normal');
+    doc.setFontSize(8.5);
+    doc.setTextColor(55, 65, 81);
+    doc.text(cat, ml, y);
+
+    doc.setFont(pdfFont, 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(156, 163, 175);
+    doc.text(`${pct}%`, ml + 70, y);
+
+    doc.setFont(pdfFont, 'bold');
+    doc.setFontSize(8.5);
+    doc.setTextColor(isInc ? 22 : 220, isInc ? 163 : 38, isInc ? 74 : 38);
+    doc.text(`${isInc ? '+' : '-'}\u20B9${formatINR(amt)}`, pw - mr, y, { align: 'right' });
+
+    y += 5;
+  });
+
+  // --- Small chart at bottom-right of page 1 ---
+  if (chartImage) {
+    doc.addImage(chartImage, "PNG", pw - mr - 70, ph - 95, 70, 70);
+  }
+
+  // =============================================
+  // PAGE 2+ — TRANSACTION LEDGER
+  // =============================================
+  doc.addPage();
+
+  let ly = 20;
+  doc.setDrawColor(17, 24, 39);
+  doc.setLineWidth(0.6);
+  doc.line(ml, ly, pw - mr, ly);
+
+  ly += 7;
+  doc.setFont(pdfFont, 'bold');
+  doc.setFontSize(11);
+  doc.setTextColor(17, 24, 39);
+  doc.text("Transaction Ledger", ml, ly);
+
+  doc.setFont(pdfFont, 'normal');
+  doc.setFontSize(8);
+  doc.setTextColor(156, 163, 175);
+  doc.text(`${getEnterprisePeriodLabel(period)}  \u2022  ${txCount} entries`, pw - mr, ly, { align: 'right' });
+
+  ly += 5;
+  doc.setDrawColor(229, 231, 235);
+  doc.setLineWidth(0.3);
+  doc.line(ml, ly, pw - mr, ly);
+
+  // --- Transaction table data ---
   const tableData = filtered
     .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
     .map(t => {
       const d = new Date(t.created_at);
       const cat = t.category || "Miscellaneous Business Expenses";
+      const sign = isEnterpriseIncome(cat) ? '+' : '-';
       return [
         cat,
         d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-        `${isEnterpriseIncome(cat) ? '+' : '-'}₹${Number(t.amount).toLocaleString()}`,
+        `${sign}\u20B9${formatINR(t.amount)}`,
         t.bill_number || '-',
         t.note || (isEnterpriseIncome(cat) ? 'Income' : 'Expense')
       ];
     });
 
+  // --- Content width for percentage columns ---
+  const tableW = pw - ml - mr;
+
   doc.autoTable({
-    startY: 178,
+    startY: ly + 3,
     head: [['Category', 'Date', 'Amount', 'Bill #', 'Note']],
     body: tableData,
-    theme: 'grid',
+    showHead: 'everyPage',
+    theme: 'striped',
     styles: {
-      font: 'helvetica',
+      font: pdfFont,
+      fontSize: 8,
+      textColor: [55, 65, 81],
+      lineColor: [229, 231, 235],
+      lineWidth: 0.15,
+      cellPadding: { top: 2.8, right: 3.4, bottom: 2.8, left: 3.4 },
       overflow: 'linebreak',
-      cellPadding: 3
+      valign: 'top'
     },
     headStyles: {
-      fillColor: [26, 64, 55],
-      textColor: 255,
+      fillColor: [241, 245, 249],
+      textColor: [107, 114, 128],
       fontStyle: 'bold',
-      fontSize: 9
+      fontSize: 7.5,
+      halign: 'left',
+      cellPadding: { top: 3, right: 3.4, bottom: 3, left: 3.4 },
+      lineWidth: { bottom: 0.5 },
+      lineColor: [229, 231, 235]
     },
     bodyStyles: {
       fontSize: 8,
-      textColor: [50, 50, 50]
+      textColor: [55, 65, 81]
     },
     alternateRowStyles: {
-      fillColor: [245, 245, 245]
+      fillColor: [249, 250, 251]
     },
     columnStyles: {
-      0: { cellWidth: 32 },
-      1: { cellWidth: 28 },
-      2: { halign: 'center', cellWidth: 25 },
-      3: { cellWidth: 25 },
-      4: { cellWidth: 'auto', fontSize: 7 }
+      0: { cellWidth: tableW * 0.22, halign: 'left', overflow: 'linebreak' },
+      1: { cellWidth: tableW * 0.15, halign: 'left' },
+      2: { cellWidth: tableW * 0.14, halign: 'right', fontStyle: 'bold', overflow: 'visible' },
+      3: { cellWidth: tableW * 0.12, halign: 'left' },
+      4: { cellWidth: tableW * 0.37, halign: 'left', fontSize: 7.5, textColor: [107, 114, 128], overflow: 'linebreak' }
     },
-    margin: { left: 14, right: 14 },
-    tableWidth: 'auto',
+    margin: { left: ml, right: mr, top: 20, bottom: 18 },
+    tableWidth: tableW,
+    tableLineColor: [229, 231, 235],
+    tableLineWidth: 0.15,
     didParseCell: function(data) {
       if (data.column.index === 2 && data.section === 'body') {
-        const val = data.cell.raw;
+        const val = data.cell.raw || '';
         if (val.startsWith('+')) {
-          data.cell.styles.textColor = [16, 185, 129];
+          data.cell.styles.textColor = [22, 163, 74];
         } else {
-          data.cell.styles.textColor = [225, 29, 72];
+          data.cell.styles.textColor = [220, 38, 38];
         }
         data.cell.styles.fontStyle = 'bold';
+      }
+    },
+    didDrawPage: function(data) {
+      if (data.pageNumber > 1) {
+        doc.setDrawColor(229, 231, 235);
+        doc.setLineWidth(0.3);
+        doc.line(ml, 15, pw - mr, 15);
+
+        doc.setFont(pdfFont, 'normal');
+        doc.setFontSize(7);
+        doc.setTextColor(156, 163, 175);
+        doc.text('Transaction Ledger (continued)', ml, 18);
+        doc.text(`${getEnterprisePeriodLabel(period)}`, pw - mr, 18, { align: 'right' });
       }
     }
   });
 
+  // =============================================
+  // FOOTER — All pages
+  // =============================================
   const pageCount = doc.internal.getNumberOfPages();
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
-    doc.setFontSize(8);
-    doc.setTextColor(180);
-    doc.text(`FinTrack Enterprise Report • Page ${i} of ${pageCount}`, pageWidth / 2, doc.internal.pageSize.getHeight() - 8, { align: 'center' });
+    const footerY = ph - 10;
+
+    doc.setDrawColor(229, 231, 235);
+    doc.setLineWidth(0.2);
+    doc.line(ml, footerY - 3, pw - mr, footerY - 3);
+
+    doc.setFont(pdfFont, 'normal');
+    doc.setFontSize(7);
+    doc.setTextColor(156, 163, 175);
+    doc.text("FinTrack Enterprise Report", ml, footerY);
+
+    doc.text(`Page ${i} of ${pageCount}`, pw / 2, footerY, { align: 'center' });
+
+    doc.text(generatedDate, pw - mr, footerY, { align: 'right' });
   }
 
   const periodSlug = period.replace('-', '_');
